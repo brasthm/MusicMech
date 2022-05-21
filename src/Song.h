@@ -10,8 +10,9 @@
 
 class Song {
 private:
+	std::wstringstream readFile(std::string filename);
 public:
-
+	Song(std::string osuFile);
 };
 
 

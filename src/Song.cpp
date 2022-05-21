@@ -3,3 +3,74 @@
 //
 
 #include "Song.h"
+
+#include <iostream>
+#include <fstream>
+
+#include "Utils.h"
+
+/*
+std::wstringstream readFile(std::string filename)
+{
+    std::wifstream wif(filename);
+    wif.imbue(std::locale(std::locale::empty(), new std::codecvt_utf8<wchar_t>));
+    std::wstringstream wss;
+    wss << wif.rdbuf();
+    return wss;
+}*/
+
+
+
+Song::Song(std::string osuFile) {
+    //char line_buffer[BUFSIZ]; /* BUFSIZ is defined if you include stdio.h */
+
+   /* FILE* infile = fopen(osuFile.c_str(), "r");
+    if (!infile) {
+        printf("\nFile '%s' not found\n", osuFile);
+    }
+    printf("\nReading %s:\n\n", osuFile);
+
+    int line_number = 0;
+    std::string section = "Format";
+    while (fgets(line_buffer, sizeof(line_buffer), infile)) {
+        std::string line = line_buffer;
+        
+        if (line_buffer[0] == '[') {
+            section = line_buffer;
+        }
+        ++line_number;
+        // note that the newline is in the buffer
+        printf("%d: %s", line_number, line_buffer);
+    }*/
+
+    std::ifstream file(osuFile);
+
+    if (!file.is_open()) {
+        std::cout << "Erreur" << std::endl;
+    }
+    bool readnow = false;
+
+    while (!file.eof()) {
+        std::string line;
+        std::getline(file, line);
+
+        if (line == "[HitObjects]") {
+            readnow = true;
+            continue;
+        }
+
+        if (readnow) {
+            std::cout << line << std::endl;
+            std::vector<std::string> words = Utils::split(line, ',');
+            if (words.size() != 0) {
+                int x, y, time, type;
+                x = std::stoi(words[0]);
+                y = std::stoi(words[1]);
+                time = std::stoi(words[2]);
+                type = std::stoi(words[3]);
+                std::cout << x << ' ' << y << ' ' << time << ' ' << type << std::endl;
+            }
+        }
+    }
+}
+

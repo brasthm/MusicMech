@@ -23,3 +23,14 @@ bool Utils::sequence_greater_than(sf::Uint16 s1, sf::Uint16 s2) {
            ( ( s1 < s2 ) && ( s2 - s1  > 32768 ) );
 
 }
+
+std::vector<std::string> Utils::split(std::string s, char delim) {
+    std::stringstream ss(s);
+    std::string item;
+    std::vector<std::string> elems;
+    while (std::getline(ss, item, delim)) {
+        elems.push_back(item);
+        // elems.push_back(std::move(item)); // if C++11 (based on comment from @mchiasson)
+    }
+    return elems;
+}

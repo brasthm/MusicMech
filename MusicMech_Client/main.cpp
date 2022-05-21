@@ -4,6 +4,7 @@
 
 #include "../src/Client.h"
 #include "../src/Game.h"
+#include "../src/Song.h"
 
 int main() {
     std::string cmd;
@@ -31,6 +32,9 @@ int main() {
             sf::RenderWindow mainWindow(sf::VideoMode(800,600), "MusicMech");
             Game g(mainWindow, &c);
             g.run();
+        }
+        else if (cmd == "load") {
+            Song song = Song("D:\\_raphael\\Programation\\Cpp\\MusicMech\\Beatmaps\\461509 Marshmello - Alone\\Marshmello - Alone (Zer0-) [Lonely].osu");
         }
         else if(cmd != "exit") {
             c.sendCommand(cmd);
