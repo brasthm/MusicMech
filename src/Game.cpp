@@ -6,6 +6,8 @@
 
 #include "Game.h"
 #include "main.h"
+#include "RingShape.h"
+#include "RessourceLoader.h"
 
 Game::Game(sf::RenderWindow &window) : window_(window), client_(nullptr){
     online_ = false;
@@ -44,6 +46,13 @@ void Game::run() {
 
     std::cout << current << std::endl;
 
+    RingShape test_shape(sf::Vector2f(400,300), 20, 10, 1);
+
+    sf::Text fps_text;
+
+    fps_text.setFont(RessourceLoader::getFont("font/Roboto-Regular.ttf"));
+    fps_text.setCharacterSize(30);
+
     joueurs_[current].setConnected(true);
     joueurs_[current].setControlledByPlayer(true);
 
@@ -60,6 +69,7 @@ void Game::run() {
         for(int i = 0; i < joueurs_.size(); i++) {
             joueurs_[i].update(fps.getElapsedTime(), window_.hasFocus());
         }
+        fps_text.setString(std::to_string(1.f/fps.getElapsedTime().asSeconds()));
         fps.restart();
 
         if(send.getElapsedTime().asMilliseconds() > CLIENT_TICK_MS) {
@@ -72,9 +82,14 @@ void Game::run() {
 
         window_.clear();
 
+
+        test_shape.draw(window_);
+
         for(int i = 0; i < NB_MAX_JOUEURS; i++) {
             joueurs_[i].draw(window_);
         }
+
+        window_.draw(fps_text);
 
         window_.display();
     }

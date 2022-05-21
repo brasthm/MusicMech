@@ -25,7 +25,7 @@ static const sf::IpAddress SERVER_IP = "127.0.0.1";
 static constexpr unsigned short SERVER_ADMIN_PORT = 54000;
 static constexpr unsigned short SERVER_CONNECT_PORT = 54001;
 static constexpr unsigned short SERVER_GAME_PORT = 54002;
-static constexpr int SERVER_TICK_MS = 1000;
+static constexpr int SERVER_TICK_MS = 100;
 static constexpr int CLIENT_TICK_MS = 20;
 
 
