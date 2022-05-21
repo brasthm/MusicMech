@@ -13,7 +13,7 @@
 class RingShape {
 private:
     const int NOTE_NB_POINTS = 100;
-    size_t proportion_;
+    float proportion_;
     float thickness_;
     float distance_;
     sf::Vector2f center_;

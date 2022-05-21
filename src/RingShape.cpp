@@ -5,12 +5,13 @@
 #include "RingShape.h"
 
 #include <cmath>
+#include <iostream>
 
 void RingShape::update()
 {
     triangles_.clear();
 
-    float delta = 2.*(angle2_ - angle1_) / (float)NOTE_NB_POINTS;
+    float delta = 2.f*(angle2_ - angle1_) / (float)NOTE_NB_POINTS;
 
     for (int i = 0; i < NOTE_NB_POINTS / 2; i++)
     {
@@ -49,7 +50,7 @@ void RingShape::init(sf::Vector2f center, float distance, float thickness, float
     distance_ = distance;
     thickness_ = thickness;
     proportion_ = proportion;
-    angle1_ = 0;
+    angle1_ = -PI/2;
     angle2_ = angle1_ + 2 * PI * proportion_;
 
     update();
@@ -80,7 +81,7 @@ void RingShape::draw(sf::RenderWindow & window)
 
 void RingShape::setProportion(float proportion) {
     proportion_ = proportion;
-    angle2_ = 2 * PI * proportion_;
+    angle2_ = angle1_ + 2.f * PI * proportion_;
 
     update();
 }
