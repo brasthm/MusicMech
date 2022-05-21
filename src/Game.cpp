@@ -8,6 +8,8 @@
 #include "main.h"
 #include "RingShape.h"
 #include "RessourceLoader.h"
+#include "Mechanic.h"
+#include "Tower.h"
 
 Game::Game(sf::RenderWindow &window) : window_(window), client_(nullptr){
     online_ = false;
@@ -44,10 +46,6 @@ void Game::run() {
 
     int current = client_->getIndex();
 
-    std::cout << current << std::endl;
-
-    RingShape test_shape(sf::Vector2f(400,300), 20, 10, 1);
-
     sf::Text fps_text;
 
     fps_text.setFont(RessourceLoader::getFont("font/Roboto-Regular.ttf"));
@@ -55,6 +53,18 @@ void Game::run() {
 
     joueurs_[current].setConnected(true);
     joueurs_[current].setControlledByPlayer(true);
+
+    sf::Clock displayTest;
+
+    float BPM = 128;
+    int currentBeat = 0;
+
+    std::vector<Mechanic*> mechanicList;
+
+    mechanicList.emplace_back(new Tower(10, {400, 300}, 70));
+    mechanicList.emplace_back(new Tower(14, {400, 430}, 50));
+    mechanicList.emplace_back(new Tower(15, {500, 430}, 50));
+    mechanicList.emplace_back(new Tower(16, {600, 430}, 50));
 
 
     while (window_.isOpen())
@@ -66,10 +76,10 @@ void Game::run() {
                 window_.close();
         }
 
-        for(int i = 0; i < joueurs_.size(); i++) {
+        for(int i = 0; i < 1; i++) {
             joueurs_[i].update(fps.getElapsedTime(), window_.hasFocus());
         }
-        fps_text.setString(std::to_string(1.f/fps.getElapsedTime().asSeconds()));
+
         fps.restart();
 
         if(send.getElapsedTime().asMilliseconds() > CLIENT_TICK_MS) {
@@ -77,13 +87,34 @@ void Game::run() {
             send.restart();
         }
 
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::R)) {
+            displayTest.restart();
+            currentBeat = 0;
+        }
+
+        float propTime = displayTest.getElapsedTime().asSeconds()*BPM/60;
+
+        for(int i = 0; i < mechanicList.size(); i++) {
+            mechanicList[i]->update(currentBeat, propTime);
+        }
+
+
+        if(propTime > 1) {
+            displayTest.restart();
+            currentBeat++;
+        }
+
+
+        fps_text.setString(std::to_string(currentBeat));
 
         client_->updateFromServerPlayerPosition(joueurs_);
 
         window_.clear();
 
 
-        test_shape.draw(window_);
+        for(int i = 0; i < mechanicList.size(); i++) {
+            mechanicList[i]->draw(window_);
+        }
 
         for(int i = 0; i < NB_MAX_JOUEURS; i++) {
             joueurs_[i].draw(window_);
@@ -109,6 +140,12 @@ void Game::run() {
             std::cout << "Failed to disconnect to server" << std::endl;
         }
     }
+
+    for(int i = 0; i < mechanicList.size(); i++) {
+        delete mechanicList[i];
+    }
+
+
 }
 
 
