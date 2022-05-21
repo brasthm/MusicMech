@@ -34,7 +34,7 @@ int main() {
             g.run();
         }
         else if (cmd == "load") {
-            Song song = Song("D:\\_raphael\\Programation\\Cpp\\MusicMech\\Beatmaps\\461509 Marshmello - Alone\\Marshmello - Alone (Zer0-) [Lonely].osu");
+            //Song song = Song("D:\\_raphael\\Programation\\Cpp\\MusicMech\\Beatmaps\\461509 Marshmello - Alone\\Marshmello - Alone (Zer0-) [Lonely].osu");
         }
         else if(cmd != "exit") {
             c.sendCommand(cmd);

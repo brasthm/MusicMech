@@ -10,6 +10,7 @@
 #include "RessourceLoader.h"
 #include "Mechanic.h"
 #include "Tower.h"
+#include "Song.h"
 
 Game::Game(sf::RenderWindow &window) : window_(window), client_(nullptr){
     online_ = false;
@@ -42,6 +43,7 @@ void Game::run() {
         }
     }
 
+
     sf::Clock fps, send;
 
     int current = client_->getIndex();
@@ -56,15 +58,15 @@ void Game::run() {
 
     sf::Clock displayTest;
 
-    float BPM = 128;
     int currentBeat = 0;
+    float BPM = 142;
+    int offset = 70;
 
     std::vector<Mechanic*> mechanicList;
 
-    mechanicList.emplace_back(new Tower(10, {400, 300}, 70));
-    mechanicList.emplace_back(new Tower(14, {400, 430}, 50));
-    mechanicList.emplace_back(new Tower(15, {500, 430}, 50));
-    mechanicList.emplace_back(new Tower(16, {600, 430}, 50));
+    Song s("D:\\_raphael\\Programation\\Cpp\\MusicMech\\Beatmaps\\461509 Marshmello - Alone\\Marshmello - Alone (Zer0-) [Lonely].osu", mechanicList);
+
+    s.play();
 
 
     while (window_.isOpen())
@@ -92,7 +94,11 @@ void Game::run() {
             currentBeat = 0;
         }
 
-        float propTime = displayTest.getElapsedTime().asSeconds()*BPM/60;
+        
+        sf::Time currentPos = s.getCurrentTime();
+        float propTime = currentPos.asMilliseconds() - 0.6 * (currentPos.asMilliseconds() - offset) / BPM;
+
+        currentBeat = 0.6 * (currentPos.asMilliseconds() - offset) / BPM;
 
         for(int i = 0; i < mechanicList.size(); i++) {
             mechanicList[i]->update(currentBeat, propTime);
