@@ -46,7 +46,7 @@ void Game::run() {
 
     std::cout << current << std::endl;
 
-    RingShape test_shape(sf::Vector2f(400,300), 20, 10, 1);
+    RingShape test_shape(sf::Vector2f(400,300), 20, 10, 0);
 
     sf::Text fps_text;
 
@@ -55,6 +55,11 @@ void Game::run() {
 
     joueurs_[current].setConnected(true);
     joueurs_[current].setControlledByPlayer(true);
+
+    sf::Clock displayTest;
+
+    float BPM = 119.92;
+    int count = 0;
 
 
     while (window_.isOpen())
@@ -66,10 +71,10 @@ void Game::run() {
                 window_.close();
         }
 
-        for(int i = 0; i < joueurs_.size(); i++) {
+        for(int i = 0; i < 1; i++) {
             joueurs_[i].update(fps.getElapsedTime(), window_.hasFocus());
         }
-        fps_text.setString(std::to_string(1.f/fps.getElapsedTime().asSeconds()));
+
         fps.restart();
 
         if(send.getElapsedTime().asMilliseconds() > CLIENT_TICK_MS) {
@@ -77,6 +82,27 @@ void Game::run() {
             send.restart();
         }
 
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::R)) {
+            displayTest.restart();
+            count = 0;
+        }
+
+        float propTime = displayTest.getElapsedTime().asSeconds()*BPM/60;
+        if(propTime < 0.25) {
+            test_shape.setProportion(0.25 * count + 0.25*(propTime)/0.25);
+        }
+        if(propTime > 1) {
+            displayTest.restart();
+            count++;
+            if(count == 4) {
+                count = 0;
+            }
+        }
+
+
+
+
+        fps_text.setString(std::to_string(0.25 * count + (propTime-0.75)));
 
         client_->updateFromServerPlayerPosition(joueurs_);
 
