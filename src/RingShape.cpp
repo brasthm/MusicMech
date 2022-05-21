@@ -77,3 +77,10 @@ void RingShape::draw(sf::RenderWindow & window)
     for (int i = 0; i < triangles_.size(); i++)
         window.draw(triangles_[i]);
 }
+
+void RingShape::setProportion(float proportion) {
+    proportion_ = proportion;
+    angle2_ = 2 * PI * proportion_;
+
+    update();
+}

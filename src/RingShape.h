@@ -12,7 +12,7 @@
 
 class RingShape {
 private:
-    const int NOTE_NB_POINTS = 16;
+    const int NOTE_NB_POINTS = 100;
     size_t proportion_;
     float thickness_;
     float distance_;
@@ -31,6 +31,7 @@ public :
     void setDistance(float distance);
     void addDistance(float delta);
     void setThickness(float thick);
+    void setProportion(float proportion);
     void draw(sf::RenderWindow &window);
 };
 
