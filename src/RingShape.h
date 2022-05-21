@@ -13,10 +13,11 @@
 class RingShape {
 private:
     const int NOTE_NB_POINTS = 100;
-    size_t proportion_;
+    float proportion_;
     float thickness_;
     float distance_;
     sf::Vector2f center_;
+    sf::Color color_;
 
     float angle1_, angle2_;
 
@@ -31,6 +32,7 @@ public :
     void setDistance(float distance);
     void addDistance(float delta);
     void setThickness(float thick);
+    void setAlpha(float alpha);
     void setProportion(float proportion);
     void draw(sf::RenderWindow &window);
 };
