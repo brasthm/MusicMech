@@ -4,6 +4,7 @@
 
 #include "RessourceLoader.h"
 #include <filesystem>
+#include <iostream>
 
 
 RessourceReference<sf::Font> RessourceLoader::getFont(std::string const& name)
