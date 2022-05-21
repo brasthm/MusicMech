@@ -8,6 +8,8 @@
 #include "main.h"
 #include "RingShape.h"
 #include "RessourceLoader.h"
+#include "Mechanic.h"
+#include "Tower.h"
 
 Game::Game(sf::RenderWindow &window) : window_(window), client_(nullptr){
     online_ = false;
@@ -44,10 +46,6 @@ void Game::run() {
 
     int current = client_->getIndex();
 
-    std::cout << current << std::endl;
-
-    RingShape test_shape(sf::Vector2f(400,300), 20, 10, 0);
-
     sf::Text fps_text;
 
     fps_text.setFont(RessourceLoader::getFont("font/Roboto-Regular.ttf"));
@@ -58,8 +56,15 @@ void Game::run() {
 
     sf::Clock displayTest;
 
-    float BPM = 119.92;
-    int count = 0;
+    float BPM = 128;
+    int currentBeat = 0;
+
+    std::vector<Mechanic*> mechanicList;
+
+    mechanicList.emplace_back(new Tower(10, {400, 300}, 70));
+    mechanicList.emplace_back(new Tower(14, {400, 430}, 50));
+    mechanicList.emplace_back(new Tower(15, {500, 430}, 50));
+    mechanicList.emplace_back(new Tower(16, {600, 430}, 50));
 
 
     while (window_.isOpen())
@@ -84,32 +89,32 @@ void Game::run() {
 
         if(sf::Keyboard::isKeyPressed(sf::Keyboard::R)) {
             displayTest.restart();
-            count = 0;
+            currentBeat = 0;
         }
 
         float propTime = displayTest.getElapsedTime().asSeconds()*BPM/60;
-        if(propTime < 0.25) {
-            test_shape.setProportion(0.25 * count + 0.25*(propTime)/0.25);
+
+        for(int i = 0; i < mechanicList.size(); i++) {
+            mechanicList[i]->update(currentBeat, propTime);
         }
+
+
         if(propTime > 1) {
             displayTest.restart();
-            count++;
-            if(count == 4) {
-                count = 0;
-            }
+            currentBeat++;
         }
 
 
-
-
-        fps_text.setString(std::to_string(0.25 * count + (propTime-0.75)));
+        fps_text.setString(std::to_string(currentBeat));
 
         client_->updateFromServerPlayerPosition(joueurs_);
 
         window_.clear();
 
 
-        test_shape.draw(window_);
+        for(int i = 0; i < mechanicList.size(); i++) {
+            mechanicList[i]->draw(window_);
+        }
 
         for(int i = 0; i < NB_MAX_JOUEURS; i++) {
             joueurs_[i].draw(window_);
@@ -135,6 +140,12 @@ void Game::run() {
             std::cout << "Failed to disconnect to server" << std::endl;
         }
     }
+
+    for(int i = 0; i < mechanicList.size(); i++) {
+        delete mechanicList[i];
+    }
+
+
 }
 
 
