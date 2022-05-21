@@ -8,11 +8,15 @@
 #include <SFML/Audio.hpp>
 #include <string>
 
+#include "Mechanic.h"
+
 class Song {
 private:
-	std::wstringstream readFile(std::string filename);
+	sf::Music music_;
 public:
-	Song(std::string osuFile);
+	Song(std::string osuFile, std::vector<Mechanic*> &mech);
+	void play();
+	sf::Time getCurrentTime();
 };
 
 

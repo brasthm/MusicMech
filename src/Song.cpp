@@ -9,6 +9,8 @@
 
 #include "Utils.h"
 
+#include "Tower.h"
+
 /*
 std::wstringstream readFile(std::string filename)
 {
@@ -21,7 +23,7 @@ std::wstringstream readFile(std::string filename)
 
 
 
-Song::Song(std::string osuFile) {
+Song::Song(std::string osuFile, std::vector<Mechanic*> &mechs) {
     //char line_buffer[BUFSIZ]; /* BUFSIZ is defined if you include stdio.h */
 
    /* FILE* infile = fopen(osuFile.c_str(), "r");
@@ -49,8 +51,14 @@ Song::Song(std::string osuFile) {
         std::cout << "Erreur" << std::endl;
     }
     bool readnow = false;
+    
+    if (music_.openFromFile("D:\\_raphael\\Programation\\Cpp\\MusicMech\\Beatmaps\\461509 Marshmello - Alone\\audio.ogg"))
+        std::cout << "hmmm" << std::endl;
 
     while (!file.eof()) {
+
+       
+
         std::string line;
         std::getline(file, line);
 
@@ -69,8 +77,20 @@ Song::Song(std::string osuFile) {
                 time = std::stoi(words[2]);
                 type = std::stoi(words[3]);
                 std::cout << x << ' ' << y << ' ' << time << ' ' << type << std::endl;
+
+                mechs.emplace_back(new Tower(0.6 * (time - 70) / 142, sf::Vector2f(x, y), 70));
             }
         }
     }
+}
+
+void Song::play()
+{
+    music_.play();
+}
+
+sf::Time Song::getCurrentTime()
+{
+    return music_.getPlayingOffset();
 }
 
