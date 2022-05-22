@@ -13,12 +13,13 @@ private:
     sf::CircleShape base_;
     RingShape approachCircle_;
     sf::Vector2f position_;
-    float radius_;
+    float radius_, newRadius_;
     bool draw_, hitsound_;
 public:
     Tower(int beat, sf::Vector2f position, float radius);
     void draw(sf::RenderWindow &window) override;
-    void update(int currentBeat, float currentPart) override;
+    void update(int currentBeat, float currentPart, sf::Vector2f pos) override;
+    void check(sf::Vector2f pos) override;
     inline std::string toString() override {
         std::string s;
         s = "Tower(beat: " + std::to_string(beat_) + ", pos: (" + std::to_string(position_.x) + "," + std::to_string(position_.y) + "), radius: " + std::to_string(radius_) + ")";

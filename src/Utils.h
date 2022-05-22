@@ -14,6 +14,7 @@ namespace Utils {
     int hash(std::string key);
     bool sequence_greater_than(sf::Uint16 s1, sf::Uint16 s2);
     std::vector<std::string> split(std::string s, char delim);
+    double distance(sf::Vector2f a, sf::Vector2f b);
 
     inline std::string& ltrim(std::string& s, const char* t = " \t\n\r\f\v")
     {

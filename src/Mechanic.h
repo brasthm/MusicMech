@@ -13,15 +13,17 @@ class Mechanic {
 protected:
     int beat_;
     std::string sound_;
-    bool played_;
+    bool played_, checked_;
+    bool passed_;
 
     void setSoundName(const std::string& name);
     void playSound();
 public:
     Mechanic();
     ~Mechanic() = default;
-    virtual void update(int currentBeat, float currentPart) = 0;
+    virtual void update(int currentBeat, float currentPart, sf::Vector2f pos) = 0;
     virtual void draw(sf::RenderWindow &window) = 0;
+    virtual void check(sf::Vector2f pos) = 0;
     virtual std::string toString()=0;
 };
 
