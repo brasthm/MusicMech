@@ -5,8 +5,10 @@
 #include "Server.h"
 
 #include <SFML/Network.hpp>
-
+#include <chrono>
+#include <thread>
 #include <iostream>
+
 #include "Random.h"
 
 Server::Server() :  admin("admin", SERVER_ADMIN_PORT, false),
@@ -28,6 +30,8 @@ void Server::run() {
         monitorConnectRequest();
         monitorPlayerData();
         sendPlayerData();
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
 }
 
