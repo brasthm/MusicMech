@@ -14,7 +14,7 @@ private:
     RingShape approachCircle_;
     sf::Vector2f position_;
     float radius_;
-    bool draw_;
+    bool draw_, hitsound_;
 public:
     Tower(int beat, sf::Vector2f position, float radius);
     void draw(sf::RenderWindow &window) override;
