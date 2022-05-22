@@ -13,6 +13,9 @@
 struct TIMING_POINT {
 	float beatOffset;
 	float beatLength;
+
+	TIMING_POINT() = default;
+    inline TIMING_POINT(float bOffset, float bLength) { beatLength = bLength; beatOffset = bOffset;};
 };
 
 class Song {
@@ -24,9 +27,12 @@ public:
 	Song(std::string osuFile, std::vector<Mechanic*> &mech);
 	void play();
 	sf::Time getCurrentTime();
-	TIMING_POINT getCurrentBeat();
+	TIMING_POINT getCurrentBeat(int ms);
 	int getCurrentBeatOffset();
 	float getCurrentBeatLength();
+
+    int getBeatOffset(int ms);
+    float getBeatLength(int ms);
 };
 
 #endif //MUSICMECH_CLIENT_SONG_H

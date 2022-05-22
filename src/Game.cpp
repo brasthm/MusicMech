@@ -59,11 +59,8 @@ void Game::run() {
     sf::Clock displayTest;
 
     int currentBeat = 0;
-    float BPM = 142;
-    int offset = 70;
 
     std::vector<Mechanic*> mechanicList;
-
     Song s("Beatmaps/461509 Marshmello - Alone/Marshmello - Alone (Zer0-) [Lonely].osu", mechanicList);
 
     s.play();
@@ -85,8 +82,6 @@ void Game::run() {
         }
         //std::cout << std::endl;
 
-        fps_text.setString(std::to_string(1/elapsedTime.asSeconds()));
-
 
 
         if(send.getElapsedTime().asMilliseconds() > CLIENT_TICK_MS) {
@@ -101,10 +96,12 @@ void Game::run() {
 
         
         sf::Time currentPos = s.getCurrentTime();
-        float currentBeat_float = 0.6 * (currentPos.asMilliseconds() - offset) / BPM;
+        float currentBeat_float = (currentPos.asMilliseconds() - (float)s.getCurrentBeatOffset()) / s.getCurrentBeatLength();
         currentBeat = (int) currentBeat_float;
 
-        float propTime = currentBeat_float - currentBeat;
+        fps_text.setString(std::to_string(currentPos.asSeconds()));
+
+        float propTime = currentBeat_float - (float)currentBeat;
 
         for(int i = 0; i < mechanicList.size(); i++) {
             mechanicList[i]->update(currentBeat, propTime);
@@ -117,15 +114,12 @@ void Game::run() {
         }
 
 
-
-
         client_->updateFromServerPlayerPosition(joueurs_);
-
         window_.clear();
 
 
         for(int i = 0; i < mechanicList.size(); i++) {
-            mechanicList[i]->draw(window_);
+            mechanicList[mechanicList.size() - i - 1]->draw(window_);
         }
 
         for(int i = 0; i < NB_MAX_JOUEURS; i++) {
