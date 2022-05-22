@@ -28,11 +28,13 @@ public:
 	void play();
 	sf::Time getCurrentTime();
 	TIMING_POINT getCurrentBeat(int ms);
-	int getCurrentBeatOffset();
+
+	float getBeatOffset(int ms);
+    float getBeatLength(int ms);
+	float getCurrentBeatOffset();
 	float getCurrentBeatLength();
 
-    int getBeatOffset(int ms);
-    float getBeatLength(int ms);
+	float getCumulativeNBeats(int ms);
 };
 
 #endif //MUSICMECH_CLIENT_SONG_H

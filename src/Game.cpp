@@ -61,7 +61,7 @@ void Game::run() {
     int currentBeat = 0;
 
     std::vector<Mechanic*> mechanicList;
-    Song s("Beatmaps/461509 Marshmello - Alone/Marshmello - Alone (Zer0-) [Lonely].osu", mechanicList);
+    Song s("Beatmaps/546820 YUC'e - Future Candy/YUC'e - Future Candy (Nathan) [Insane].osu", mechanicList);
 
     s.play();
 
@@ -96,10 +96,10 @@ void Game::run() {
 
         
         sf::Time currentPos = s.getCurrentTime();
-        float currentBeat_float = (currentPos.asMilliseconds() - (float)s.getCurrentBeatOffset()) / s.getCurrentBeatLength();
+        float currentBeat_float = s.getCumulativeNBeats(currentPos.asMilliseconds());
         currentBeat = (int) currentBeat_float;
 
-        fps_text.setString(std::to_string(currentPos.asSeconds()));
+        fps_text.setString(std::to_string(currentBeat));
 
         float propTime = currentBeat_float - (float)currentBeat;
 

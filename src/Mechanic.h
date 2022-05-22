@@ -22,8 +22,10 @@ public:
     ~Mechanic() = default;
     virtual void update(int currentBeat, float currentPart) = 0;
     virtual void draw(sf::RenderWindow &window) = 0;
-
+    virtual std::string toString()=0;
 };
+
+
 
 
 #endif //MUSICMECH_CLIENT_MECHANIC_H
