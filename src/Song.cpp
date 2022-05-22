@@ -77,6 +77,7 @@ Song::Song(std::string osuFile, std::vector<Mechanic*> &mechs) {
                     {
                         std::cout << "  offset: " << beatOffset << ", ms per beat : " << beatLength << " (" << 60 / (beatLength / 1000) << " bpm)" << std::endl;
                         timingPoints_.push_back(TIMING_POINT(beatOffset, beatLength));
+                        currentTimingPoint_ = timingPoints_.begin();
                     }
                 }
                 else if (*parsing == "[HitObjects]") {
@@ -87,7 +88,8 @@ Song::Song(std::string osuFile, std::vector<Mechanic*> &mechs) {
                     type = std::stoi(words[3]);
                     //std::cout << x << ' ' << y << ' ' << time << ' ' << type << std::endl;
 
-                    mechs.emplace_back(new Tower(0.6 * (time - 70) / 142, sf::Vector2f(x, y), 70));
+                    mechs.emplace_back(new Tower((time - getBeatOffset(time)) / getBeatLength(time),
+                                                 sf::Vector2f(x, y), 70));
                 }
             }
         }
@@ -112,10 +114,8 @@ sf::Time Song::getCurrentTime()
     return music_.getPlayingOffset();
 }
 
-TIMING_POINT Song::getCurrentBeat()
+TIMING_POINT Song::getCurrentBeat(int ms)
 {
-    int ms = getCurrentTime().asMilliseconds();
-
     while (currentTimingPoint_ != timingPoints_.begin()  &&  ms < currentTimingPoint_->beatOffset)
         currentTimingPoint_--;
 
@@ -130,10 +130,18 @@ TIMING_POINT Song::getCurrentBeat()
 
 int Song::getCurrentBeatOffset()
 {
-    return getCurrentBeat().beatOffset;
+    return getCurrentBeat(getCurrentTime().asMilliseconds()).beatOffset;
 }
 
 float Song::getCurrentBeatLength()
 {
-    return getCurrentBeat().beatLength;
+    return getCurrentBeat(getCurrentTime().asMilliseconds()).beatLength;
+}
+
+int Song::getBeatOffset(int ms) {
+    return getCurrentBeat(ms).beatOffset;
+}
+
+float Song::getBeatLength(int ms) {
+    return getCurrentBeat(ms).beatLength;
 }

@@ -6,15 +6,24 @@
 #define MUSICMECH_CLIENT_MECHANIC_H
 
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
+
+
 
 class Mechanic {
 protected:
     int beat_;
+    sf::Sound sound_;
+    bool played_;
+
+    void setSoundName(const std::string& name);
+    void playSound();
 public:
     Mechanic();
     ~Mechanic() = default;
     virtual void update(int currentBeat, float currentPart) = 0;
     virtual void draw(sf::RenderWindow &window) = 0;
+
 };
 
 
