@@ -24,6 +24,7 @@ public:
     void setDataFromServer(sf::Packet &packet);
     inline int getPosX() const {return pos_.x;};
     inline int getPosY() const {return pos_.y;};
+    inline sf::Vector2f getPos() const {return pos_;};
 };
 
 
