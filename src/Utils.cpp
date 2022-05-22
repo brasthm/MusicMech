@@ -34,3 +34,8 @@ std::vector<std::string> Utils::split(std::string s, char delim) {
     }
     return elems;
 }
+
+double Utils::distance(sf::Vector2f a, sf::Vector2f b) {
+    auto diff = a - b;
+    return sqrt(diff.x * diff.x + diff.y * diff.y);
+}

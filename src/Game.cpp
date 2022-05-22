@@ -104,7 +104,7 @@ void Game::run() {
         float propTime = currentBeat_float - (float)currentBeat;
 
         for(int i = 0; i < mechanicList.size(); i++) {
-            mechanicList[i]->update(currentBeat, propTime);
+            mechanicList[i]->update(currentBeat, propTime, joueurs_[current].getPos());
         }
 
 
