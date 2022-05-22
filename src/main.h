@@ -27,6 +27,7 @@ static constexpr unsigned short SERVER_CONNECT_PORT = 54001;
 static constexpr unsigned short SERVER_GAME_PORT = 54002;
 static constexpr int SERVER_TICK_MS = 100;
 static constexpr int CLIENT_TICK_MS = 20;
+static constexpr int SERVER_SLEEP = 10;
 
 
 #endif //MUSICMECH_SERVER_MAIN_H
