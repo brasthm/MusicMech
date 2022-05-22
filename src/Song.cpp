@@ -88,8 +88,8 @@ Song::Song(std::string osuFile, std::vector<Mechanic*> &mechs) {
                     type = std::stoi(words[3]);
                     //std::cout << x << ' ' << y << ' ' << time << ' ' << type << std::endl;
 
-                    mechs.emplace_back(new Tower((time - getBeatOffset(time)) / getBeatLength(time),
-                                                 sf::Vector2f(x, y), 70));
+                    mechs.emplace_back(new Tower((int)getCumulativeNBeats(time), sf::Vector2f(x, y), 70));
+                    std::cout << mechs.back()->toString() << std::endl;
                 }
             }
         }
@@ -97,10 +97,6 @@ Song::Song(std::string osuFile, std::vector<Mechanic*> &mechs) {
     std::cout << "  converted " << mechs.size() << " hit objects to mechanics" << std::endl;
     std::cout << "beatmap parsed!" << std::endl;
     file.close();
-
-    if (timingPoints_.size() == 0)
-        std::cout << "Error: beatmap must contain at least one uninherited timing point" << std::endl;
-    currentTimingPoint_ = timingPoints_.begin();
 
 }
 
@@ -128,20 +124,41 @@ TIMING_POINT Song::getCurrentBeat(int ms)
     return *currentTimingPoint_;
 }
 
-int Song::getCurrentBeatOffset()
-{
-    return getCurrentBeat(getCurrentTime().asMilliseconds()).beatOffset;
-}
-
-float Song::getCurrentBeatLength()
-{
-    return getCurrentBeat(getCurrentTime().asMilliseconds()).beatLength;
-}
-
-int Song::getBeatOffset(int ms) {
-    return getCurrentBeat(ms).beatOffset;
+float Song::getBeatOffset(int ms) {
+    return (float)getCurrentBeat(ms).beatOffset;
 }
 
 float Song::getBeatLength(int ms) {
     return getCurrentBeat(ms).beatLength;
+}
+
+float Song::getCurrentBeatOffset()
+{
+    return getBeatOffset(getCurrentTime().asMilliseconds());
+}
+
+float Song::getCurrentBeatLength()
+{
+    return getBeatLength(getCurrentTime().asMilliseconds());
+}
+
+float Song::getCumulativeNBeats(int ms) {
+    float nBeats = 0;
+    std::vector<TIMING_POINT>::iterator t1, t2;
+    t1 = timingPoints_.begin();
+    t2 = std::next(t1);
+    //std::cout << timingPoints_.size() << " ";
+
+    while (t2 != timingPoints_.end() && ms > t2->beatOffset) {
+
+        nBeats += (t2->beatOffset - t1->beatOffset) / t1->beatLength;
+
+        t1++;
+        t2++;
+    }
+
+    nBeats += (ms - t1->beatOffset) / t1->beatLength;
+
+    //std::cout << std::endl;
+    return nBeats;
 }

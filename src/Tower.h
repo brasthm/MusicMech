@@ -19,7 +19,15 @@ public:
     Tower(int beat, sf::Vector2f position, float radius);
     void draw(sf::RenderWindow &window) override;
     void update(int currentBeat, float currentPart) override;
+    inline std::string toString() override {
+        std::string s;
+        s = "Tower(beat: " + std::to_string(beat_) + ", pos: (" + std::to_string(position_.x) + "," + std::to_string(position_.y) + "), radius: " + std::to_string(radius_) + ")";
+        return s;
+    }
 };
 
+inline std::ostream& operator <<(std::ostream& stream, Tower& tower) {
+    return stream << tower.toString();
+}
 
 #endif //MUSICMECH_CLIENT_TOWER_H
