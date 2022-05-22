@@ -6,14 +6,13 @@
 #define MUSICMECH_CLIENT_MECHANIC_H
 
 #include <SFML/Graphics.hpp>
-#include <SFML/Audio.hpp>
 
 
 
 class Mechanic {
 protected:
     int beat_;
-    sf::Sound sound_;
+    std::string sound_;
     bool played_;
 
     void setSoundName(const std::string& name);

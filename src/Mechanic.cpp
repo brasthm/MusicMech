@@ -3,7 +3,7 @@
 //
 
 #include "Mechanic.h"
-#include "RessourceLoader.h"
+#include "DJ.h"
 
 Mechanic::Mechanic() {
     beat_ = 0;
@@ -12,11 +12,11 @@ Mechanic::Mechanic() {
 
 void Mechanic::playSound() {
     if(!played_) {
-        sound_.play();
+        DJ::playSound(sound_);
         played_ = true;
     }
 }
 
 void Mechanic::setSoundName(const std::string& name) {
-    sound_.setBuffer(RessourceLoader::getSoundBuffer(name));
+    sound_ = name;
 }

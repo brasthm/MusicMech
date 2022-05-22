@@ -16,6 +16,9 @@ static constexpr float PI = 3.14159265f;
 static constexpr int TIMOUT_TIME = 5;
 static constexpr int NB_MAX_JOUEURS = 16;
 
+static constexpr int NB_MAX_SOUND = 50;
+static constexpr int NB_MAX_MUSIC = 5;
+
 // Server Info
 
 static const std::string SERVER_NAME = "MATCHMECHSERV";
