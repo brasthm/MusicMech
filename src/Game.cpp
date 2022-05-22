@@ -64,7 +64,7 @@ void Game::run() {
 
     std::vector<Mechanic*> mechanicList;
 
-    Song s("D:\\_raphael\\Programation\\Cpp\\MusicMech\\Beatmaps\\461509 Marshmello - Alone\\Marshmello - Alone (Zer0-) [Lonely].osu", mechanicList);
+    Song s = Song("Beatmaps/461509 Marshmello - Alone/Marshmello - Alone (Zer0-) [Lonely].osu", mechanicList);
 
     s.play();
 

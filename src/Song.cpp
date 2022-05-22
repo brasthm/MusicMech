@@ -6,8 +6,10 @@
 
 #include <iostream>
 #include <fstream>
+#include <filesystem>
 
 #include "Utils.h"
+#include "RessourceLoader.h"
 
 #include "Tower.h"
 
@@ -24,64 +26,84 @@ std::wstringstream readFile(std::string filename)
 
 
 Song::Song(std::string osuFile, std::vector<Mechanic*> &mechs) {
-    //char line_buffer[BUFSIZ]; /* BUFSIZ is defined if you include stdio.h */
+    
+    std::string osuPath = RessourceLoader::getPath(osuFile);
 
-   /* FILE* infile = fopen(osuFile.c_str(), "r");
-    if (!infile) {
-        printf("\nFile '%s' not found\n", osuFile);
-    }
-    printf("\nReading %s:\n\n", osuFile);
-
-    int line_number = 0;
-    std::string section = "Format";
-    while (fgets(line_buffer, sizeof(line_buffer), infile)) {
-        std::string line = line_buffer;
-        
-        if (line_buffer[0] == '[') {
-            section = line_buffer;
-        }
-        ++line_number;
-        // note that the newline is in the buffer
-        printf("%d: %s", line_number, line_buffer);
-    }*/
-
-    std::ifstream file(osuFile);
-
+    // open osu file
+    std::cout << "opening " << osuPath << std::endl;
+    std::ifstream file(osuPath);
     if (!file.is_open()) {
-        std::cout << "Erreur" << std::endl;
+        std::cout << "Error: did not find osu file " << osuPath << std::endl;
+        return;
     }
+
+    // parse osu file
+
+    std::vector<std::string> toParse;
+    toParse.push_back("AudioFilename:");
+    toParse.push_back("[TimingPoints]");
+    toParse.push_back("[HitObjects]");
+    std::vector<std::string>::iterator parsing = toParse.begin();
+
+    std::string line;
     bool readnow = false;
     
-    if (music_.openFromFile("D:\\_raphael\\Programation\\Cpp\\MusicMech\\Beatmaps\\461509 Marshmello - Alone\\audio.ogg"))
-        std::cout << "hmmm" << std::endl;
-
     while (!file.eof()) {
-
-       
-
-        std::string line;
         std::getline(file, line);
 
-        if (line == "[HitObjects]") {
-            readnow = true;
-            continue;
+        
+        if (readnow && line[0] == '[') {
+            readnow = false;
+            parsing++;
+        }
+
+        if (line.rfind(*parsing, 0) == 0)  // if line starts with *parsing
+        {
+            if (*parsing == "AudioFilename:") {
+                std::string audioFile = Utils::trim(Utils::split(line, ':')[1]);
+                std::filesystem::path audioPath = std::filesystem::path(osuPath).parent_path() / audioFile;
+                if (!music_.openFromFile(audioPath.string()))
+                    std::cout << "Error: could not open music file " << audioFile << std::endl;
+                parsing++;
+            }
+            else if (*parsing == "[TimingPoints]" || *parsing == "[HitObjects]") {
+                std::cout << "parsing " << *parsing << std::endl;
+                readnow = true;
+                continue;
+            }
         }
 
         if (readnow) {
-            std::cout << line << std::endl;
             std::vector<std::string> words = Utils::split(line, ',');
             if (words.size() != 0) {
-                int x, y, time, type;
-                x = std::stoi(words[0]);
-                y = std::stoi(words[1]);
-                time = std::stoi(words[2]);
-                type = std::stoi(words[3]);
-                std::cout << x << ' ' << y << ' ' << time << ' ' << type << std::endl;
+                //std::cout << line << std::endl;
 
-                mechs.emplace_back(new Tower(0.6 * (time - 70) / 142, sf::Vector2f(x, y), 70));
+                if (*parsing == "[TimingPoints]") {
+                    offset_ = std::stoi(words[0]);
+                    msPerBeat_ = std::stof(words[1]);
+                    std::cout << "  ms per beat: " << msPerBeat_ << " (" << 60 / (msPerBeat_ / 1000) << " bpm), offset: " << offset_ << std::endl;
+
+                    // for now, ignore everything but the first
+                    std::cout << "  skipping other timing points for now..." << std::endl;
+                    readnow = false;
+                    parsing++;
+                }
+                else if (*parsing == "[HitObjects]") {
+                    int x, y, time, type;
+                    x = std::stoi(words[0]);
+                    y = std::stoi(words[1]);
+                    time = std::stoi(words[2]);
+                    type = std::stoi(words[3]);
+                    //std::cout << x << ' ' << y << ' ' << time << ' ' << type << std::endl;
+
+                    mechs.emplace_back(new Tower(0.6 * (time - 70) / 142, sf::Vector2f(x, y), 70));
+                }
             }
         }
     }
+    std::cout << "  converted " << mechs.size() << " hit objects to mechanics" << std::endl;
+    std::cout << "beatmap parsed!" << std::endl;
+    file.close();
 }
 
 void Song::play()
@@ -92,5 +114,15 @@ void Song::play()
 sf::Time Song::getCurrentTime()
 {
     return music_.getPlayingOffset();
+}
+
+float Song::getCurrentMsPerBeat()
+{
+    return msPerBeat_;
+}
+
+int Song::getCurrentOffset()
+{
+    return offset_;
 }
 
