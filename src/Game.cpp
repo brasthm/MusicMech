@@ -101,9 +101,10 @@ void Game::run() {
 
         
         sf::Time currentPos = s.getCurrentTime();
-        float propTime = currentPos.asMilliseconds() - 0.6 * (currentPos.asMilliseconds() - offset) / BPM;
+        float currentBeat_float = 0.6 * (currentPos.asMilliseconds() - offset) / BPM;
+        currentBeat = (int) currentBeat_float;
 
-        currentBeat = 0.6 * (currentPos.asMilliseconds() - offset) / BPM;
+        float propTime = currentBeat_float - currentBeat;
 
         for(int i = 0; i < mechanicList.size(); i++) {
             mechanicList[i]->update(currentBeat, propTime);
