@@ -34,7 +34,8 @@ int main() {
             g.run();
         }
         else if (cmd == "load") {
-            //Song song = Song("D:\\_raphael\\Programation\\Cpp\\MusicMech\\Beatmaps\\461509 Marshmello - Alone\\Marshmello - Alone (Zer0-) [Lonely].osu");
+            std::vector<Mechanic*> mechanicList;
+            Song song = Song("Beatmaps/461509 Marshmello - Alone/Marshmello - Alone (Zer0-) [Lonely].osu", mechanicList);
         }
         else if(cmd != "exit") {
             c.sendCommand(cmd);

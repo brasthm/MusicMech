@@ -14,6 +14,21 @@ namespace Utils {
     int hash(std::string key);
     bool sequence_greater_than(sf::Uint16 s1, sf::Uint16 s2);
     std::vector<std::string> split(std::string s, char delim);
+
+    inline std::string& ltrim(std::string& s, const char* t = " \t\n\r\f\v")
+    {
+        s.erase(0, s.find_first_not_of(t));
+        return s;
+    }
+    inline std::string& rtrim(std::string& s, const char* t = " \t\n\r\f\v")
+    {
+        s.erase(s.find_last_not_of(t) + 1);
+        return s;
+    }
+    inline std::string& trim(std::string& s, const char* t = " \t\n\r\f\v")
+    {
+        return ltrim(rtrim(s, t), t);
+    }
 }
 
 
