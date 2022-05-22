@@ -33,7 +33,12 @@ void Tower::update(int currentBeat, float currentPart) {
         draw_ = true;
     }
     else if(beat_ == currentBeat) {
+        approachCircle_.setProportion(1);
         base_.setFillColor(sf::Color(0,0,255, 255*(1-currentPart)));
+        float newRadius = radius_ * (1 + 0.5 * (1 - currentPart));
+        base_.setRadius(newRadius);
+        base_.setPosition(position_.x - newRadius, position_.y - newRadius);
+        approachCircle_.setDistance(newRadius);
         approachCircle_.setAlpha(255*(1-currentPart));
     }
     else {
