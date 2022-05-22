@@ -3,6 +3,7 @@
 //
 
 #include "Tower.h"
+#include "Utils.h"
 
 Tower::Tower(int beat, sf::Vector2f position, float radius) :
     approachCircle_(position, radius + 10, 20, 0){
@@ -11,6 +12,8 @@ Tower::Tower(int beat, sf::Vector2f position, float radius) :
         radius_ = radius;
         draw_=false;
         hitsound_=false;
+
+        newRadius_ = radius_;
 
         base_.setRadius(radius_);
         base_.setPosition(position_.x - radius_, position_.y - radius_);
@@ -27,7 +30,7 @@ void Tower::draw(sf::RenderWindow &window) {
 
 }
 
-void Tower::update(int currentBeat, float currentPart) {
+void Tower::update(int currentBeat, float currentPart, sf::Vector2f pos) {
 
     if(beat_ > currentBeat && beat_ - currentBeat <= 4) {
         if(currentPart > 0.66) {
@@ -36,18 +39,32 @@ void Tower::update(int currentBeat, float currentPart) {
         draw_ = true;
     }
     else if(beat_ == currentBeat) {
-        Mechanic::playSound();
+
+        if(!checked_ && currentPart < 0.25)
+            check(pos);
+        if(!checked_ && passed_) {
+            Mechanic::playSound();
+            newRadius_ = radius_ * (1 + 0.5 * (1 - currentPart));
+
+            checked_ = false;
+        }
 
         approachCircle_.setProportion(1);
         base_.setFillColor(sf::Color(0,0,255, 255*(1-currentPart)));
-        float newRadius = radius_ * (1 + 0.5 * (1 - currentPart));
-        base_.setRadius(newRadius);
-        base_.setPosition(position_.x - newRadius, position_.y - newRadius);
-        approachCircle_.setDistance(newRadius);
         approachCircle_.setAlpha(255*(1-currentPart));
+
+
+        base_.setRadius(newRadius_);
+        base_.setPosition(position_.x - newRadius_, position_.y - newRadius_);
+        approachCircle_.setDistance(newRadius_);
+
     }
     else {
         draw_ = false;
     }
 
+}
+
+void Tower::check(sf::Vector2f pos) {
+    passed_ = Utils::distance(pos, position_) < radius_;
 }
