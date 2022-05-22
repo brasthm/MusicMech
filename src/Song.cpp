@@ -13,17 +13,6 @@
 
 #include "Tower.h"
 
-/*
-std::wstringstream readFile(std::string filename)
-{
-    std::wifstream wif(filename);
-    wif.imbue(std::locale(std::locale::empty(), new std::codecvt_utf8<wchar_t>));
-    std::wstringstream wss;
-    wss << wif.rdbuf();
-    return wss;
-}*/
-
-
 
 Song::Song(std::string osuFile, std::vector<Mechanic*> &mechs) {
     
@@ -79,14 +68,16 @@ Song::Song(std::string osuFile, std::vector<Mechanic*> &mechs) {
                 //std::cout << line << std::endl;
 
                 if (*parsing == "[TimingPoints]") {
-                    offset_ = std::stoi(words[0]);
-                    msPerBeat_ = std::stof(words[1]);
-                    std::cout << "  ms per beat: " << msPerBeat_ << " (" << 60 / (msPerBeat_ / 1000) << " bpm), offset: " << offset_ << std::endl;
+                    float beatOffset = std::stoi(words[0]);
+                    float beatLength = std::stof(words[1]);
+                    int meter        = std::stoi(words[2]);
+                    int uninherited  = std::stoi(words[6]);
 
-                    // for now, ignore everything but the first
-                    std::cout << "  skipping other timing points for now..." << std::endl;
-                    readnow = false;
-                    parsing++;
+                    if (uninherited == 1)
+                    {
+                        std::cout << "  offset: " << beatOffset << ", ms per beat : " << beatLength << " (" << 60 / (beatLength / 1000) << " bpm)" << std::endl;
+                        timingPoints_.push_back(TIMING_POINT(beatOffset, beatLength));
+                    }
                 }
                 else if (*parsing == "[HitObjects]") {
                     int x, y, time, type;
@@ -104,6 +95,11 @@ Song::Song(std::string osuFile, std::vector<Mechanic*> &mechs) {
     std::cout << "  converted " << mechs.size() << " hit objects to mechanics" << std::endl;
     std::cout << "beatmap parsed!" << std::endl;
     file.close();
+
+    if (timingPoints_.size() == 0)
+        std::cout << "Error: beatmap must contain at least one uninherited timing point" << std::endl;
+    currentTimingPoint_ = timingPoints_.begin();
+
 }
 
 void Song::play()
@@ -116,13 +112,28 @@ sf::Time Song::getCurrentTime()
     return music_.getPlayingOffset();
 }
 
-float Song::getCurrentMsPerBeat()
+TIMING_POINT Song::getCurrentBeat()
 {
-    return msPerBeat_;
+    int ms = getCurrentTime().asMilliseconds();
+
+    while (currentTimingPoint_ != timingPoints_.begin()  &&  ms < currentTimingPoint_->beatOffset)
+        currentTimingPoint_--;
+
+    auto nextTimingPoint = std::next(currentTimingPoint_);
+    while (nextTimingPoint != timingPoints_.end()  &&  ms >= nextTimingPoint->beatOffset) {
+        currentTimingPoint_++;
+        nextTimingPoint++;
+    }
+
+    return *currentTimingPoint_;
 }
 
-int Song::getCurrentOffset()
+int Song::getCurrentBeatOffset()
 {
-    return offset_;
+    return getCurrentBeat().beatOffset;
 }
 
+float Song::getCurrentBeatLength()
+{
+    return getCurrentBeat().beatLength;
+}

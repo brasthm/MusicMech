@@ -1,5 +1,7 @@
 #include <iostream>
 #include <string>
+#include <chrono>
+#include <thread>
 #include <SFML/Graphics.hpp>
 
 #include "../src/Client.h"
@@ -35,7 +37,12 @@ int main() {
         }
         else if (cmd == "load") {
             std::vector<Mechanic*> mechanicList;
-            Song song = Song("Beatmaps/461509 Marshmello - Alone/Marshmello - Alone (Zer0-) [Lonely].osu", mechanicList);
+            Song song = Song("Beatmaps/546820 YUC'e - Future Candy/YUC'e - Future Candy (Nathan) [Insane].osu", mechanicList);
+            song.play();
+            while (true) {
+                std::cout << song.getCurrentBeatOffset() << " " << song.getCurrentBeatLength() << std::endl;
+                std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            }
         }
         else if(cmd != "exit") {
             c.sendCommand(cmd);
