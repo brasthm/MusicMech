@@ -64,10 +64,9 @@ void Game::run() {
 
     std::vector<Mechanic*> mechanicList;
 
-    Song s = Song("Beatmaps/461509 Marshmello - Alone/Marshmello - Alone (Zer0-) [Lonely].osu", mechanicList);
+    Song s("Beatmaps/461509 Marshmello - Alone/Marshmello - Alone (Zer0-) [Lonely].osu", mechanicList);
 
     s.play();
-
 
     while (window_.isOpen())
     {
@@ -78,11 +77,17 @@ void Game::run() {
                 window_.close();
         }
 
-        for(int i = 0; i < 1; i++) {
-            joueurs_[i].update(fps.getElapsedTime(), window_.hasFocus());
-        }
-
+        sf::Time elapsedTime = fps.getElapsedTime();
         fps.restart();
+        for(int i = 0; i < joueurs_.size(); i++) {
+            //std::cout << elapsedTime.asMilliseconds() << " ";
+            joueurs_[i].update(elapsedTime, window_.hasFocus());
+        }
+        //std::cout << std::endl;
+
+        fps_text.setString(std::to_string(1/elapsedTime.asSeconds()));
+
+
 
         if(send.getElapsedTime().asMilliseconds() > CLIENT_TICK_MS) {
             client_->sendPlayerData((int)joueurs_[current].getPosX(), (int)joueurs_[current].getPosY());
@@ -111,7 +116,7 @@ void Game::run() {
         }
 
 
-        fps_text.setString(std::to_string(currentBeat));
+
 
         client_->updateFromServerPlayerPosition(joueurs_);
 
