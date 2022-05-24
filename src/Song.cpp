@@ -88,7 +88,7 @@ Song::Song(std::string osuFile, std::vector<Mechanic*> &mechs) {
                     type = std::stoi(words[3]);
                     //std::cout << x << ' ' << y << ' ' << time << ' ' << type << std::endl;
 
-                    mechs.emplace_back(new Tower((int)getCumulativeNBeats(time), sf::Vector2f(x, y), 70));
+                    mechs.emplace_back(new Tower((int)(getCumulativeNBeats(time)+0.5), sf::Vector2f(x, y), 70));
                     std::cout << mechs.back()->toString() << std::endl;
                 }
             }

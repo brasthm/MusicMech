@@ -8,18 +8,22 @@
 #include "Mechanic.h"
 #include "RingShape.h"
 
+#include <vector>
+
 class Tower : public Mechanic{
 private:
     sf::CircleShape base_;
+    std::vector<sf::RectangleShape> lights_;
     RingShape approachCircle_;
     sf::Vector2f position_;
     float radius_, newRadius_;
-    bool draw_, hitsound_;
+    bool draw_;
+    int nbShare_, nbIn_;
 public:
-    Tower(int beat, sf::Vector2f position, float radius);
+    Tower(float beat, sf::Vector2f position, float radius);
     void draw(sf::RenderWindow &window) override;
-    void update(int currentBeat, float currentPart, sf::Vector2f pos) override;
-    void check(sf::Vector2f pos) override;
+    void update(const sf::Time &elapsed, float currentBeat, float currentPart, std::vector<Joueur> &joueurs) override;
+    void check(std::vector<Joueur> &joueurs) override;
     inline std::string toString() override {
         std::string s;
         s = "Tower(beat: " + std::to_string(beat_) + ", pos: (" + std::to_string(position_.x) + "," + std::to_string(position_.y) + "), radius: " + std::to_string(radius_) + ")";

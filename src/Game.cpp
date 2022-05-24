@@ -61,7 +61,7 @@ void Game::run() {
     int currentBeat = 0;
 
     std::vector<Mechanic*> mechanicList;
-    Song s("Beatmaps/546820 YUC'e - Future Candy/YUC'e - Future Candy (Nathan) [Insane].osu", mechanicList);
+    Song s("Beatmaps/461509 Marshmello - Alone/Marshmello - Alone (Zer0-) [Hard].osu", mechanicList);
 
     s.play();
 
@@ -74,13 +74,25 @@ void Game::run() {
                 window_.close();
         }
 
+        sf::Time currentPos = s.getCurrentTime();
+        float currentBeat_float = s.getCumulativeNBeats(currentPos.asMilliseconds());
+        currentBeat = (int) currentBeat_float;
+
+        fps_text.setString(std::to_string(currentBeat));
+
+        float propTime = currentBeat_float - (float)currentBeat;
+
+
         sf::Time elapsedTime = fps.getElapsedTime();
         fps.restart();
         for(int i = 0; i < joueurs_.size(); i++) {
-            //std::cout << elapsedTime.asMilliseconds() << " ";
             joueurs_[i].update(elapsedTime, window_.hasFocus());
         }
-        //std::cout << std::endl;
+
+        for(int i = 0; i < mechanicList.size(); i++) {
+            mechanicList[i]->update(elapsedTime, currentBeat, propTime, joueurs_);
+        }
+
 
 
 
@@ -94,28 +106,10 @@ void Game::run() {
             currentBeat = 0;
         }
 
-        
-        sf::Time currentPos = s.getCurrentTime();
-        float currentBeat_float = s.getCumulativeNBeats(currentPos.asMilliseconds());
-        currentBeat = (int) currentBeat_float;
-
-        fps_text.setString(std::to_string(currentBeat));
-
-        float propTime = currentBeat_float - (float)currentBeat;
-
-        for(int i = 0; i < mechanicList.size(); i++) {
-            mechanicList[i]->update(currentBeat, propTime, joueurs_[current].getPos());
-        }
-
-
-        if(propTime > 1) {
-            displayTest.restart();
-            currentBeat++;
-        }
 
 
         client_->updateFromServerPlayerPosition(joueurs_);
-        window_.clear();
+        window_.clear(sf::Color(0x2A2431FF));
 
 
         for(int i = 0; i < mechanicList.size(); i++) {
