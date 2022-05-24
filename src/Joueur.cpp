@@ -10,7 +10,9 @@
 
 Joueur::Joueur() {
     shape_.setRadius(20);
-    shape_.setFillColor(sf::Color::Green);
+    shape_.setOutlineThickness(3);
+    shape_.setOutlineColor(sf::Color(sf::Color::White));
+    shape_.setPointCount(100);
     pos_.x = 0; pos_.y = 0; serv_pos_ = pos_;
     controlledByPlayer_ = false;
     speed_ = 700;
@@ -54,10 +56,12 @@ void Joueur::draw(sf::RenderWindow &window) {
     if(connected_) {
         shape_.setPosition(serv_pos_);
 
-        if(controlledByPlayer_)
-            shape_.setFillColor(sf::Color(0, 255, 0, 128));
+        if(controlledByPlayer_) {
+            shape_.setFillColor(sf::Color(0x3B00EA80));
+        }
+
         else
-            shape_.setFillColor(sf::Color(255, 0, 0, 128));
+            shape_.setFillColor(sf::Color(0xFF007D80));
 
         window.draw(shape_);
 
@@ -66,9 +70,9 @@ void Joueur::draw(sf::RenderWindow &window) {
 
         shape_.setPosition(pos_);
         if(controlledByPlayer_)
-            shape_.setFillColor(sf::Color::Green);
+            shape_.setFillColor(sf::Color(0x3B00EAFF));
         else
-            shape_.setFillColor(sf::Color::Red);
+            shape_.setFillColor(sf::Color(0xFF007DFF));
         window.draw(shape_);
     }
 }

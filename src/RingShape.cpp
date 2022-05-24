@@ -46,7 +46,7 @@ RingShape::RingShape(sf::Vector2f center, float distance, float thickness, float
 
 void RingShape::init(sf::Vector2f center, float distance, float thickness, float proportion)
 {
-    color_ = sf::Color(100, 100, 255, 255);
+    color_ = sf::Color(0x79CE1BFF);
     center_ = center;
     distance_ = distance;
     thickness_ = thickness;
