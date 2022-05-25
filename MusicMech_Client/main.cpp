@@ -31,7 +31,9 @@ int main() {
                 std::cout << "Disconnection failed" << std::endl;
         }
         else if(cmd == "run") {
-            sf::RenderWindow mainWindow(sf::VideoMode(800,600), "MusicMech");
+            sf::ContextSettings settings;
+            settings.antialiasingLevel = 8;
+            sf::RenderWindow mainWindow(sf::VideoMode(800,600), "MusicMech", sf::Style::Default, settings);
             Game g(mainWindow, &c);
             g.run();
         }
