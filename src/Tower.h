@@ -7,13 +7,14 @@
 
 #include "Mechanic.h"
 #include "RingShape.h"
+#include "PlayerIndicator.h"
 
 #include <vector>
 
 class Tower : public Mechanic{
 private:
     sf::CircleShape base_;
-    std::vector<sf::RectangleShape> lights_;
+    PlayerIndicator playerIndicator_;
     RingShape approachCircle_;
     sf::Vector2f position_;
     float radius_, newRadius_;
