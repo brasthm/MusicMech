@@ -17,13 +17,16 @@ private:
     RingShape approachCircle_;
     sf::Vector2f position_;
     float radius_, newRadius_;
-    bool draw_;
     int nbShare_, nbIn_;
 public:
-    Tower(float beat, sf::Vector2f position, float radius);
-    void draw(sf::RenderWindow &window) override;
-    void update(const sf::Time &elapsed, float currentBeat, float currentPart, std::vector<Joueur> &joueurs) override;
-    void check(std::vector<Joueur> &joueurs) override;
+    Tower(float beat, sf::Vector2f position, float radius, float nbShare, float active);
+    void onDraw(sf::RenderWindow &window) override;
+    void onCheck(std::vector<Joueur> &joueurs) override;
+    void onApproach(float currentBeat, float cuurentPart, std::vector<Joueur> &joueurs) override;
+    void onPassed(float currentBeat, float currentPart, std::vector<Joueur> &joueurs) override;
+    void onFade(float currentBeat, float currentPart, std::vector<Joueur> &joueurs) override;
+
+
     inline std::string toString() override {
         std::string s;
         s = "Tower(beat: " + std::to_string(beat_) + ", pos: (" + std::to_string(position_.x) + "," + std::to_string(position_.y) + "), radius: " + std::to_string(radius_) + ")";

@@ -12,7 +12,7 @@ class Joueur {
 private:
     sf::CircleShape shape_;
     sf::Vector2f pos_, serv_pos_;
-    float speed_;
+    float speed_, radius_;
     bool controlledByPlayer_, connected_;
 public:
     Joueur();
