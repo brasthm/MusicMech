@@ -70,7 +70,7 @@ void Game::run() {
     }
     mechanicList.clear();
 
-    mechanicList.emplace_back(new Tower(32.75, {60, 160}, 70, 1, 8));
+    mechanicList.emplace_back(new Tower(32.75, {60, 160}, 70, 0, 8));
     mechanicList.emplace_back(new Tower(33, {100, 200}, 70, 1, 4));
     mechanicList.emplace_back(new Tower(35, {300, 200}, 70, 1, 4));
     mechanicList.emplace_back(new Tower(37, {500, 200}, 70, 1, 4));
