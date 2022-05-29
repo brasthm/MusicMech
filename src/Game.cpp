@@ -61,9 +61,28 @@ void Game::run() {
     int currentBeat = 0;
 
     std::vector<Mechanic*> mechanicList;
-    Song s("Beatmaps/461509 Marshmello - Alone/Marshmello - Alone (Zer0-) [Hard].osu", mechanicList);
+    Song s("Beatmaps/546820 YUC'e - Future Candy/YUC'e - Future Candy (Nathan) [Normal].osu", mechanicList);
 
     s.play();
+
+    for(int i = 0; i < mechanicList.size(); i++) {
+        delete mechanicList[i];
+    }
+    mechanicList.clear();
+
+    mechanicList.emplace_back(new Tower(32.75, {60, 160}, 70, 1, 8));
+    mechanicList.emplace_back(new Tower(33, {100, 200}, 70, 1, 4));
+    mechanicList.emplace_back(new Tower(35, {300, 200}, 70, 1, 4));
+    mechanicList.emplace_back(new Tower(37, {500, 200}, 70, 1, 4));
+
+    mechanicList.emplace_back(new Tower(39, {700, 300}, 70, 2, 4));
+
+    mechanicList.emplace_back(new Tower(32.75, {60, 360}, 70, 1, 8));
+    mechanicList.emplace_back(new Tower(33, {100, 400}, 70, 1, 4));
+    mechanicList.emplace_back(new Tower(35, {300, 400}, 70, 1, 4));
+    mechanicList.emplace_back(new Tower(37, {500, 400}, 70, 1, 4));
+
+    mechanicList.emplace_back(new Tower(39, {400, 300}, 70, 1, 0));
 
     while (window_.isOpen())
     {
@@ -78,9 +97,7 @@ void Game::run() {
         float currentBeat_float = s.getCumulativeNBeats(currentPos.asMilliseconds());
         currentBeat = (int) currentBeat_float;
 
-        fps_text.setString(std::to_string(currentBeat));
-
-        float propTime = currentBeat_float - (float)currentBeat;
+        fps_text.setString(std::to_string(currentBeat_float));
 
 
         sf::Time elapsedTime = fps.getElapsedTime();
@@ -90,7 +107,7 @@ void Game::run() {
         }
 
         for(int i = 0; i < mechanicList.size(); i++) {
-            mechanicList[i]->update(elapsedTime, currentBeat, propTime, joueurs_);
+            mechanicList[i]->update(elapsedTime, currentBeat_float, joueurs_);
         }
 
 

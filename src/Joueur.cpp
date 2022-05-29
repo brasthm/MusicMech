@@ -3,16 +3,19 @@
 //
 
 #include "Joueur.h"
+#include "main.h"
 
 #include <cmath>
 #include <iostream>
 
 
 Joueur::Joueur() {
-    shape_.setRadius(20);
+    radius_ = BASE_PLAYER_RADIUS;
+    shape_.setRadius(radius_);
     shape_.setOutlineThickness(3);
     shape_.setOutlineColor(sf::Color(sf::Color::White));
     shape_.setPointCount(100);
+    shape_.setOrigin(radius_, radius_);
     pos_.x = 0; pos_.y = 0; serv_pos_ = pos_;
     controlledByPlayer_ = false;
     speed_ = 700;

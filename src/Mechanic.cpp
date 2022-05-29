@@ -11,7 +11,9 @@
 
 Mechanic::Mechanic() {
     beat_ = 0;
-    played_ = false;
+    played_ = checked_ = passed_ = draw_ = false;
+    alpha_ = 255;
+    active_ = 4;
 }
 
 void Mechanic::playSound() {
@@ -42,4 +44,51 @@ void Mechanic::updateColor(const sf::Time &elapsed) {
     v.z = v.z * speedColor_.z * elapsed.asSeconds();
 
     colorCurrent_ = colorCurrent_ + v;
+}
+
+void Mechanic::update(const sf::Time &elapsed, float currentBeat, std::vector<Joueur> &joueurs) {
+    float n = std::abs(currentBeat - beat_);
+    float currentPart = n - (int)n;
+
+    if(currentBeat < beat_)
+        currentPart = 1-currentPart;
+
+    if(beat_ > currentBeat && beat_ - currentBeat <= active_) {
+        draw_ = true;
+
+        onCheck(joueurs);
+        updateColor(elapsed);
+
+        onApproach(currentBeat, currentPart, joueurs);
+    }
+    else if(currentBeat > beat_ && currentBeat - beat_ <= 1) {
+        draw_ = true;
+
+        if(!checked_ && currentPart < 0.25) {
+            onCheck(joueurs);
+            updateColor(elapsed);
+        }
+
+        if(!checked_ && passed_) {
+            playSound();
+            onPassed(currentBeat, currentPart, joueurs);
+
+            checked_ = true;
+        }
+
+        if(!checked_ && !passed_ && currentPart > 0.25) {
+            onFailed(currentBeat, currentPart, joueurs);
+            checked_ = true;
+        }
+
+        onFade(currentBeat, currentPart, joueurs);
+    }
+    else {
+        draw_ = false;
+    }
+
+}
+
+void Mechanic::draw(sf::RenderWindow &window) {
+    onDraw(window);
 }
