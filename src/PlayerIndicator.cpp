@@ -5,8 +5,9 @@
 #include "PlayerIndicator.h"
 #include "main.h"
 
-PlayerIndicator::PlayerIndicator(sf::Vector2f pos, int nbTot, sf::Uint32 outlineColor, sf::Uint32 fillColor, float c, float g) {
+PlayerIndicator::PlayerIndicator(sf::Vector2f pos,  sf::Vector2f offset, int nbTot, sf::Uint32 outlineColor, sf::Uint32 fillColor, float c, float g) {
     position_ = pos;
+    offset_ = offset;
     nbTot_ = nbTot;
 
     c_ = c;
@@ -27,24 +28,25 @@ PlayerIndicator::PlayerIndicator(sf::Vector2f pos, int nbTot, sf::Uint32 outline
         lights_.back().setRotation(45);
     }
 
-    updatePosition();
+    updatePosition(position_);
 }
 
 
 
-void PlayerIndicator::updatePosition() {
+void PlayerIndicator::updatePosition(sf::Vector2f position) {
+    position_ = position;
     for(int i = 0; i < nbTot_; i++) {
         if(i == 0) {
-            lights_[i].setPosition(position_.x , position_.y);
+            lights_[i].setPosition(position_.x + offset_.x , position_.y + offset_.y);
         }
         else if(i == 1) {
-            lights_[i].setPosition(position_.x - step_, position_.y - step_);
+            lights_[i].setPosition(position_.x + offset_.x - step_, position_.y + offset_.y - step_);
         }
         else if(i == 2) {
-            lights_[i].setPosition(position_.x + step_, position_.y - step_);
+            lights_[i].setPosition(position_.x + offset_.x + step_, position_.y + offset_.y - step_);
         }
         else if(i == 3) {
-            lights_[i].setPosition(position_.x, position_.y - 2 * step_);
+            lights_[i].setPosition(position_.x + offset_.x, position_.y + offset_.y - 2 * step_);
         }
     }
 }
@@ -76,3 +78,4 @@ void PlayerIndicator::updateLight(int nb) {
         lights_[i].setFillColor(c);
     }
 }
+

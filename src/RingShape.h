@@ -27,13 +27,14 @@ private:
 
 public :
     RingShape();
-    RingShape(sf::Vector2f center, float distance, float thickness, float proportion);
-    void init(sf::Vector2f center, float distance, float thickness, float proportion);
+    RingShape(sf::Vector2f center, float distance, float thickness, float proportion, sf::Uint32 fillColor);
+    void init(sf::Vector2f center, float distance, float thickness, float proportion, sf::Uint32 fillColor);
     void setDistance(float distance);
     void addDistance(float delta);
     void setThickness(float thick);
     void setAlpha(float alpha);
     void setProportion(float proportion);
+    void setCenter(sf::Vector2f center);
     void draw(sf::RenderWindow &window);
 };
 

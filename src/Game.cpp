@@ -3,6 +3,7 @@
 //
 
 #include <iostream>
+#include <cmath>
 
 #include "Game.h"
 #include "main.h"
@@ -11,6 +12,7 @@
 #include "Mechanic.h"
 #include "Tower.h"
 #include "Song.h"
+#include "Spread.h"
 
 Game::Game(sf::RenderWindow &window) : window_(window), client_(nullptr){
     online_ = false;
@@ -83,6 +85,23 @@ void Game::run() {
     mechanicList.emplace_back(new Tower(37, {500, 400}, 70, 1, 4));
 
     mechanicList.emplace_back(new Tower(39, {400, 300}, 70, 1, 0));
+
+    mechanicList.emplace_back(new Spread(25, {100, 200}, 100, 1, 4, &joueurs_[0]));
+
+    for(int  i = 0; i < 12; i++) {
+        mechanicList.emplace_back(new Spread(41 + 2*i,
+                                             {static_cast<float>(400 + 250*cos(2*i*PI/8)),
+                                                        static_cast<float>(300 + 250*sin(2*i*PI/8))},
+                                             130, 0, 4, nullptr));
+        mechanicList.emplace_back(new Spread(41 + 2*i,
+                                             {static_cast<float>(400 + 250*cos(PI+2*i*PI/8)),
+                                              static_cast<float>(300 + 250*sin(PI+2*i*PI/8))},
+                                             130, 0, 4, nullptr));
+
+        mechanicList.emplace_back(new Spread(41 + 2*i,
+                                             {400, 300},
+                                             130, 0, 4, nullptr));
+    }
 
     while (window_.isOpen())
     {

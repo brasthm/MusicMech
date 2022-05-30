@@ -34,7 +34,7 @@ public:
     void draw(sf::RenderWindow &window);
 
 
-    virtual std::string toString()=0;
+    virtual std::string toString() { return ""; };
     virtual inline void onDraw(sf::RenderWindow &window) {};
     virtual inline void onCheck(std::vector<Joueur> &joueurs) {};
     virtual inline void onApproach(float currentBeat, float currentPart, std::vector<Joueur> &joueurs) {};
