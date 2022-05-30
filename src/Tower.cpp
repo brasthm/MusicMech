@@ -6,8 +6,8 @@
 #include "Utils.h"
 
 Tower::Tower(float beat, sf::Vector2f position, float radius, float nbShare, float active) :
-    approachCircle_(position, radius + 10, 20, 0),
-    playerIndicator_(sf::Vector2f(position.x, position.y + radius*0.6f), nbShare,
+    approachCircle_(position, radius + 10, 20, 0, 0x79CE1BFF),
+    playerIndicator_(sf::Vector2f(position.x, position.y), sf::Vector2f(0, radius*0.6f), nbShare,
                      0xDAFB93FF, 0xDAFB9300,
                      radius * 0.195f, radius * 0.1f){
         position_ = position;
@@ -54,7 +54,6 @@ void Tower::onDraw(sf::RenderWindow &window) {
 
 
 void Tower::onCheck(std::vector<Joueur> &joueurs) {
-
     nbIn_ = 0;
 
     for(int  i = 0; i < joueurs.size(); i++) {

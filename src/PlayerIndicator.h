@@ -10,16 +10,16 @@
 
 class PlayerIndicator {
     std::vector<sf::RectangleShape> lights_;
-    sf::Vector2f position_;
+    sf::Vector2f position_, offset_;
     sf::Color outlineColor_, fillColor_;
     int nbTot_;
     float c_, step_;
 
 public:
-    PlayerIndicator(sf::Vector2f pos, int nbTot,
+    PlayerIndicator(sf::Vector2f pos, sf::Vector2f offset, int nbTot,
                     sf::Uint32 outlineColor, sf::Uint32 fillColor,
                     float c, float g);
-    void updatePosition();
+    void updatePosition(sf::Vector2f position);
     void updateAlpha(float alpha);
     void draw(sf::RenderWindow &window);
     void updateLight(int nb);

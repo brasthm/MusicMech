@@ -39,14 +39,14 @@ RingShape::RingShape()
 {
 }
 
-RingShape::RingShape(sf::Vector2f center, float distance, float thickness, float proportion)
+RingShape::RingShape(sf::Vector2f center, float distance, float thickness, float proportion, sf::Uint32 color)
 {
-    init(center, distance, thickness, proportion);
+    init(center, distance, thickness, proportion, color);
 }
 
-void RingShape::init(sf::Vector2f center, float distance, float thickness, float proportion)
+void RingShape::init(sf::Vector2f center, float distance, float thickness, float proportion, sf::Uint32 color)
 {
-    color_ = sf::Color(0x79CE1BFF);
+    color_ = sf::Color(color);
     center_ = center;
     distance_ = distance;
     thickness_ = thickness;
@@ -90,4 +90,8 @@ void RingShape::setProportion(float proportion) {
 void RingShape::setAlpha(float alpha) {
     color_.a = alpha;
     update();
+}
+
+void RingShape::setCenter(sf::Vector2f center) {
+    center_ = center;
 }
