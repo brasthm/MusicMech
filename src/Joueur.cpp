@@ -20,6 +20,7 @@ Joueur::Joueur() {
     controlledByPlayer_ = false;
     speed_ = 700;
     connected_ = false;
+    name_ = "";
 }
 
 void Joueur::update(sf::Time elapsed, bool hasFocus) {

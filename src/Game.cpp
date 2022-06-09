@@ -14,16 +14,16 @@
 #include "Song.h"
 #include "Spread.h"
 
-Game::Game(sf::RenderWindow &window) : window_(window), client_(nullptr){
+Game::Game() : client_(nullptr){
     online_ = false;
 }
 
-Game::Game(sf::RenderWindow &window, Client *client) : window_(window), client_(client) {
+Game::Game(Client *client) :client_(client) {
     online_ = true;
 }
 
 
-void Game::run() {
+void Game::run(sf::RenderWindow &window) {
 
     for(int i = 0; i < NB_MAX_JOUEURS; i++) {
         joueurs_.emplace_back();
@@ -102,14 +102,14 @@ void Game::run() {
                                              {400, 300},
                                              130, 0, 4, nullptr));
     }
-
-    while (window_.isOpen())
+    bool exit=false;
+    while (!exit)
     {
-        sf::Event event;
-        while (window_.pollEvent(event))
+        sf::Event event{};
+        while (window.pollEvent(event))
         {
             if (event.type == sf::Event::Closed)
-                window_.close();
+                exit=true;
         }
 
         sf::Time currentPos = s.getCurrentTime();
@@ -122,7 +122,7 @@ void Game::run() {
         sf::Time elapsedTime = fps.getElapsedTime();
         fps.restart();
         for(int i = 0; i < joueurs_.size(); i++) {
-            joueurs_[i].update(elapsedTime, window_.hasFocus());
+            joueurs_[i].update(elapsedTime, window.hasFocus());
         }
 
         for(int i = 0; i < mechanicList.size(); i++) {
@@ -145,20 +145,20 @@ void Game::run() {
 
 
         client_->updateFromServerPlayerPosition(joueurs_);
-        window_.clear(sf::Color(0x2A2431FF));
+        window.clear(sf::Color(0x2A2431FF));
 
 
         for(int i = 0; i < mechanicList.size(); i++) {
-            mechanicList[mechanicList.size() - i - 1]->draw(window_);
+            mechanicList[mechanicList.size() - i - 1]->draw(window);
         }
 
         for(int i = 0; i < NB_MAX_JOUEURS; i++) {
-            joueurs_[i].draw(window_);
+            joueurs_[i].draw(window);
         }
 
-        window_.draw(fps_text);
+        window.draw(fps_text);
 
-        window_.display();
+        window.display();
     }
 
     if(online_) {

@@ -14,8 +14,8 @@ private:
     std::mt19937 gen;
 
     inline Random() : gen(r()) {};
-    inline int genrand() {
-        std::uniform_real_distribution<> dis(INT32_MIN, INT32_MAX);
+    inline int genrand(int lower = INT32_MIN, int upper = INT32_MAX) {
+        std::uniform_real_distribution<> dis(lower, upper);
         return dis(gen);
     }
 
@@ -28,6 +28,10 @@ public:
 
     inline static int rand() {
         return getInstance().genrand();
+    }
+
+    inline static int randint(int lower, int upper) {
+        return getInstance().genrand(lower, upper);
     }
 
 

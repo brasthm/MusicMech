@@ -11,7 +11,17 @@ add_executable(MusicMech_Server
                                 ../src/Random.h
         ../src/Game.cpp         ../src/Game.h
         ../src/Client.cpp       ../src/Client.h
-        ../src/Joueur.cpp       ../src/Joueur.h ../src/Song.cpp ../src/Song.h ../src/RingShape.cpp ../src/RingShape.h ../src/RessourceLoader.cpp ../src/RessourceLoader.h ../src/Mechanic.cpp ../src/Mechanic.h ../src/Tower.cpp ../src/Tower.h ../src/DJ.h ../src/PlayerIndicator.cpp ../src/PlayerIndicator.h ../src/Spread.cpp ../src/Spread.h)
+        ../src/Joueur.cpp       ../src/Joueur.h
+        ../src/Song.cpp         ../src/Song.h
+        ../src/RingShape.cpp    ../src/RingShape.h
+        ../src/RessourceLoader.cpp ../src/RessourceLoader.h
+        ../src/Mechanic.cpp     ../src/Mechanic.h
+        ../src/Tower.cpp        ../src/Tower.h
+                                ../src/DJ.h
+        ../src/PlayerIndicator.cpp ../src/PlayerIndicator.h
+        ../src/Spread.cpp       ../src/Spread.h
+        ../src/LobbyMenu.cpp     ../src/LobbyMenu.h
+        ../src/Lobby.cpp        ../src/Lobby.h)
 
 
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake_modules")

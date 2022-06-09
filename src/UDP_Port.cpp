@@ -67,6 +67,7 @@ void UDP_Port::setVerbose(bool b) {
 }
 
 bool UDP_Port::recieve() {
+    recievedPacket_.clear();
     if(socket_.isBlocking()){
         sf::SocketSelector selector;
         selector.add(socket_);

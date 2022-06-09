@@ -14,6 +14,7 @@ private:
     sf::Vector2f pos_, serv_pos_;
     float speed_, radius_;
     bool controlledByPlayer_, connected_;
+    std::string name_;
 public:
     Joueur();
     void update(sf::Time elapsed, bool hasFocus);

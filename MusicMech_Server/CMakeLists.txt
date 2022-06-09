@@ -7,7 +7,7 @@ add_executable(MusicMech_Server
         main.cpp                ../src/main.h
         ../src/Server.cpp       ../src/Server.h
         ../src/UDP_Port.cpp     ../src/UDP_Port.h
-        ../src/Utils.cpp        ../src/Utils.h ../src/Random.h)
+        ../src/Utils.cpp        ../src/Utils.h ../src/Random.h ../src/PlayerInfo.h ../src/Lobby.h ../src/Lobby.cpp)
 
 
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake_modules")

@@ -13,14 +13,13 @@
 
 class Game {
 private:
-    sf::RenderWindow &window_;
     Client *client_;
     bool online_;
     std::vector<Joueur> joueurs_;
 public:
-    explicit Game(sf::RenderWindow &window);
-    Game(sf::RenderWindow &window, Client *client);
-    void run();
+    explicit Game();
+    Game(Client *client);
+    void run(sf::RenderWindow &window);
 
 };
 

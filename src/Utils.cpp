@@ -113,3 +113,10 @@ sf::Color Utils::HSVtoRGB(sf::Vector3f color) {
 
     return color2;
 }
+
+std::string Utils::paddLeft(std::string s, int nbPad, char padChar) {
+    std::string res = s;
+    if(nbPad > s.size())
+        res = s.insert(0, nbPad - s.size(), padChar);
+    return res;
+}

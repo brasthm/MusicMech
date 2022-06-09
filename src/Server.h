@@ -7,49 +7,20 @@
 
 #include "UDP_Port.h"
 #include "main.h"
+#include "PlayerInfo.h"
+#include "Lobby.h"
 
 #include <vector>
 #include <map>
 
 
-class PlayerInfo {
-public:
-    inline PlayerInfo() = default;
-    inline PlayerInfo(sf::IpAddress a, unsigned short p, sf::Int32 s) {
-        address = a;
-        port = p;
-        seed = s;
-
-        x = 0; y = 0;
-
-        connected = false;
-        state = 0;
-    };
-    inline void clear() {
-        address = sf::IpAddress::None;
-        port = 0;
-        seed = 0;
-
-        x = 0; y = 0;
-
-        connected = false;
-        state = 0;
-    };
-
-    sf::IpAddress address;
-    unsigned short port;
-    bool connected;
-    sf::Int32 seed, x, y;
-    sf::Uint16 packetID;
-    sf::Uint8 state;
-
-};
 
 class Server {
 private:
-    UDP_Port admin, connect, game;
+    UDP_Port admin, connect, game, lobby;
     std::vector<PlayerInfo> connectedPlayers;
     std::map<std::pair<sf::IpAddress, unsigned short>, PlayerInfo> connectionState;
+    std::vector<Lobby> lobbies;
     sf::Int32 serverSeed;
     sf::Clock serverTick;
 protected:
@@ -57,9 +28,14 @@ protected:
     void monitorConnectRequest();
     void monitorPlayerData();
     void sendPlayerData();
+    void monitorLobby();
+
+
     bool checkConnected(sf::IpAddress address, unsigned short port);
     int findConnected(sf::IpAddress address, unsigned short port);
     int findFistAvailableConnected();
+
+    void sendRoomLobbyNotif(int index, sf::Uint8 state, sf::Uint8 param);
 
 public:
     Server();
