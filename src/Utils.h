@@ -18,6 +18,7 @@ namespace Utils {
     double distance(sf::Vector2f a, sf::Vector2f b);
     sf::Vector3f RGBtoHSV(const sf::Color& color);
     sf::Color HSVtoRGB(sf::Vector3f color);
+    std::string paddLeft(std::string s, int nbPad, char padChar = ' ');
 
     inline std::string& ltrim(std::string& s, const char* t = " \t\n\r\f\v")
     {
