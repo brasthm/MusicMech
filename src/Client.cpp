@@ -10,7 +10,7 @@ Client::Client(std::string name) : clientSocket_(name) {
     name_ = name;
     clientSeed_ = Random::rand();
     challengeResponse_ = 0;
-    clientSocket_.setVerbose(true);
+    clientSocket_.setVerbose(false);
     clientSocket_.setBlocking(false);
     clientSocket_.bind(sf::Socket::AnyPort);
 }
@@ -79,7 +79,7 @@ void Client::sendCommand(const std::string& cmd) {
 
 void Client::sendPlayerData(sf::Int32 x, sf::Int32 y) {
     sf::Packet packet;
-    packet << packetID_ << x << y;
+    packet << challengeResponse_ << packetID_ << x << y;
     clientSocket_.send(packet, SERVER_IP, SERVER_GAME_PORT);
     packetID_++;
 }
@@ -110,6 +110,7 @@ bool Client::requestLobbyCreation(std::string &lobbyIndex, std::string name) {
         }
         clientSocket_.getRecievedPacket() >> index;
         lobbyIndex = index;
+        std::cout << "Index : " << lobbyIndex << std::endl;
 
     }
 
@@ -220,26 +221,49 @@ bool Client::requestLobbyDisconnect(std::vector<Lobby> &lobbylist, std::string& 
     return true;
 }
 
-bool Client::monitorLobby(std::vector<Lobby> &lobbylist, std::string &roomID) {
+bool Client::monitorLobby(std::vector<Lobby> &lobbylist, std::string &roomID, int &roomState) {
     bool ok = true;
     if(clientSocket_.recieve()) {
         sf::Uint8 state;
         clientSocket_.getRecievedPacket() >> state;
         if(state == 30) { //Start Game
-
+            sf::Uint8 ind;
+            clientSocket_.getRecievedPacket() >> ind;
+            index_ = ind;
+            roomState = 3;
         }
         else if(state == 31) { // Lobby Disband
             sf::Uint8 dummy;
             clientSocket_.getRecievedPacket() >> dummy;
             ok = requestLobbyDisconnect(lobbylist, roomID);
+            roomState = 0;
         }
         else if(state == 32) { // Refresh Lobby Info
             sf::Uint8 dummy;
-            clientSocket_.setBlocking(true);
             clientSocket_.getRecievedPacket() >> dummy;
             int index = findLobbyById(lobbylist, roomID);
             ok = requestLobbyInfo(lobbylist[index], roomID);
         }
     }
     return ok;
+}
+
+bool Client::requestLaunchGame(const std::string &id) {
+    clientSocket_.setBlocking(true);
+    sf::Packet p;
+    sf::Uint8 state = 20;
+
+    p << state << challengeResponse_ << id;
+    clientSocket_.send(p, SERVER_IP, SERVER_LOBBY_PORT);
+
+    if(clientSocket_.recieve()) {
+        clientSocket_.getRecievedPacket() >> state;
+        if (state == 100) {
+            clientSocket_.setBlocking(false);
+            return false;
+        }
+    }
+
+    clientSocket_.setBlocking(false);
+    return true;
 }

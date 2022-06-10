@@ -30,8 +30,9 @@ public:
     bool requestLobbyDisconnect(std::vector<Lobby> &lobbylist,  std::string& lobbyIndex);
     bool requestLobbyList(std::vector<Lobby> &lobbylist);
     bool requestLobbyInfo(Lobby &lobbylist, const std::string& id);
+    bool requestLaunchGame(const std::string& id);
 
-    bool monitorLobby(std::vector<Lobby> &lobbylist, std::string &roomID);
+    bool monitorLobby(std::vector<Lobby> &lobbylist, std::string &roomID, int &state);
 
 
 };
