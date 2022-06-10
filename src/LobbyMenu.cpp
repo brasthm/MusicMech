@@ -72,6 +72,7 @@ int LobbyMenu::run(sf::RenderWindow &window, Game &game, Client &client) {
                     std::getline(std::cin, inp);
                     ok = client.requestLobbyCreation(index_, inp);
                     ind_ = findFirstAvailableLobby(lobbyList_);
+                    lobbyList_[ind_].id = index_;
                     ok = ok && client.requestLobbyInfo(lobbyList_[ind_], index_);
                     if(ok) state = 1;
                     else std::cout << "Error on lobby room creation" << std::endl;
@@ -102,11 +103,22 @@ int LobbyMenu::run(sf::RenderWindow &window, Game &game, Client &client) {
                     if(ok) state = 0;
                     else std::cout << "Error on deconnection" << std::endl;
                 }
+                if(sf::Keyboard::isKeyPressed(sf::Keyboard::Return)) {
+                    ok = client.requestLaunchGame(index_);
+                    if(ok) state = 3;
+                    else std::cout << "Error on deconnection" << std::endl;
+                }
             }
         }
 
 
-        client.monitorLobby(lobbyList_, index_);
+        if(!client.monitorLobby(lobbyList_, index_, state))
+            std::cout << "MONITOR ERROR" << std::endl;
+        if(state == 3) { // Launch game
+            game.run(window);
+            state = 1;
+        }
+
 
         window.clear();
 

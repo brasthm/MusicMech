@@ -15,7 +15,7 @@ static constexpr float PI = 3.14159265f;
 static constexpr float SQRT2 = 1.41421356237f;
 
 static constexpr int TIMOUT_TIME = 5;
-static constexpr int NB_MAX_JOUEURS = 4;
+static constexpr int NB_MAX_JOUEURS = 2;
 
 static constexpr float BASE_PLAYER_RADIUS = 20;
 

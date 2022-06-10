@@ -22,7 +22,7 @@ int findFirstAvailablePlayerSpot(const std::vector<Lobby> &lobbyList, int indLob
 }
 
 int findLobbyById(const std::vector<Lobby> &lobbyList, std::string id) {
-    for(int i = 0; i< NB_MAX_JOUEURS; i++) {
+    for(int i = 0; i< SERVER_NB_MAX_LOBBY; i++) {
         if(lobbyList[i].id == id)
             return i;
     }

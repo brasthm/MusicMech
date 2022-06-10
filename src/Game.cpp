@@ -29,22 +29,6 @@ void Game::run(sf::RenderWindow &window) {
         joueurs_.emplace_back();
     }
 
-    if(online_) {
-        int n = 0;
-        bool conn = false;
-        while(n < 5 && !conn) {
-            conn = client_->connectToServer();
-            n++;
-        }
-        if(conn) {
-            std::cout << "Connected to server" << std::endl;
-        }
-        else {
-            std::cout << "Failed to connect to server" << std::endl;
-            return;
-        }
-    }
-
 
     sf::Clock fps, send;
 
@@ -57,6 +41,8 @@ void Game::run(sf::RenderWindow &window) {
 
     joueurs_[current].setConnected(true);
     joueurs_[current].setControlledByPlayer(true);
+
+    std::cout << "Current : " << current << std::endl;
 
     sf::Clock displayTest;
 
@@ -159,22 +145,6 @@ void Game::run(sf::RenderWindow &window) {
         window.draw(fps_text);
 
         window.display();
-    }
-
-    if(online_) {
-        int n = 0;
-        bool dced = false;
-
-        while(n < 5 && !dced) {
-            dced = client_->disconectToServer();
-            n++;
-        }
-        if(dced) {
-            std::cout << "Disconnected to server" << std::endl;
-        }
-        else {
-            std::cout << "Failed to disconnect to server" << std::endl;
-        }
     }
 
     for(int i = 0; i < mechanicList.size(); i++) {

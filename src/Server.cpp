@@ -216,11 +216,12 @@ void Server::sendPlayerData() {
 
                 for(sf::Uint8 i = 0; i < NB_MAX_JOUEURS; i++) {
                     if(lobbies[j].players[i] != nullptr) {
-                        packet << i << lobbies[j].players[i]->x << lobbies[j].players[i]->y;
+                        bool connected = lobbies[j].players[i]->status == PlayerStatus::PLAYER_PLAYING;
+                        packet << connected << lobbies[j].players[i]->x << lobbies[j].players[i]->y;
                     }
                     else {
-                        sf::Uint8 err = 255;
-                        packet << err << lobbies[j].players[i]->x << lobbies[j].players[i]->y;
+                        sf::Int32 err = 0;
+                        packet << false << err << err;
                     }
 
                 }
@@ -343,17 +344,21 @@ void Server::monitorLobby() {
 
                             if(lobbies[lobbyIndex].nbIn == 0) {
                                 lobbies[lobbyIndex].status = LobbyStatus::LOBBY_AVAILABLE;
+                                state = 50;
+                            }
+                            else {
+                                if(indPlayer == 0)
+                                    state = 31;
+                                else
+                                    state = 32;
                             }
 
-                            if(indPlayer == 0)
-                                state = 31;
-                            else
-                                state = 32;
+
 
                             packet << state;
                             lobby.send(packet, lobby.getSender(), lobby.getSenderPort());
-
-                            sendRoomLobbyNotif(lobbyIndex, state, 0);
+                            if(state != 50)
+                                sendRoomLobbyNotif(lobbyIndex, state, 0);
                         }
                         else
                             state = 100;
@@ -379,6 +384,8 @@ void Server::monitorLobby() {
                         std::cout << "LOBBY : Game launched in lobby " << lobbies[lobbyIndex].id << std::endl<< std::endl;
 
                         state = 30;
+                        packet << state;
+                        lobby.send(packet, lobby.getSender(), lobby.getSenderPort());
                         sendRoomLobbyNotif(lobbyIndex, state, 1);
                     }
                     else
@@ -392,7 +399,8 @@ void Server::monitorLobby() {
                         sf::Uint8 stat = lobbies[i].status;
                         packet << stat << lobbies[i].id << lobbies[i].name;
                         packet << lobbies[i].nbIn << lobbies[i].limit;
-                        if(lobbies[i].status == LobbyStatus::LOBBY_FILLING) {
+                        if(lobbies[i].status == LobbyStatus::LOBBY_FILLING &&
+                        lobbies[i].players[0] != nullptr ) {
                             packet << lobbies[i].players[0]->name;
                         }
                         else {
@@ -440,7 +448,11 @@ void Server::sendRoomLobbyNotif(int index, sf::Uint8 state, sf::Uint8 param) {
     for(sf::Uint8 i = 0; i < NB_MAX_JOUEURS; i++) {
         if(lobbies[index].players[i] != nullptr) {
             sf::Packet p;
-            p << state << param;
+            p << state;
+            if(param == 1)
+                p << i;
+            else
+                p << param;
             lobby.send(p, lobbies[index].players[i]->address, lobbies[index].players[i]->port);
         }
     }
