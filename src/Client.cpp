@@ -84,12 +84,34 @@ void Client::sendPlayerData(sf::Int32 x, sf::Int32 y) {
     packetID_++;
 }
 
-void Client::updateFromServerPlayerPosition(std::vector<Joueur> &joueurs) {
+bool Client::updateFromServerPlayerPosition(std::vector<Joueur> &joueurs) {
     if(clientSocket_.recieve()) {
-        for(int i = 0; i < joueurs.size(); i++) {
-            joueurs[i].setDataFromServer(clientSocket_.getRecievedPacket());
+        sf::Uint8 state = 0;
+
+        clientSocket_.getRecievedPacket() >> state;
+
+        if(state == 0) {
+            for(int i = 0; i < joueurs.size(); i++) {
+                joueurs[i].setDataFromServer(clientSocket_.getRecievedPacket());
+            }
         }
+        else if(state == 33) {
+            return false;
+        }
+
     }
+
+    return true;
+}
+
+bool Client::sendEndGame(const std::string &id) {
+    sf::Packet p;
+    sf::Uint8 state = 21;
+
+    p << state << challengeResponse_ << id;
+    clientSocket_.send(p, SERVER_IP, SERVER_LOBBY_PORT);
+
+    return false;
 }
 
 bool Client::requestLobbyCreation(std::string &lobbyIndex, std::string name) {

@@ -20,10 +20,7 @@ protected:
     float active_;
 
 
-    sf::Vector3f colorCurrent_, colorTarget_;
-    float alpha_;
-    sf::Color colorGood_, colorFailed_;
-    sf::Vector3f speedColor_;
+
 
     void setSoundName(const std::string& name);
     void playSound();
@@ -31,19 +28,16 @@ public:
     Mechanic();
     ~Mechanic() = default;
     void update(const sf::Time &elapsed, float currentBeat, std::vector<Joueur> &joueurs);
-    void draw(sf::RenderWindow &window);
+    void draw(const sf::Time &elapsed, sf::RenderWindow &window);
 
 
     virtual std::string toString() { return ""; };
-    virtual inline void onDraw(sf::RenderWindow &window) {};
-    virtual inline void onCheck(std::vector<Joueur> &joueurs) {};
-    virtual inline void onApproach(float currentBeat, float currentPart, std::vector<Joueur> &joueurs) {};
-    virtual inline void onPassed(float currentBeat, float currentPart, std::vector<Joueur> &joueurs) {};
-    virtual inline void onFailed(float currentBeat, float currentPart, std::vector<Joueur> &joueurs) {};
-    virtual inline void onFade(float currentBeat, float currentPart, std::vector<Joueur> &joueurs) {};
-
-    void setColorTarget(const sf::Color &color);
-    void updateColor(const sf::Time &elapsed);
+    virtual inline void onDraw(const sf::Time &elapsed, sf::RenderWindow &window) {};
+    virtual inline void onCheck(const sf::Time &elapsed, std::vector<Joueur> &joueurs) {};
+    virtual inline void onApproach(const sf::Time &elapsed, float currentBeat, float currentPart, std::vector<Joueur> &joueurs) {};
+    virtual inline void onPassed(const sf::Time &elapsed, float currentBeat, float currentPart, std::vector<Joueur> &joueurs) {};
+    virtual inline void onFailed(const sf::Time &elapsed, float currentBeat, float currentPart, std::vector<Joueur> &joueurs) {};
+    virtual inline void onFade(const sf::Time &elapsed, float currentBeat, float currentPart, std::vector<Joueur> &joueurs) {};
 
 
 };

@@ -10,16 +10,22 @@
 
 #include "Client.h"
 #include "Joueur.h"
+#include "Mechanic.h"
+#include "Song.h"
 
 class Game {
 private:
     Client *client_;
     bool online_;
     std::vector<Joueur> joueurs_;
+    std::vector<Mechanic*> mechanicList_;
+    Song song_;
 public:
     explicit Game();
+    ~Game();
     Game(Client *client);
-    void run(sf::RenderWindow &window);
+    void run(sf::RenderWindow &window, std::string roomID);
+    void load();
 
 };
 

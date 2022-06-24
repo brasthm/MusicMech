@@ -115,7 +115,7 @@ int LobbyMenu::run(sf::RenderWindow &window, Game &game, Client &client) {
         if(!client.monitorLobby(lobbyList_, index_, state))
             std::cout << "MONITOR ERROR" << std::endl;
         if(state == 3) { // Launch game
-            game.run(window);
+            game.run(window, index_);
             state = 1;
         }
 
@@ -186,6 +186,10 @@ int LobbyMenu::run(sf::RenderWindow &window, Game &game, Client &client) {
         }
 
         window.display();
+    }
+
+    if(state == 1) {
+        client.requestLobbyDisconnect(lobbyList_, index_);
     }
 
     client.disconectToServer();

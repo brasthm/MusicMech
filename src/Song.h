@@ -24,8 +24,10 @@ private:
 	std::vector<TIMING_POINT> timingPoints_;
 	std::vector<TIMING_POINT>::iterator currentTimingPoint_;
 public:
-	Song(std::string osuFile, std::vector<Mechanic*> &mech);
+    Song() = default;
+	Song(const std::string& osuFile, std::vector<Mechanic*> &mech);
 	void play();
+	void load(const std::string& osuFile, std::vector<Mechanic*> &mech);
 	sf::Time getCurrentTime();
 	TIMING_POINT getCurrentBeat(int ms);
 
