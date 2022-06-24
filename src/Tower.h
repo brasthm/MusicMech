@@ -8,6 +8,7 @@
 #include "Mechanic.h"
 #include "RingShape.h"
 #include "PlayerIndicator.h"
+#include "ShiftColor.h"
 
 #include <vector>
 
@@ -19,13 +20,14 @@ private:
     sf::Vector2f position_;
     float radius_, newRadius_;
     int nbShare_, nbIn_;
+    ShiftColor backColor_;
 public:
     Tower(float beat, sf::Vector2f position, float radius, float nbShare, float active);
-    void onDraw(sf::RenderWindow &window) override;
-    void onCheck(std::vector<Joueur> &joueurs) override;
-    void onApproach(float currentBeat, float cuurentPart, std::vector<Joueur> &joueurs) override;
-    void onPassed(float currentBeat, float currentPart, std::vector<Joueur> &joueurs) override;
-    void onFade(float currentBeat, float currentPart, std::vector<Joueur> &joueurs) override;
+    void onDraw(const sf::Time &elapsed, sf::RenderWindow &window) override;
+    void onCheck(const sf::Time &elapsed, std::vector<Joueur> &joueurs) override;
+    void onApproach(const sf::Time &elapsed, float currentBeat, float cuurentPart, std::vector<Joueur> &joueurs) override;
+    void onPassed(const sf::Time &elapsed, float currentBeat, float currentPart, std::vector<Joueur> &joueurs) override;
+    void onFade(const sf::Time &elapsed, float currentBeat, float currentPart, std::vector<Joueur> &joueurs) override;
 
 
     inline std::string toString() override {

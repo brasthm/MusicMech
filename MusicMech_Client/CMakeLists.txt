@@ -3,7 +3,7 @@ project(MusicMech_Client)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(MusicMech_Server
+add_executable(MusicMech_Client
         main.cpp                ../src/main.h
         ../src/Server.cpp       ../src/Server.h
         ../src/UDP_Port.cpp     ../src/UDP_Port.h
@@ -21,12 +21,15 @@ add_executable(MusicMech_Server
         ../src/PlayerIndicator.cpp ../src/PlayerIndicator.h
         ../src/Spread.cpp       ../src/Spread.h
         ../src/LobbyMenu.cpp     ../src/LobbyMenu.h
-        ../src/Lobby.cpp        ../src/Lobby.h)
+        ../src/Lobby.cpp        ../src/Lobby.h
+        ../src/Tether.cpp       ../src/Tether.h
+        ../src/ShiftColor.cpp   ../src/ShiftColor.h
+        ../src/ArrowShape.cpp   ../src/ArrowShape.h)
 
 
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake_modules")
 find_package(SFML REQUIRED system window graphics network audio)
 if (SFML_FOUND)
     include_directories(${SFML_INCLUDE_DIR})
-    target_link_libraries(MusicMech_Server ${SFML_LIBRARIES})
+    target_link_libraries(MusicMech_Client ${SFML_LIBRARIES})
 endif()

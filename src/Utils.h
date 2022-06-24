@@ -15,10 +15,13 @@ namespace Utils {
     int hash(std::string key);
     bool sequence_greater_than(sf::Uint16 s1, sf::Uint16 s2);
     std::vector<std::string> split(std::string s, char delim);
-    double distance(sf::Vector2f a, sf::Vector2f b);
-    sf::Vector3f RGBtoHSV(const sf::Color& color);
-    sf::Color HSVtoRGB(sf::Vector3f color);
+    float distance(sf::Vector2f a, sf::Vector2f b);
+    float distance(const std::array<float, 4> &a, const std::array<float, 4> &b);
+    std::array<float, 4> RGBtoHSV(const sf::Color& color);
+    sf::Color HSVtoRGB(const std::array<float, 4> &color);
     std::string paddLeft(std::string s, int nbPad, char padChar = ' ');
+    std::array<float, 4> diff(const std::array<float, 4> &a, const std::array<float, 4> &b);
+    bool sameSign(float a, float b);
 
     inline std::string& ltrim(std::string& s, const char* t = " \t\n\r\f\v")
     {

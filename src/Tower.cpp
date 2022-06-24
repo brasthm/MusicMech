@@ -23,13 +23,10 @@ Tower::Tower(float beat, sf::Vector2f position, float radius, float nbShare, flo
 
         newRadius_ = radius_;
 
-        colorGood_ = sf::Color(0x89CA7EFF);
-        colorFailed_ = sf::Color(0x427538FF);
-
-        colorCurrent_ = Utils::RGBtoHSV(colorFailed_);
-        colorTarget_ = colorCurrent_;
-
-        speedColor_ = {10, 1, 5};
+        backColor_.addTarget("good", 0x89CA7EFF);
+        backColor_.addTarget("failed", 0x427538FF);
+        backColor_.setSpeed({10, 1, 5, 1});
+        backColor_.initCurrent("failed");
 
         base_.setRadius(radius_);
         base_.setPosition(position_.x - radius_, position_.y - radius_);
@@ -41,19 +38,17 @@ Tower::Tower(float beat, sf::Vector2f position, float radius, float nbShare, flo
         Mechanic::setSoundName("Sound/normal-hitnormal.wav");
 }
 
-void Tower::onDraw(sf::RenderWindow &window) {
+void Tower::onDraw(const sf::Time &elapsed, sf::RenderWindow &window) {
     if(draw_) {
         approachCircle_.draw(window);
-        sf::Color displayColor = Utils::HSVtoRGB(colorCurrent_);
-        displayColor.a = alpha_;
-        base_.setFillColor(displayColor);
+        base_.setFillColor(backColor_.getCurrentColor());
         window.draw(base_);
         playerIndicator_.draw(window);
     }
 }
 
 
-void Tower::onCheck(std::vector<Joueur> &joueurs) {
+void Tower::onCheck(const sf::Time &elapsed, std::vector<Joueur> &joueurs) {
     nbIn_ = 0;
 
     for(int  i = 0; i < joueurs.size(); i++) {
@@ -71,26 +66,27 @@ void Tower::onCheck(std::vector<Joueur> &joueurs) {
     passed_ = nbIn_ >= nbShare_;
 
     if(passed_) {
-        Mechanic::setColorTarget(colorGood_);
+        backColor_.setCurrentTarget("good");
     }
     else {
-        Mechanic::setColorTarget(colorFailed_);
+        backColor_.setCurrentTarget("failed");
     }
+    backColor_.updateColor(elapsed);
 
     playerIndicator_.updateLight(nbIn_);
 }
 
-void Tower::onApproach(float currentBeat, float currentPart, std::vector<Joueur> &joueurs) {
+void Tower::onApproach(const sf::Time &elapsed, float currentBeat, float currentPart, std::vector<Joueur> &joueurs) {
     if(currentPart > 0.66) {
         approachCircle_.setProportion(1.f/active_ * (active_ - (int)(beat_ - currentBeat + 1) + (currentPart - 0.66)/0.34));
     }
 }
 
-void Tower::onPassed(float currentBeat, float currentPart, std::vector<Joueur> &joueurs) {
+void Tower::onPassed(const sf::Time &elapsed, float currentBeat, float currentPart, std::vector<Joueur> &joueurs) {
     newRadius_ = radius_ * (1 + 0.5 * (1 - currentPart));
 }
 
-void Tower::onFade(float currentBeat, float currentPart, std::vector<Joueur> &joueurs) {
+void Tower::onFade(const sf::Time &elapsed, float currentBeat, float currentPart, std::vector<Joueur> &joueurs) {
     approachCircle_.setProportion(1);
 
     sf::Color color = base_.getFillColor();
@@ -100,8 +96,7 @@ void Tower::onFade(float currentBeat, float currentPart, std::vector<Joueur> &jo
 
     approachCircle_.setAlpha(255*(1-currentPart));
 
-    alpha_ = 255*(1-currentPart);
-
+    backColor_.setCurrentColor(3, 255*(1-currentPart));
 
     base_.setRadius(newRadius_);
     base_.setPosition(position_.x - newRadius_, position_.y - newRadius_);

@@ -101,6 +101,7 @@ int main() {
             settings.antialiasingLevel = 8;
             sf::RenderWindow mainWindow(sf::VideoMode(800,600), "MusicMech", sf::Style::Default, settings);
             Game g(&c);
+            g.load();
             lm.run(mainWindow, g, c);
 
         }

@@ -6,7 +6,7 @@
 #include "Utils.h"
 
 Spread::Spread(float beat, sf::Vector2f position, float radius, float nbShare, float active, Joueur *joueurCible) :
-        approachCircle_(position, radius + 10, 20, 0, 0x781F0B88),
+        approachCircle_(position, radius + 10, 20, 0, 0xD3522788),
         playerIndicator_(sf::Vector2f(position.x, position.y), sf::Vector2f(0, radius*0.6f), nbShare,
                          0xFFD5CB88, 0xB64F3888,
                          radius * 0.195f, radius * 0.1f) {
@@ -24,13 +24,10 @@ Spread::Spread(float beat, sf::Vector2f position, float radius, float nbShare, f
 
     newRadius_ = radius_;
 
-    colorGood_ = sf::Color(0xB64F3888);
-    colorFailed_ = sf::Color(0x781F0B88);
-
-    colorCurrent_ = Utils::RGBtoHSV(colorFailed_);
-    colorTarget_ = colorCurrent_;
-
-    speedColor_ = {100, 100, 100};
+    backColor_.addTarget("good", 0xB64F3888);
+    backColor_.addTarget("failed", 0x781F0B88);
+    backColor_.setSpeed({10, 1, 5, 1});
+    backColor_.initCurrent("failed");
 
     base_.setRadius(radius_);
     base_.setPosition(position_.x - radius_, position_.y - radius_);
@@ -49,18 +46,16 @@ Spread::Spread(float beat, sf::Vector2f position, float radius, float nbShare, f
 
 }
 
-void Spread::onDraw(sf::RenderWindow &window) {
+void Spread::onDraw(const sf::Time &elapsed, sf::RenderWindow &window) {
     if(draw_) {
         approachCircle_.draw(window);
-        sf::Color displayColor = Utils::HSVtoRGB(colorCurrent_);
-        displayColor.a = alpha_;
-        base_.setFillColor(displayColor);
+        base_.setFillColor(backColor_.getCurrentColor());
         window.draw(base_);
         playerIndicator_.draw(window);
     }
 }
 
-void Spread::onCheck(std::vector<Joueur> &joueurs) {
+void Spread::onCheck(const sf::Time &elapsed, std::vector<Joueur> &joueurs) {
     nbIn_ = 0;
 
     for(int  i = 0; i < joueurs.size(); i++) {
@@ -80,7 +75,7 @@ void Spread::onCheck(std::vector<Joueur> &joueurs) {
     playerIndicator_.updateLight(nbIn_);
 }
 
-void Spread::onApproach(float currentBeat, float currentPart, std::vector<Joueur> &joueurs) {
+void Spread::onApproach(const sf::Time &elapsed, float currentBeat, float currentPart, std::vector<Joueur> &joueurs) {
     if(currentPart > 0.66) {
         approachCircle_.setProportion(1.f/active_ * (active_ - (int)(beat_ - currentBeat + 1) + (currentPart - 0.66)/0.34));
     }
@@ -90,10 +85,10 @@ void Spread::onApproach(float currentBeat, float currentPart, std::vector<Joueur
 
     if((beat_ - currentBeat) <= 1 && currentPart > 0.95) {
         if(passed_) {
-            Mechanic::setColorTarget(colorGood_);
+            backColor_.setCurrentTarget("good");
         }
         else {
-            Mechanic::setColorTarget(colorFailed_);
+            backColor_.setCurrentTarget("failed");
         }
     }
 
@@ -106,11 +101,11 @@ void Spread::onApproach(float currentBeat, float currentPart, std::vector<Joueur
     }
 }
 
-void Spread::onPassed(float currentBeat, float currentPart, std::vector<Joueur> &joueurs) {
+void Spread::onPassed(const sf::Time &elapsed, float currentBeat, float currentPart, std::vector<Joueur> &joueurs) {
     //newRadius_ = radius_ * (1 + 0.5 * (1 - currentPart));
 }
 
-void Spread::onFade(float currentBeat, float currentPart, std::vector<Joueur> &joueurs) {
+void Spread::onFade(const sf::Time &elapsed, float currentBeat, float currentPart, std::vector<Joueur> &joueurs) {
 
 
     approachCircle_.setProportion(1);
@@ -122,7 +117,7 @@ void Spread::onFade(float currentBeat, float currentPart, std::vector<Joueur> &j
 
     approachCircle_.setAlpha(255*(1-currentPart));
 
-    alpha_ = 255*(1-currentPart);
+    backColor_.setCurrentColor(3, 255*(1-currentPart));
 
 
     base_.setRadius(newRadius_);

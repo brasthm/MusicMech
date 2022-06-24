@@ -35,15 +35,16 @@ std::vector<std::string> Utils::split(std::string s, char delim) {
     return elems;
 }
 
-double Utils::distance(sf::Vector2f a, sf::Vector2f b) {
+float Utils::distance(sf::Vector2f a, sf::Vector2f b) {
     auto diff = a - b;
-    return sqrt(diff.x * diff.x + diff.y * diff.y);
+    return std::sqrt(diff.x * diff.x + diff.y * diff.y);
 }
 
-sf::Vector3f Utils::RGBtoHSV(const sf::Color &color) {
+std::array<float, 4> Utils::RGBtoHSV(const sf::Color &color) {
     float R = color.r / 255.f;
     float G = color.g / 255.f;
     float B = color.b / 255.f;
+    float A = color.a;
 
     float M = std::max({ R, G, B });
     float m = std::min({ R, G, B });
@@ -73,15 +74,16 @@ sf::Vector3f Utils::RGBtoHSV(const sf::Color &color) {
     if (V != 0.f)
         S = C / V;
 
-    return { H, S, V };
+    return { H, S, V, A };
 }
 
-sf::Color Utils::HSVtoRGB(sf::Vector3f color) {
+sf::Color Utils::HSVtoRGB(const std::array<float, 4> &color) {
 
-    float H, S, V;
-    H = color.x;
-    S = color.y;
-    V = color.z;
+    float H, S, V, A;
+    H = color[0];
+    S = color[1];
+    V = color[2];
+    A = color[3];
 
     float C = S * V; // Chroma
     float HPrime = std::fmod(H / 60, 6.f); // H'
@@ -110,6 +112,7 @@ sf::Color Utils::HSVtoRGB(sf::Vector3f color) {
     color2.r = static_cast<sf::Uint8>(std::round(R * 255));
     color2.g = static_cast<sf::Uint8>(std::round(G * 255));
     color2.b = static_cast<sf::Uint8>(std::round(B * 255));
+    color2.a = A;
 
     return color2;
 }
@@ -119,4 +122,25 @@ std::string Utils::paddLeft(std::string s, int nbPad, char padChar) {
     if(nbPad > s.size())
         res = s.insert(0, nbPad - s.size(), padChar);
     return res;
+}
+
+std::array<float, 4> Utils::diff(const std::array<float, 4> &a, const std::array<float, 4> &b) {
+    std::array<float, 4> res{0};
+    for(int i = 0; i < res.size(); i++) {
+        res[i] = a[i] - b[i];
+    }
+    return res;
+}
+
+float Utils::distance(const std::array<float, 4> &a, const std::array<float, 4> &b) {
+    auto d = diff(a, b);
+    float s = 0;
+    for(float i : d) {
+        s += i*i;
+    }
+    return std::sqrt(s);
+}
+
+bool Utils::sameSign(float a, float b) {
+    return ((a<0) == (b<0));
 }

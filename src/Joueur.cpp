@@ -4,6 +4,7 @@
 
 #include "Joueur.h"
 #include "main.h"
+#include "Utils.h"
 
 #include <cmath>
 #include <iostream>
@@ -46,11 +47,28 @@ void Joueur::update(sf::Time elapsed, bool hasFocus) {
             vecDep = serv_pos_ - pos_;
         }
 
-        float length = sqrt(vecDep.x * vecDep.x + vecDep.y * vecDep.y);
+        float length = std::sqrt(vecDep.x * vecDep.x + vecDep.y * vecDep.y);
 
         if(length != 0) {
             vecDep = vecDep/length;
+            float diffX, diffY;
+            if(!controlledByPlayer_) {
+                diffX = vecDep.x;
+                diffY = vecDep.y;
+            }
+
             pos_ += vecDep*speed_*elapsed.asSeconds();
+
+            if(!controlledByPlayer_) {
+                float newDiffX, newDiffY;
+                newDiffX = serv_pos_.x - pos_.x;
+                newDiffY = serv_pos_.y - pos_.y;
+
+                if(!Utils::sameSign(newDiffX, diffX))
+                    pos_.x = serv_pos_.x;
+                if(!Utils::sameSign(newDiffY, diffY))
+                    pos_.y = serv_pos_.y;
+            }
         }
     }
 
@@ -68,9 +86,6 @@ void Joueur::draw(sf::RenderWindow &window) {
             shape_.setFillColor(sf::Color(0xFF007D80));
 
         window.draw(shape_);
-
-
-
 
         shape_.setPosition(pos_);
         if(controlledByPlayer_)
