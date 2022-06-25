@@ -13,6 +13,7 @@ Mechanic::Mechanic() {
     beat_ = 0;
     played_ = checked_ = passed_ = draw_ = false;
     active_ = 4;
+    drawPriority_ = 0;
 }
 
 void Mechanic::playSound() {
@@ -68,4 +69,18 @@ void Mechanic::update(const sf::Time &elapsed, float currentBeat, std::vector<Jo
 
 void Mechanic::draw(const sf::Time &elapsed, sf::RenderWindow &window) {
     onDraw(elapsed, window);
+}
+
+int Mechanic::getDrawPriority() const {
+    return drawPriority_;
+}
+
+bool Mechanic::operator<(const Mechanic &mech) const {
+    if(drawPriority_ == mech.getDrawPriority())
+        return beat_ < mech.getBeat();
+    return drawPriority_ < mech.getDrawPriority();
+}
+
+float Mechanic::getBeat() const {
+    return beat_;
 }

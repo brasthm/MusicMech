@@ -15,6 +15,8 @@ Tower::Tower(float beat, sf::Vector2f position, float radius, float nbShare, flo
         radius_ = radius;
         draw_=false;
 
+        drawPriority_ = 10;
+
 
         nbIn_ = 0;
         nbShare_ = nbShare;
