@@ -18,9 +18,7 @@ protected:
     bool passed_;
     bool draw_;
     float active_;
-
-
-
+    int drawPriority_;
 
     void setSoundName(const std::string& name);
     void playSound();
@@ -29,6 +27,10 @@ public:
     ~Mechanic() = default;
     void update(const sf::Time &elapsed, float currentBeat, std::vector<Joueur> &joueurs);
     void draw(const sf::Time &elapsed, sf::RenderWindow &window);
+
+    int getDrawPriority() const;
+    bool operator< (const Mechanic& mech) const;
+    float getBeat() const;
 
 
     virtual std::string toString() { return ""; };

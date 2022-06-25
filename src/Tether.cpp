@@ -16,6 +16,7 @@ Tether::Tether(float beat, Joueur *anchor1, Joueur *anchor2, float minDist, floa
     minDist_ = minDist;
     active_ = active;
     drawArrow_ = true;
+    drawPriority_ = 100;
 
     inward_ = inward;
     continu_ = continu;

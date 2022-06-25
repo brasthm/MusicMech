@@ -56,6 +56,10 @@ void Game::run(sf::RenderWindow &window, std::string roomID) {
 
     song_.play();
 
+    std::sort(mechanicList_.begin(), mechanicList_.end(), compareMech);
+
+    for(int i = 0; i < mechanicList_.size(); i++)
+        std::cout << mechanicList_[i]->getDrawPriority() << " " << mechanicList_[i]->getBeat() << std::endl;
 
 
     bool exit=false, interupted=false;
@@ -102,7 +106,7 @@ void Game::run(sf::RenderWindow &window, std::string roomID) {
         window.clear(sf::Color(0x2A2431FF));
 
         for(int i = 0; i < mechanicList_.size(); i++) {
-            mechanicList_[mechanicList_.size() - i - 1]->draw(elapsedTime, window);
+            mechanicList_[i]->draw(elapsedTime, window);
         }
 
         for(int i = 0; i < NB_MAX_JOUEURS; i++) {
@@ -165,6 +169,10 @@ Game::~Game() {
     for(int i = 0; i < mechanicList_.size(); i++) {
         delete mechanicList_[i];
     }
+}
+
+bool Game::compareMech(Mechanic *m1, Mechanic *m2) {
+    return *m1 < *m2;
 }
 
 

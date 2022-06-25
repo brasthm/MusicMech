@@ -16,7 +16,6 @@ Spread::Spread(float beat, sf::Vector2f position, float radius, float nbShare, f
     radius_ = radius;
     draw_=false;
 
-
     nbIn_ = 0;
     nbShare_ = nbShare;
 
@@ -43,6 +42,8 @@ Spread::Spread(float beat, sf::Vector2f position, float radius, float nbShare, f
         follow_ = false;
     else
         follow_ = true;
+
+    drawPriority_ = follow_ ? 15:0;
 
 }
 
