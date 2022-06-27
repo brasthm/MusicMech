@@ -5,9 +5,9 @@ set(CMAKE_CXX_STANDARD 20)
 
 add_executable(MusicMech_Server
         main.cpp                ../src/main.h
-        ../src/Server.cpp       ../src/Server.h
-        ../src/UDP_Port.cpp     ../src/UDP_Port.h
-        ../src/Utils.cpp        ../src/Utils.h ../src/Random.h ../src/PlayerInfo.h ../src/Lobby.h ../src/Lobby.cpp)
+        ../src/Network/Server.cpp ../src/Network/Server.h
+        ../src/Network/UDP_Port.cpp ../src/Network/UDP_Port.h
+        ../src/System/Utils.cpp ../src/System/Utils.h ../src/System/Random.h ../src/Network/PlayerInfo.h ../src/Network/Lobby.h ../src/Network/Lobby.cpp)
 
 
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake_modules")

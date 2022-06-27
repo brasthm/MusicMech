@@ -1,5 +1,5 @@
 #include <iostream>
-#include "../src/Server.h"
+#include "../src/Network/Server.h"
 
 int main() {
     Server s;

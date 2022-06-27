@@ -5,9 +5,9 @@
 #ifndef MUSICMECH_CLIENT_LOBBYMENU_H
 #define MUSICMECH_CLIENT_LOBBYMENU_H
 
-#include "Lobby.h"
-#include "PlayerInfo.h"
-#include "Client.h"
+#include "Network/Lobby.h"
+#include "Network/PlayerInfo.h"
+#include "Network/Client.h"
 #include "Game.h"
 
 class LobbyMenu {

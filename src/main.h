@@ -16,8 +16,10 @@ static constexpr float SQRT2 = 1.41421356237f;
 
 static constexpr int TIMOUT_TIME = 5;
 static constexpr int NB_MAX_JOUEURS = 2;
+static constexpr int NB_MAX_TOTEM = 8;
 
 static constexpr float BASE_PLAYER_RADIUS = 20;
+static constexpr float BASE_TOTEM_RADIUS = 10;
 
 static constexpr int NB_MAX_SOUND = 50;
 static constexpr int NB_MAX_MUSIC = 5;
