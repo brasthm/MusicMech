@@ -5,9 +5,9 @@
 #include <SFML/Graphics.hpp>
 #include <iomanip>
 
-#include "../src/Client.h"
+#include "../src/Network/Client.h"
 #include "../src/Game.h"
-#include "../src/Song.h"
+#include "../src/System/Song.h"
 #include "../src/LobbyMenu.h"
 
 int main() {
