@@ -9,12 +9,12 @@
 
 class Totem : public Entity {
 private:
-    bool draw_, active_;
+    bool draw_;
 public:
     Totem();
-    void update(sf::Time elapsed, bool hasFocus) override;
+    void update(sf::Time elapsed, float beat, bool hasFocus) override;
     void draw(sf::RenderWindow &window) override;
-    void setActive(bool val);
+
 };
 
 

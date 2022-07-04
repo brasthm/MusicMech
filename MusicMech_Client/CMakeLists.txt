@@ -16,7 +16,6 @@ add_executable(MusicMech_Client
         ../src/Graphics/RingShape.cpp ../src/Graphics/RingShape.h
         ../src/System/RessourceLoader.cpp ../src/System/RessourceLoader.h
         ../src/Mechanics/Mechanic.cpp ../src/Mechanics/Mechanic.h
-        ../src/Mechanics/Tower.cpp ../src/Mechanics/Tower.h
         ../src/System/DJ.h
         ../src/Graphics/PlayerIndicator.cpp ../src/Graphics/PlayerIndicator.h
         ../src/Mechanics/Spread.cpp ../src/Mechanics/Spread.h
@@ -24,7 +23,7 @@ add_executable(MusicMech_Client
         ../src/Network/Lobby.cpp ../src/Network/Lobby.h
         ../src/Mechanics/Tether.cpp ../src/Mechanics/Tether.h
         ../src/Graphics/ShiftColor.cpp ../src/Graphics/ShiftColor.h
-        ../src/Graphics/ArrowShape.cpp ../src/Graphics/ArrowShape.h ../src/Entity/Entity.cpp ../src/Entity/Entity.h ../src/Entity/Totem.cpp ../src/Entity/Totem.h ../src/Mechanics/ActivateTotem.cpp ../src/Mechanics/ActivateTotem.h ../src/Mechanics/MoveEntity.cpp ../src/Mechanics/MoveEntity.h)
+        ../src/Graphics/ArrowShape.cpp ../src/Graphics/ArrowShape.h ../src/Entity/Entity.cpp ../src/Entity/Entity.h ../src/Entity/Totem.cpp ../src/Entity/Totem.h ../src/Mechanics/ActivateTotem.cpp ../src/Mechanics/ActivateTotem.h ../src/Mechanics/MoveEntity.cpp ../src/Mechanics/MoveEntity.h ../src/Entity/EntityManager.cpp ../src/Entity/EntityManager.h ../src/System/Debuff.cpp ../src/System/Debuff.h ../src/Mechanics/ApplyDebuff.cpp ../src/Mechanics/ApplyDebuff.h)
 
 
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake_modules")

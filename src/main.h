@@ -15,7 +15,7 @@ static constexpr float PI = 3.14159265f;
 static constexpr float SQRT2 = 1.41421356237f;
 
 static constexpr int TIMOUT_TIME = 5;
-static constexpr int NB_MAX_JOUEURS = 2;
+static constexpr int NB_MAX_JOUEURS = 4;
 static constexpr int NB_MAX_TOTEM = 8;
 
 static constexpr float BASE_PLAYER_RADIUS = 20;
@@ -36,7 +36,7 @@ static constexpr unsigned short SERVER_CONNECT_PORT = 54001;
 static constexpr unsigned short SERVER_GAME_PORT = 54002;
 static constexpr unsigned short SERVER_LOBBY_PORT = 54003;
 static constexpr int SERVER_TICK_MS = 100;
-static constexpr int CLIENT_TICK_MS = 20;
+static constexpr int CLIENT_TICK_MS = 100;
 static constexpr int SERVER_SLEEP = 10;
 
 

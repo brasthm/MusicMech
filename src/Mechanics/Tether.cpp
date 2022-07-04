@@ -9,9 +9,7 @@
 #include <cmath>
 #include <iostream>
 
-Tether::Tether(float beat, Joueur *anchor1, Joueur *anchor2, float minDist, float active, bool inward, bool continu) {
-    anchor1_ = anchor1;
-    anchor2_ = anchor2;
+Tether::Tether(float beat, const Target& t1, const Target& t2, float minDist, float active, bool inward, bool continu) : anchor1_(t1), anchor2_(t2) {
     beat_ = beat;
     minDist_ = minDist;
     active_ = active;
@@ -23,17 +21,17 @@ Tether::Tether(float beat, Joueur *anchor1, Joueur *anchor2, float minDist, floa
 
     backColor_.addTarget("passed", 0x89CA7EFF);
     backColor_.addTarget("failed", 0xB64F38FF);
-    backColor_.setSpeed({360, 1, 1, 1});
+    backColor_.setSpeed({0.5, 0.5, 0.5, 0.5});
     backColor_.initCurrent("failed");
 
     borderColor_.addTarget("passed", 0xDAFB93FF);
     borderColor_.addTarget("failed", 0xFFD5CBFF);
-    borderColor_.setSpeed({360, 1, 1, 1});
+    borderColor_.setSpeed({0.5, 0.5, 0.5, 0.5});
     borderColor_.initCurrent("failed");
 
     indicatorColor_.addTarget("passed", 0x79CE1BFF);
     indicatorColor_.addTarget("failed", 0xD35227FF);
-    indicatorColor_.setSpeed({360, 1, 1, 1});
+    indicatorColor_.setSpeed({0.5, 0.5, 0.5, 0.5});
     indicatorColor_.initCurrent("failed");
 
     tether_.setOutlineThickness(5);
@@ -46,8 +44,8 @@ Tether::Tether(float beat, Joueur *anchor1, Joueur *anchor2, float minDist, floa
     arr1.setScale(1.5);
     arr2.setScale(1.5);
 
-    arr1.setColorSpeed({1,1,1, 255});
-    arr2.setColorSpeed({1,1,1, 255});
+    arr1.setColorSpeed({1,1,1, 1});
+    arr2.setColorSpeed({1,1,1, 1});
 
     Mechanic::setSoundName("Sound/normal-hitnormal.wav");
 }
@@ -66,11 +64,11 @@ void Tether::onDraw(const sf::Time &elapsed, sf::RenderWindow &window) {
     }
 }
 
-void Tether::onCheck(const sf::Time &elapsed, std::vector<Joueur> &joueurs) {
+void Tether::onCheck(const sf::Time &elapsed, float currentBeat, float currentPart, EntityManager &em) {
     bool good;
 
-    if(inward_) good = Utils::distance(anchor1_->getPos(), anchor2_->getPos()) <= minDist_;
-    else good = Utils::distance(anchor1_->getPos(), anchor2_->getPos()) >= minDist_;
+    if(inward_) good = Utils::distance(pos1_, pos2_) <= minDist_;
+    else good = Utils::distance(pos1_, pos2_) >= minDist_;
 
     if(good) {
         passed_ = true;
@@ -89,24 +87,29 @@ void Tether::onCheck(const sf::Time &elapsed, std::vector<Joueur> &joueurs) {
     indicatorColor_.updateColor(elapsed);
 }
 
-void Tether::onApproach(const sf::Time &elapsed, float currentBeat, float currentPart, std::vector<Joueur> &joueurs) {
-    auto d = (float)Utils::distance(anchor1_->getPos(), anchor2_->getPos());
+void Tether::onApproach(const sf::Time &elapsed, float currentBeat, float currentPart, EntityManager &em) {
+    
+    pos1_ = em.getPosition(anchor1_);
+    pos2_ = em.getPosition(anchor2_);
+    
+    
+    
+    auto d = (float)Utils::distance(pos1_, pos2_);
     tether_.setSize({d, 10});
-    sf::Vector2f dir = (anchor2_->getPos() - anchor1_->getPos())/d;
-    float signX = anchor2_->getPosX() - anchor1_->getPosX() > 0 ? 1:-1;
-    float signY = anchor2_->getPosY() - anchor1_->getPosY() > 0 ? 1:-1;
+    sf::Vector2f dir = (pos2_ - pos1_)/d;
+    float signX = pos2_.x - pos1_.x > 0 ? 1:-1;
 
     float angle = 0;
 
-    if(anchor2_->getPosX() - anchor1_->getPosX() > 0) {
-        tether_.setPosition(anchor1_->getPos());
-        angle = std::atan((float)(anchor2_->getPosY() - anchor1_->getPosY())/
-                          (float)(anchor2_->getPosX() - anchor1_->getPosX()));
+    if(signX == 1) {
+        tether_.setPosition(pos1_);
+        angle = std::atan((float)(pos2_.y - pos1_.y)/
+                          (float)(pos2_.x - pos1_.x));
     }
     else {
-        tether_.setPosition(anchor2_->getPos());
-        angle = std::atan((float)(anchor1_->getPosY() - anchor2_->getPosY())/
-                          (float)(anchor1_->getPosX() - anchor2_->getPosX()));
+        tether_.setPosition(pos2_);
+        angle = std::atan((float)(pos1_.y - pos2_.y)/
+                          (float)(pos1_.x - pos2_.x));
     }
 
     indicator_.setRotation(0);
@@ -116,30 +119,29 @@ void Tether::onApproach(const sf::Time &elapsed, float currentBeat, float curren
 
     if(continu_) {
         float position = 2*d*currentPart - d;
-        float width = 0;
 
         if(position <= 0) {
             indicator_.setSize({position + d, 40});
             indicator_.setOrigin(0, 20);
-            if(signX == 1) indicator_.setPosition(anchor1_->getPos());
-            else indicator_.setPosition(anchor2_->getPos());
+            if(signX == 1) indicator_.setPosition(pos1_);
+            else indicator_.setPosition(pos2_);
         }
         else {
             indicator_.setSize({d-position, 40});
             indicator_.setOrigin(0, 20);
-            if(signX == 1) indicator_.setPosition(anchor1_->getPos() + position*dir);
-            else indicator_.setPosition(anchor2_->getPos() - position*dir);
+            if(signX == 1) indicator_.setPosition(pos1_ + position*dir);
+            else indicator_.setPosition(pos2_ - position*dir);
         }
     }
     else {
         float proportion = 1.f/active_ * (active_ - std::floor(beat_ - currentBeat + 1));
         if(currentPart > 0.66) {
-            proportion += 1.f/active_ * (currentPart - 0.66)/0.34;
+            proportion += 1.f/active_ * (currentPart - 0.66f)/0.34f;
         }
 
         indicator_.setSize({proportion*d, 40});
         indicator_.setOrigin(proportion*d/2, 20);
-        indicator_.setPosition((anchor1_->getPos() + anchor2_->getPos())/2.f);
+        indicator_.setPosition((pos1_ + pos2_)/2.f);
     }
 
     indicator_.setRotation(angle);
@@ -152,12 +154,12 @@ void Tether::onApproach(const sf::Time &elapsed, float currentBeat, float curren
     arr2.setRotation(angle+180);
 
     if(inward_) {
-        arr1.setPosition((anchor1_->getPos()+anchor2_->getPos())*0.5f - signX*(1-currentPart)*(d-prop)*0.5f*dir);
-        arr2.setPosition((anchor1_->getPos()+anchor2_->getPos())*0.5f + signX*(1-currentPart)*(d-prop)*0.5f*dir);
+        arr1.setPosition((pos1_+pos2_)*0.5f - signX*(1-currentPart)*(d-prop)*0.5f*dir);
+        arr2.setPosition((pos1_+pos2_)*0.5f + signX*(1-currentPart)*(d-prop)*0.5f*dir);
     }
     else {
-        arr1.setPosition((anchor1_->getPos()+anchor2_->getPos())*0.5f + signX*dir*prop + signX*currentPart*(d-prop)*0.5f*dir);
-        arr2.setPosition((anchor1_->getPos()+anchor2_->getPos())*0.5f - signX*dir*prop - signX*currentPart*(d-prop)*0.5f*dir);
+        arr1.setPosition((pos1_+pos2_)*0.5f + signX*dir*prop + signX*currentPart*(d-prop)*0.5f*dir);
+        arr2.setPosition((pos1_+pos2_)*0.5f - signX*dir*prop - signX*currentPart*(d-prop)*0.5f*dir);
     }
 
 
@@ -165,10 +167,10 @@ void Tether::onApproach(const sf::Time &elapsed, float currentBeat, float curren
     arr2.update(elapsed);
 }
 
-void Tether::onPassed(const sf::Time &elapsed, float currentBeat, float currentPart, std::vector<Joueur> &joueurs) {
+void Tether::onPassed(const sf::Time &elapsed, float currentBeat, float currentPart, EntityManager &em) {
 }
 
-void Tether::onFade(const sf::Time &elapsed, float currentBeat, float currentPart, std::vector<Joueur> &joueurs) {
+void Tether::onFade(const sf::Time &elapsed, float currentBeat, float currentPart, EntityManager &em) {
     backColor_.setCurrentColor(3, 255*(1-currentPart));
     borderColor_.setCurrentColor(3, 255*(1-currentPart));
     indicatorColor_.setCurrentColor(3, 255*(1-currentPart));

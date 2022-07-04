@@ -11,7 +11,7 @@
 
 Mechanic::Mechanic() {
     beat_ = 0;
-    played_ = checked_ = passed_ = draw_ = false;
+    played_ = checked_ = passed_ = draw_ = init_ = false;
     active_ = 4;
     drawPriority_ = 0;
 }
@@ -27,9 +27,9 @@ void Mechanic::setSoundName(const std::string& name) {
     sound_ = name;
 }
 
-void Mechanic::update(const sf::Time &elapsed, float currentBeat, std::vector<Joueur> &joueurs) {
+void Mechanic::update(const sf::Time &elapsed, float currentBeat, EntityManager &entities) {
     float n = std::abs(currentBeat - beat_);
-    float currentPart = n - (int)n;
+    float currentPart = n - std::floor(n);
 
     if(currentBeat < beat_)
         currentPart = 1-currentPart;
@@ -37,29 +37,34 @@ void Mechanic::update(const sf::Time &elapsed, float currentBeat, std::vector<Jo
     if(beat_ > currentBeat && beat_ - currentBeat <= active_) {
         draw_ = true;
 
-        onCheck(elapsed, joueurs);
-        onApproach(elapsed, currentBeat, currentPart, joueurs);
+        if(!init_) {
+            onInit(elapsed, currentBeat, currentPart, entities);
+            init_ = true;
+        }
+
+        onCheck(elapsed, currentBeat, currentPart, entities);
+        onApproach(elapsed, currentBeat, currentPart, entities);
     }
-    else if(currentBeat > beat_ && currentBeat - beat_ <= 1) {
+    else if(currentBeat > beat_ && currentBeat - beat_ < 1) {
         draw_ = true;
 
         if(!checked_ && currentPart < 0.25) {
-            onCheck(elapsed, joueurs);
+            onCheck(elapsed, currentBeat, currentPart, entities);
         }
 
         if(!checked_ && passed_) {
             playSound();
-            onPassed(elapsed, currentBeat, currentPart, joueurs);
+            onPassed(elapsed, currentBeat, currentPart, entities);
 
             checked_ = true;
         }
 
         if(!checked_ && !passed_ && currentPart > 0.25) {
-            onFailed(elapsed, currentBeat, currentPart, joueurs);
+            onFailed(elapsed, currentBeat, currentPart, entities);
             checked_ = true;
         }
 
-        onFade(elapsed, currentBeat, currentPart, joueurs);
+        onFade(elapsed, currentBeat, currentPart, entities);
     }
     else {
         draw_ = false;
@@ -84,3 +89,4 @@ bool Mechanic::operator<(const Mechanic &mech) const {
 float Mechanic::getBeat() const {
     return beat_;
 }
+

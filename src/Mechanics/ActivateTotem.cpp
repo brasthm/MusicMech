@@ -4,14 +4,12 @@
 
 #include "ActivateTotem.h"
 
-ActivateTotem::ActivateTotem(float beat, Totem *target, bool val) {
+ActivateTotem::ActivateTotem(float beat, const Target& target, bool val) : target_(target){
     beat_ = beat;
     val_ = val;
-    target_ = target;
     passed_ = true;
 }
 
-void
-ActivateTotem::onPassed(const sf::Time &elapsed, float currentBeat, float currentPart, std::vector<Joueur> &joueurs) {
-    target_->setActive(val_);
+void ActivateTotem::onPassed(const sf::Time &elapsed, float currentBeat, float currentPart, EntityManager &entities) {
+    entities.setActive(target_, val_);
 }

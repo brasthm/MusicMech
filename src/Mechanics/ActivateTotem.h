@@ -6,15 +6,14 @@
 #define MUSICMECH_CLIENT_ACTIVATETOTEM_H
 
 #include "Mechanic.h"
-#include "../Entity/Totem.h"
 
 class ActivateTotem : public Mechanic {
-    Totem *target_;
+    Target target_;
     bool val_;
 public:
-    ActivateTotem(float beat, Totem* target, bool val);
+    ActivateTotem(float beat, const Target& target, bool val);
 
-    void onPassed(const sf::Time &elapsed, float currentBeat, float currentPart, std::vector<Joueur> &joueurs) override;
+    void onPassed(const sf::Time &elapsed, float currentBeat, float currentPart, EntityManager &entities) override;
 
 };
 

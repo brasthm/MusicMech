@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "Network/Client.h"
+#include "Entity/EntityManager.h"
 #include "Entity/Joueur.h"
 #include "Entity/Totem.h"
 #include "Mechanics/Mechanic.h"
@@ -18,6 +19,7 @@ class Game {
 private:
     Client *client_;
     bool online_;
+    EntityManager em_;
     std::vector<Joueur> joueurs_;
     std::vector<Totem> totems_;
     std::vector<Mechanic*> mechanicList_;

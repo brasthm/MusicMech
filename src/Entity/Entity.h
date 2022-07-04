@@ -6,6 +6,7 @@
 #define MUSICMECH_CLIENT_ENTITY_H
 
 #include <SFML/Graphics.hpp>
+#include "../System/Debuff.h"
 
 
 class Entity {
@@ -13,6 +14,8 @@ protected:
     sf::CircleShape shape_;
     sf::Vector2f pos_, targetPos_;
     float speed_=0, radius_=0, baseSpeed_=0;
+    bool active_=false;
+    Debuff debuff_;
 
 public:
     Entity() = default;
@@ -20,10 +23,15 @@ public:
     inline int getPosY() const {return pos_.y;};
     inline sf::Vector2f getPos() const {return pos_;};
 
+    inline void setActive(bool val) {active_ = val;};
+    inline bool getActive() {return  active_; };
+
     void setTarget(const sf::Vector2f &, float speed, bool isInstant);
 
-    virtual void update(sf::Time elapsed, bool hasFocus) = 0;
+    virtual void update(sf::Time elapsed, float beat, bool hasFocus) = 0;
     virtual void draw(sf::RenderWindow &window) = 0;
+
+    void applyDebuff(DebuffType type, float end);
 };
 
 
