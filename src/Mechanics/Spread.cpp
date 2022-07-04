@@ -8,15 +8,15 @@
 #include <cmath>
 #include <iostream>
 
-Spread::Spread(float beat, sf::Vector2f position, float radius, int nbShare, float active, Entity *cible) :
-        approachCircle_(position, radius + 10, 20, 0),
-        playerIndicator_(sf::Vector2f(position.x, position.y), sf::Vector2f(0, radius*0.6f), nbShare,
+Spread::Spread(float beat, float radius, int nbShare, float active, const Target &target) :
+        target_(target),
+        approachCircle_({}, radius + 10, 20, 0),
+        playerIndicator_({}, sf::Vector2f(0, radius*0.6f), nbShare,
                          radius * 0.195f, radius * 0.1f) {
 
-    position_ = position;
     beat_ = beat;
     radius_ = radius;
-    draw_=false;
+    draw_ = false;
 
     nbIn_ = 0;
     nbShare_ = nbShare;
@@ -25,13 +25,10 @@ Spread::Spread(float beat, sf::Vector2f position, float radius, int nbShare, flo
     active_ = active;
     newRadius_ = radius_;
 
-    cible_ = cible;
-    follow_ = cible_ != nullptr;
-
     sf::Uint32 outlineColor=0, fillColorPlayerIndicator=0, fillColor=0, fillColorFailed=0, approachColor=0;
 
     if(isShare_) {
-        if(follow_) {
+        if(target_.timing == TARGET_FOLLOW) {
             outlineColor = 0xDAFB9388;
             fillColor = 0x89CA7E88;
             fillColorFailed = 0x42753888;
@@ -46,7 +43,7 @@ Spread::Spread(float beat, sf::Vector2f position, float radius, int nbShare, flo
             approachColor = 0x79CE1BFF;
         }
 
-        backColor_.setSpeed({300, 5, 5, 1});
+        backColor_.setSpeed({0.5, 0.5, 0.5, 0.5});
     }
     else {
         outlineColor = 0xFFD5CB88;
@@ -55,7 +52,7 @@ Spread::Spread(float beat, sf::Vector2f position, float radius, int nbShare, flo
         fillColorPlayerIndicator = 0xFFD5CB00;
         approachColor = 0xD3522788;
 
-        backColor_.setSpeed({300, 1000000, 1000000, 100000});
+        backColor_.setSpeed({0.5, 0.5, 0.5, 0.5});
     }
 
     approachCircle_.setFillColor(approachColor);
@@ -69,14 +66,13 @@ Spread::Spread(float beat, sf::Vector2f position, float radius, int nbShare, flo
     backColor_.initCurrent("failed");
 
     base_.setRadius(radius_);
-    base_.setPosition(position_.x - radius_, position_.y - radius_);
 
     base_.setOutlineThickness(5);
     base_.setPointCount(100);
 
     Mechanic::setSoundName("Sound/normal-hitnormal.wav");
 
-    drawPriority_ = follow_ ? 15: isShare_ ? 10 : 0;
+    drawPriority_ = target_.timing == TARGET_FOLLOW ? 15: isShare_ ? 10 : 0;
 }
 
 void Spread::onDraw(const sf::Time &elapsed, sf::RenderWindow &window) {
@@ -88,15 +84,15 @@ void Spread::onDraw(const sf::Time &elapsed, sf::RenderWindow &window) {
     }
 }
 
-void Spread::onCheck(const sf::Time &elapsed, std::vector<Joueur> &joueurs) {
+void Spread::onCheck(const sf::Time &elapsed, float currentBeat, float cuurentPart, EntityManager &entities) {
     nbIn_ = 0;
 
-    for(int  i = 0; i < joueurs.size(); i++) {
-
-        if(!joueurs[i].getConnected())
+    for(int  i = 0; i < entities.getSizePlayers(); i++) {
+        Target t(TARGET_ENTITY, TARGET_PLAYERS, i);
+        if(!entities.getActive(t))
             break;
 
-        bool good = Utils::distance(joueurs[i].getPos(), position_) < radius_;
+        bool good = Utils::distance(entities.getPosition(t), position_) < radius_;
 
         if(good) {
             nbIn_++;
@@ -119,7 +115,7 @@ void Spread::onCheck(const sf::Time &elapsed, std::vector<Joueur> &joueurs) {
 }
 
 
-void Spread::onApproach(const sf::Time &elapsed, float currentBeat, float currentPart, std::vector<Joueur> &joueurs) {
+void Spread::onApproach(const sf::Time &elapsed, float currentBeat, float currentPart, EntityManager &entities) {
     if(currentPart > 0.66) {
         approachCircle_.setProportion(1.f/active_ * (active_ - std::floor(beat_ - currentBeat + 1) + (currentPart - 0.66f)/0.34f));
     }
@@ -135,20 +131,20 @@ void Spread::onApproach(const sf::Time &elapsed, float currentBeat, float curren
 
     }
 
-    if(follow_) {
-        position_ = cible_->getPos();
-
-        base_.setPosition(position_.x - radius_, position_.y - radius_);
-        approachCircle_.setCenter(position_);
-        playerIndicator_.updatePosition(position_);
+    if(target_.timing == TARGET_FOLLOW) {
+        updatePosition(entities);
     }
 }
 
-void Spread::onPassed(const sf::Time &elapsed, float currentBeat, float currentPart, std::vector<Joueur> &joueurs) {
+void Spread::onPassed(const sf::Time &elapsed, float currentBeat, float currentPart, EntityManager &entities) {
     if(isShare_) newRadius_ = radius_ * (1.f + 0.5f * (1.f - currentPart));
+
+    if(target_.timing == TARGET_ONBEAT) {
+        updatePosition(entities);
+    }
 }
 
-void Spread::onFade(const sf::Time &elapsed, float currentBeat, float currentPart, std::vector<Joueur> &joueurs) {
+void Spread::onFade(const sf::Time &elapsed, float currentBeat, float currentPart, EntityManager &entities) {
     approachCircle_.setProportion(1);
 
     sf::Color color = base_.getFillColor();
@@ -165,4 +161,18 @@ void Spread::onFade(const sf::Time &elapsed, float currentBeat, float currentPar
     approachCircle_.setDistance(newRadius_ + 10);
 
     playerIndicator_.updateAlpha(currentPart);
+}
+
+void Spread::onInit(const sf::Time &elapsed, float currentBeat, float currentPart, EntityManager &entities) {
+    if(target_.timing == TARGET_ONINIT) {
+        updatePosition(entities);
+    }
+}
+
+void Spread::updatePosition(EntityManager &entityManager) {
+    position_ = entityManager.getPosition(target_);
+
+    base_.setPosition(position_.x - radius_, position_.y - radius_);
+    approachCircle_.setCenter(position_);
+    playerIndicator_.updatePosition(position_);
 }

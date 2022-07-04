@@ -30,6 +30,7 @@ Server::Server() :  admin("admin", SERVER_ADMIN_PORT, false),
 void Server::run() {
     bool loop = true;
     serverTick.restart();
+
     while(loop) {
         monitorAdminCommand(loop);
         monitorConnectRequest();

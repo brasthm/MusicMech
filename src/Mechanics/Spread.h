@@ -15,21 +15,24 @@ class Spread : public Mechanic {
     sf::CircleShape base_;
     PlayerIndicator playerIndicator_;
     RingShape approachCircle_;
-    sf::Vector2f position_;
     float radius_, newRadius_;
     int nbShare_, nbIn_;
-    Entity *cible_;
-    bool follow_, isShare_;
+    bool isShare_;
     ShiftColor backColor_;
+    Target target_;
+    sf::Vector2f position_;
+
+    void updatePosition(EntityManager &entityManager);
 
 
 public:
-    Spread(float beat, sf::Vector2f position, float radius, int nbShare, float active, Entity * cible);
+    Spread(float beat, float radius, int nbShare, float active, const Target &target);
     void onDraw(const sf::Time &elapsed, sf::RenderWindow &window) override;
-    void onCheck(const sf::Time &elapsed, std::vector<Joueur> &joueurs) override;
-    void onApproach(const sf::Time &elapsed, float currentBeat, float cuurentPart, std::vector<Joueur> &joueurs) override;
-    void onPassed(const sf::Time &elapsed, float currentBeat, float currentPart, std::vector<Joueur> &joueurs) override;
-    void onFade(const sf::Time &elapsed, float currentBeat, float currentPart, std::vector<Joueur> &joueurs) override;
+    void onCheck(const sf::Time &elapsed, float currentBeat, float cuurentPart, EntityManager &entities) override;
+    void onApproach(const sf::Time &elapsed, float currentBeat, float cuurentPart, EntityManager &entities) override;
+    void onPassed(const sf::Time &elapsed, float currentBeat, float currentPart, EntityManager &entities) override;
+    void onFade(const sf::Time &elapsed, float currentBeat, float currentPart, EntityManager &entities) override;
+    void onInit(const sf::Time &elapsed, float currentBeat, float currentPart, EntityManager &entities) override;
 };
 
 

@@ -5,26 +5,31 @@
 #include "ShiftColor.h"
 #include "../System/Utils.h"
 
-void ShiftColor::updateColor(const sf::Time &elapsed) {
-    float numm = Utils::distance(colorTargets_[currentTarget_], colorTargets_[prevTarget_]);
+#include <iostream>
 
-    if(numm != 0) {
-        for(int i = 0; i < colorCurrent_.size(); i++) {
-            float diff = colorTargets_[currentTarget_][i] - colorCurrent_[i];
-            colorCurrent_[i] += diff/numm * speedColor_[i] * elapsed.asSeconds();
-            float newDiff = colorTargets_[currentTarget_][i] - colorCurrent_[i];
-            if(!Utils::sameSign(diff, newDiff))
-                colorCurrent_[i] = colorTargets_[currentTarget_][i];
+void ShiftColor::updateColor(const sf::Time &elapsed) {
+    for(int i = 0; i < colorCurrent_.size(); i++) {
+        float diff = colorTargets_[currentTarget_][i] - colorCurrent_[i];
+        if(std::abs(diff) > 1e-3) {
+            float speed = 100000.f;
+            if(shiftTime_[i] != 0)
+                speed = (colorTargets_[currentTarget_][i] - colorTargets_[prevTarget_][i])/shiftTime_[i];
+
+            float deltaD = speed * elapsed.asSeconds();
+            if(std::abs(deltaD) > std::abs(diff))
+                deltaD = diff;
+            colorCurrent_[i] += deltaD;
         }
     }
+
 }
 
 void ShiftColor::setSpeed(int index, float val) {
-    speedColor_[index] = val;
+    shiftTime_[index] = val;
 }
 
-void ShiftColor::setSpeed(const std::array<float, 4> &speed) {
-    speedColor_ = speed;
+void ShiftColor::setSpeed(const std::array<float, 4> &time) {
+    shiftTime_ = time;
 }
 
 void ShiftColor::addTarget(const std::string& key, sf::Uint32 color) {

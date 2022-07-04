@@ -15,7 +15,7 @@ private:
     std::vector<PlayerInfo> playerList_;
     std::vector<Lobby> lobbyList_;
     std::string index_;
-    int ind_;
+    int ind_, retries_;
 
 public:
     LobbyMenu();

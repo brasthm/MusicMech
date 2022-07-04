@@ -4,11 +4,13 @@
 
 #include "LobbyMenu.h"
 #include "System/RessourceLoader.h"
+#include "System/Random.h"
 
 #include <iostream>
 #include <iomanip>
 #include <chrono>
 #include <thread>
+#include <random>
 
 int LobbyMenu::run(sf::RenderWindow &window, Game &game, Client &client) {
     bool quit = false;
@@ -54,6 +56,7 @@ int LobbyMenu::run(sf::RenderWindow &window, Game &game, Client &client) {
     std::cout << "   3. Refresh" << std::endl;
     std::cout << "   4. Quit" << std::endl;
 
+    retries_ = 0;
 
     while (!quit) {
         sf::Event event{};
@@ -115,8 +118,18 @@ int LobbyMenu::run(sf::RenderWindow &window, Game &game, Client &client) {
         if(!client.monitorLobby(lobbyList_, index_, state))
             std::cout << "MONITOR ERROR" << std::endl;
         if(state == 3) { // Launch game
+            std::string seedString = index_ + std::to_string(retries_);
+            for(int i = 0; i < lobbyList_[ind_].players.size(); i++) {
+                seedString+=lobbyList_[ind_].players[i]->name;
+            }
+            std::cout << seedString << std::endl;
+            auto *seed = new std::seed_seq(seedString.begin(), seedString.end());
+            Random::setSeed(seed);
+            delete seed;
             game.run(window, index_);
             state = 1;
+            retries_++;
+
         }
 
 

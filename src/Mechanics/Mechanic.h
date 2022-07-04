@@ -7,7 +7,7 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "../Entity/Joueur.h"
+#include "../Entity/EntityManager.h"
 
 
 class Mechanic {
@@ -17,6 +17,7 @@ protected:
     bool played_, checked_;
     bool passed_;
     bool draw_;
+    bool init_;
     float active_;
     int drawPriority_;
 
@@ -25,7 +26,7 @@ protected:
 public:
     Mechanic();
     ~Mechanic() = default;
-    void update(const sf::Time &elapsed, float currentBeat, std::vector<Joueur> &joueurs);
+    void update(const sf::Time &elapsed, float currentBeat, EntityManager &entities);
     void draw(const sf::Time &elapsed, sf::RenderWindow &window);
 
     int getDrawPriority() const;
@@ -34,12 +35,13 @@ public:
 
 
     virtual std::string toString() { return ""; };
+    virtual inline void onInit(const sf::Time &elapsed, float currentBeat, float currentPart, EntityManager &entities) {};
     virtual inline void onDraw(const sf::Time &elapsed, sf::RenderWindow &window) {};
-    virtual inline void onCheck(const sf::Time &elapsed, std::vector<Joueur> &joueurs) {};
-    virtual inline void onApproach(const sf::Time &elapsed, float currentBeat, float currentPart, std::vector<Joueur> &joueurs) {};
-    virtual inline void onPassed(const sf::Time &elapsed, float currentBeat, float currentPart, std::vector<Joueur> &joueurs) {};
-    virtual inline void onFailed(const sf::Time &elapsed, float currentBeat, float currentPart, std::vector<Joueur> &joueurs) {};
-    virtual inline void onFade(const sf::Time &elapsed, float currentBeat, float currentPart, std::vector<Joueur> &joueurs) {};
+    virtual inline void onCheck(const sf::Time &elapsed, float currentBeat, float currentPart, EntityManager &entities) {};
+    virtual inline void onApproach(const sf::Time &elapsed, float currentBeat, float currentPart, EntityManager &entities) {};
+    virtual inline void onPassed(const sf::Time &elapsed, float currentBeat, float currentPart, EntityManager &entities) {};
+    virtual inline void onFailed(const sf::Time &elapsed, float currentBeat, float currentPart, EntityManager &entities) {};
+    virtual inline void onFade(const sf::Time &elapsed, float currentBeat, float currentPart, EntityManager &entities) {};
 
 
 };

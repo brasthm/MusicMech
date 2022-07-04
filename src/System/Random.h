@@ -6,6 +6,8 @@
 #define MUSICMECH_SERVER_RANDOM_H
 
 #include <random>
+#include <iostream>
+#include <algorithm>
 
 class Random {
 private:
@@ -18,12 +20,25 @@ private:
         std::uniform_real_distribution<> dis(lower, upper);
         return dis(gen);
     }
+    template<typename T>
+    inline void shuffle_(std::vector<T> &v) {
+        std::shuffle(v.begin(), v.end(), gen);
+    }
+
+    inline void setSeed_(std::seed_seq *seed) {
+        gen.seed(*seed);
+        std::cout << gen() << std::endl;
+    }
 
     inline static Random &getInstance() {
         if(!random)
             random = new Random();
         return *random;
     };
+
+    inline ~Random() {
+        delete random;
+    }
 public:
 
     inline static int rand() {
@@ -32,6 +47,15 @@ public:
 
     inline static int randint(int lower, int upper) {
         return getInstance().genrand(lower, upper);
+    }
+
+    template<typename T>
+    inline static void shuffle(std::vector<T> &v) {
+        getInstance().shuffle_(v);
+    }
+
+    inline static void setSeed(std::seed_seq *seed) {
+        getInstance().setSeed_(seed);
     }
 
 

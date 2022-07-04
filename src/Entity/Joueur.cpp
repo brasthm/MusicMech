@@ -20,17 +20,18 @@ Joueur::Joueur() {
     pos_.x = 0; pos_.y = 0; serv_pos_ = pos_;
     controlledByPlayer_ = false;
     speed_ = 700;
-    connected_ = false;
+    active_ = false;
     name_ = "";
     baseSpeed_ = speed_;
 }
 
-void Joueur::update(sf::Time elapsed, bool hasFocus) {
+void Joueur::update(sf::Time elapsed, float beat, bool hasFocus) {
 
-    if(connected_) {
+    if(active_) {
+        debuff_.update(elapsed, beat);
         sf::Vector2f vecDep(0,0);
 
-        if(controlledByPlayer_ && hasFocus) {
+        if(controlledByPlayer_ && hasFocus && debuff_.type() != DEBUFF_ROOT) {
             if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up)) {
                 vecDep.y = -1;
             }
@@ -76,8 +77,10 @@ void Joueur::update(sf::Time elapsed, bool hasFocus) {
 }
 
 void Joueur::draw(sf::RenderWindow &window) {
-    if(connected_) {
+    if(active_) {
         shape_.setPosition(serv_pos_);
+
+        debuff_.draw(window, pos_);
 
         if(controlledByPlayer_) {
             shape_.setFillColor(sf::Color(0x3B00EA80));
@@ -100,7 +103,7 @@ void Joueur::draw(sf::RenderWindow &window) {
 
 void Joueur::setDataFromServer(sf::Packet &packet)  {
     sf::Int32 x, y;
-    packet >> connected_ >> x >> y;
+    packet >> active_ >> x >> y;
     serv_pos_.x = x;
     serv_pos_.y = y;
 }

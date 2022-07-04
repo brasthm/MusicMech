@@ -11,7 +11,7 @@
 #include "Utils.h"
 #include "RessourceLoader.h"
 
-#include "../Mechanics/Tower.h"
+#include "../Mechanics/Spread.h"
 
 
 Song::Song(const std::string& osuFile, std::vector<Mechanic*> &mechs) {
@@ -148,15 +148,15 @@ void Song::load(const std::string& osuFile, std::vector<Mechanic *> &mechs) {
                     }
                 }
                 else if (*parsing == "[HitObjects]") {
-                    int x, y, time, type;
-                    x = std::stoi(words[0]);
-                    y = std::stoi(words[1]);
-                    time = std::stoi(words[2]);
-                    type = std::stoi(words[3]);
+                    float x, y, time, type;
+                    x = std::stof(words[0]);
+                    y = std::stof(words[1]);
+                    time = std::stof(words[2]);
+                    type = std::stof(words[3]);
                     //std::cout << x << ' ' << y << ' ' << time << ' ' << type << std::endl;
 
-                    mechs.emplace_back(new Tower(getCumulativeNBeats(time), sf::Vector2f(x, y), 70, 1, 4));
-                    std::cout << mechs.back()->toString() << std::endl;
+                    mechs.emplace_back(new Spread(getCumulativeNBeats(time), 70, 1, 4, Target(TARGET_POS, {x, y})));
+                    //std::cout << mechs.back()->toString() << std::endl;
                 }
             }
         }

@@ -4,15 +4,13 @@
 
 #include "MoveEntity.h"
 
-MoveEntity::MoveEntity(float beat, Entity *target, const sf::Vector2f &pos, float speed, bool isInstant) {
+MoveEntity::MoveEntity(float beat, const Target& entity, const Target& target, float speed, bool isInstant) : entity_(entity), target_(target){
     beat_ = beat;
     passed_ = true;
-    target_ = target;
     speed_ = speed;
     isInstant_ = isInstant;
-    pos_ = pos;
 }
 
-void MoveEntity::onPassed(const sf::Time &elapsed, float currentBeat, float currentPart, std::vector<Joueur> &joueurs) {
-    target_->setTarget(pos_, speed_, isInstant_);
+void MoveEntity::onPassed(const sf::Time &elapsed, float currentBeat, float currentPart, EntityManager &entities) {
+    entities.setTargetPosition(entity_, target_, speed_, isInstant_);
 }

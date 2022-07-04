@@ -9,14 +9,13 @@
 #include "../Entity/Entity.h"
 
 class MoveEntity : public Mechanic {
-    Entity *target_;
-    sf::Vector2f pos_;
+    Target entity_, target_;
     bool isInstant_;
     float speed_;
 public:
-    MoveEntity(float beat, Entity* target, const sf::Vector2f &pos, float speed, bool isInstant);
+    MoveEntity(float beat, const Target& entity, const Target& target, float speed, bool isInstant);
 
-    void onPassed(const sf::Time &elapsed, float currentBeat, float currentPart, std::vector<Joueur> &joueurs) override;
+    void onPassed(const sf::Time &elapsed, float currentBeat, float currentPart, EntityManager &entities) override;
 
 };
 
