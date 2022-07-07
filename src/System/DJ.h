@@ -18,6 +18,9 @@ private:
     std::vector<sf::Sound> sounds_;
     std::vector<sf::Music> musics_;
 
+    sf::Clock clock_;
+    sf::Time elapsed_;
+
     int currentSound_;
     int currentMusic_;
 
@@ -26,6 +29,8 @@ private:
     DJ() : sounds_(NB_MAX_SOUND), musics_(NB_MAX_MUSIC){
         currentSound_ = 0;
         currentMusic_ = 0;
+        clock_.restart();
+        elapsed_ = sf::seconds(1);
     };
 
     inline ~DJ() {
@@ -41,15 +46,24 @@ private:
 
 
     int playSound_(const std::string& path) {
-        int returnval = currentSound_;
+        elapsed_ += clock_.getElapsedTime();
+        clock_.restart();
+        if(elapsed_ > sf::milliseconds(30)) {
+            elapsed_ = sf::seconds(0);
 
-        sounds_[currentSound_].setBuffer(RessourceLoader::getSoundBuffer(path));
-        sounds_[currentSound_].play();
+            int returnval = currentSound_;
 
-        currentSound_++;
-        currentSound_  = currentSound_ % NB_MAX_SOUND;
+            sounds_[currentSound_].setBuffer(RessourceLoader::getSoundBuffer(path));
+            sounds_[currentSound_].play();
 
-        return returnval;
+            currentSound_++;
+            currentSound_  = currentSound_ % NB_MAX_SOUND;
+
+            return returnval;
+        }
+
+
+        return 0;
     };
 
     int playMusic_(const std::string& path) {

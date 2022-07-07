@@ -99,7 +99,7 @@ int main() {
             LobbyMenu lm;
             sf::ContextSettings settings;
             settings.antialiasingLevel = 8;
-            sf::RenderWindow mainWindow(sf::VideoMode(800,600), "MusicMech", sf::Style::Default, settings);
+            sf::RenderWindow mainWindow(sf::VideoMode(ARENA_WIDTH,ARENA_HEIGHT), "MusicMech", sf::Style::Default, settings);
             Game g(&c);
             g.load();
             lm.run(mainWindow, g, c);

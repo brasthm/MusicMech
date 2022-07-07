@@ -20,6 +20,7 @@ Song::Song(const std::string& osuFile, std::vector<Mechanic*> &mechs) {
 
 void Song::play()
 {
+    music_.setVolume(50);
     music_.play();
 }
 
@@ -131,7 +132,7 @@ void Song::load(const std::string& osuFile, std::vector<Mechanic *> &mechs) {
 
         if (readnow) {
             std::vector<std::string> words = Utils::split(line, ',');
-            if (words.size() != 0) {
+            if (words.size() != 0 && words[0] != "\r") {
                 //std::cout << line << std::endl;
 
                 if (*parsing == "[TimingPoints]") {
@@ -164,4 +165,8 @@ void Song::load(const std::string& osuFile, std::vector<Mechanic *> &mechs) {
     std::cout << "  converted " << mechs.size() << " hit objects to mechanics" << std::endl;
     std::cout << "beatmap parsed!" << std::endl;
     file.close();
+}
+
+void Song::setTime(sf::Time time) {
+    music_.setPlayingOffset(time);
 }

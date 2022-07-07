@@ -30,8 +30,6 @@ public:
     Game(Client *client);
     void run(sf::RenderWindow &window, const std::string& roomID);
     void load();
-    static bool compareMech(Mechanic *m1, Mechanic *m2);
-
 };
 
 

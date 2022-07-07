@@ -32,6 +32,7 @@ public:
     int getDrawPriority() const;
     bool operator< (const Mechanic& mech) const;
     float getBeat() const;
+    float getActive() const;
 
 
     virtual std::string toString() { return ""; };
