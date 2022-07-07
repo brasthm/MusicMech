@@ -24,6 +24,9 @@ static constexpr float BASE_TOTEM_RADIUS = 10;
 static constexpr int NB_MAX_SOUND = 50;
 static constexpr int NB_MAX_MUSIC = 5;
 
+static constexpr int ARENA_WIDTH = 1000;
+static constexpr int ARENA_HEIGHT = 1000;
+
 // Server Info
 
 static const std::string SERVER_NAME = "MATCHMECHSERV";

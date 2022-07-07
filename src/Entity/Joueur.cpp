@@ -17,7 +17,7 @@ Joueur::Joueur() {
     shape_.setOutlineColor(sf::Color(sf::Color::White));
     shape_.setPointCount(100);
     shape_.setOrigin(radius_, radius_);
-    pos_.x = 0; pos_.y = 0; serv_pos_ = pos_;
+    pos_.x = ARENA_WIDTH/2.f; pos_.y = ARENA_HEIGHT/2.f; serv_pos_ = pos_;
     controlledByPlayer_ = false;
     speed_ = 700;
     active_ = false;

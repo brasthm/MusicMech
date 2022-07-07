@@ -36,14 +36,12 @@ Spread::Spread(float beat, float radius, int nbShare, float active, const Target
             approachColor = 0x79CE1B88;
         }
         else {
-            outlineColor = 0xDAFB93FF;
-            fillColor = 0x89C17EFF;
-            fillColorFailed = 0x427538FF;
+            outlineColor = 0xDAFB9388;
+            fillColor = 0x89C17E88;
+            fillColorFailed = 0x42753888;
             fillColorPlayerIndicator = 0xDAFB9300;
-            approachColor = 0x79CE1BFF;
+            approachColor = 0x79CE1B88;
         }
-
-        backColor_.setSpeed({0.5, 0.5, 0.5, 0.5});
     }
     else {
         outlineColor = 0xFFD5CB88;
@@ -51,9 +49,9 @@ Spread::Spread(float beat, float radius, int nbShare, float active, const Target
         fillColorFailed = 0x781F0B88;
         fillColorPlayerIndicator = 0xFFD5CB00;
         approachColor = 0xD3522788;
-
-        backColor_.setSpeed({0.5, 0.5, 0.5, 0.5});
     }
+
+    backColor_.setSpeed({0.1, 0.1, 0.1, 0.5});
 
     approachCircle_.setFillColor(approachColor);
     playerIndicator_.setOutlineColor(outlineColor);

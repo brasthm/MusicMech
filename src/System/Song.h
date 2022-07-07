@@ -37,6 +37,8 @@ public:
 	float getCurrentBeatLength();
 
 	float getCumulativeNBeats(int ms);
+
+	void setTime(sf::Time time);
 };
 
 #endif //MUSICMECH_CLIENT_SONG_H
