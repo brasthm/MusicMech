@@ -170,3 +170,68 @@ void Song::load(const std::string& osuFile, std::vector<Mechanic *> &mechs) {
 void Song::setTime(sf::Time time) {
     music_.setPlayingOffset(time);
 }
+
+void Song::pause() {
+    music_.pause();
+}
+
+void Song::addCheckpoint(float time, float beat) {
+    checkpoints_.emplace_back(time, beat);
+}
+
+int Song::getCheckpoint(float time) {
+    std::cout << "Checkpoint - "  << checkpoints_.size();
+    if(checkpoints_.empty())
+        return -1;
+
+    int i = 0;
+
+
+    while(i < checkpoints_.size() && time > checkpoints_[i].first) {
+        i++;
+    }
+
+    if(i!=0)
+        i--;
+
+    std::cout << " " << i << std::endl;
+
+    return i;
+}
+
+std::pair<float, float> Song::getCurrentCheckpoint(float time) {
+    int res = getCheckpoint(time);
+
+    if(res == -1)
+        return {0,0};
+
+    return checkpoints_[res];
+}
+
+std::pair<float, float> Song::getPreviousCheckpoint(float time) {
+    int res = getCheckpoint(time);
+
+    if(res == -1)
+        return {0,0};
+
+    if(res == 0)
+        return checkpoints_[0];
+
+    return checkpoints_[res-1];
+}
+
+std::pair<float, float> Song::getNextCheckpoint(float time) {
+    int res = getCheckpoint(time);
+
+    if(res == -1)
+        return {0,0};
+
+    if(res == checkpoints_.size() - 1)
+        return checkpoints_[checkpoints_.size() - 1];
+
+    return checkpoints_[res + 1];
+}
+
+void Song::resetCheckpoints() {
+    checkpoints_.clear();
+}

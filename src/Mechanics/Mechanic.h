@@ -18,6 +18,7 @@ protected:
     bool passed_;
     bool draw_;
     bool init_;
+    bool activate_;
     float active_;
     int drawPriority_;
 
@@ -33,6 +34,9 @@ public:
     bool operator< (const Mechanic& mech) const;
     float getBeat() const;
     float getActive() const;
+    bool isFailed() const;
+
+    virtual void reset(float beat);
 
 
     virtual std::string toString() { return ""; };

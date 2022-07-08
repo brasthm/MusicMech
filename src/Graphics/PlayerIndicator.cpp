@@ -33,6 +33,9 @@ PlayerIndicator::PlayerIndicator(sf::Vector2f pos,  sf::Vector2f offset, int nbT
 
 void PlayerIndicator::setFillColor(sf::Uint32 fillColor) {
     fillColor_ = sf::Color(fillColor);
+    for(int i = 0; i < nbTot_; i++) {
+        lights_[i].setFillColor(fillColor_);
+    }
 }
 
 
@@ -83,5 +86,8 @@ void PlayerIndicator::updateLight(int nb) {
 
 void PlayerIndicator::setOutlineColor(sf::Uint32 outlineColor) {
     outlineColor_ = sf::Color(outlineColor);
+    for(int i = 0; i < nbTot_; i++) {
+        lights_[i].setOutlineColor(outlineColor_);
+    }
 }
 

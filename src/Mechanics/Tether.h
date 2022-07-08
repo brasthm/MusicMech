@@ -16,6 +16,7 @@ class Tether : public Mechanic {
     sf::RectangleShape tether_, indicator_;
     ShiftColor borderColor_, backColor_, indicatorColor_;
     bool drawArrow_;
+    sf::Time timer_;
 
     bool inward_, continu_;
 
@@ -28,6 +29,7 @@ public:
     void onApproach(const sf::Time &elapsed, float currentBeat, float cuurentPart, EntityManager &em) override;
     void onPassed(const sf::Time &elapsed, float currentBeat, float currentPart, EntityManager &em) override;
     void onFade(const sf::Time &elapsed, float currentBeat, float currentPart, EntityManager &em) override;
+    void reset(float beat) override;
 };
 
 inline std::ostream& operator <<(std::ostream& stream, Tether& tower) {

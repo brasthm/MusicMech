@@ -84,7 +84,7 @@ void Client::sendPlayerData(sf::Int32 x, sf::Int32 y) {
     packetID_++;
 }
 
-bool Client::updateFromServerPlayerPosition(std::vector<Joueur> &joueurs) {
+int Client::updateFromServerPlayerPosition(std::vector<Joueur> &joueurs) {
     if(clientSocket_.recieve()) {
         sf::Uint8 state = 0;
 
@@ -95,13 +95,19 @@ bool Client::updateFromServerPlayerPosition(std::vector<Joueur> &joueurs) {
                 joueurs[i].setDataFromServer(clientSocket_.getRecievedPacket());
             }
         }
+        else if (state == 34) {
+            return 2;
+        }
+        else if (state == 35) {
+            return 3;
+        }
         else if(state == 33) {
-            return false;
+            return 1;
         }
 
     }
 
-    return true;
+    return 0;
 }
 
 bool Client::sendEndGame(const std::string &id) {
@@ -274,6 +280,46 @@ bool Client::requestLaunchGame(const std::string &id) {
     clientSocket_.setBlocking(true);
     sf::Packet p;
     sf::Uint8 state = 20;
+
+    p << state << challengeResponse_ << id;
+    clientSocket_.send(p, SERVER_IP, SERVER_LOBBY_PORT);
+
+    if(clientSocket_.recieve()) {
+        clientSocket_.getRecievedPacket() >> state;
+        if (state == 100) {
+            clientSocket_.setBlocking(false);
+            return false;
+        }
+    }
+
+    clientSocket_.setBlocking(false);
+    return true;
+}
+
+bool Client::sendPauseGame(const std::string &id) {
+    clientSocket_.setBlocking(true);
+    sf::Packet p;
+    sf::Uint8 state = 22;
+
+    p << state << challengeResponse_ << id;
+    clientSocket_.send(p, SERVER_IP, SERVER_LOBBY_PORT);
+
+    if(clientSocket_.recieve()) {
+        clientSocket_.getRecievedPacket() >> state;
+        if (state == 100) {
+            clientSocket_.setBlocking(false);
+            return false;
+        }
+    }
+
+    clientSocket_.setBlocking(false);
+    return true;
+}
+
+bool Client::sendResumeGame(const std::string &id) {
+    clientSocket_.setBlocking(true);
+    sf::Packet p;
+    sf::Uint8 state = 23;
 
     p << state << challengeResponse_ << id;
     clientSocket_.send(p, SERVER_IP, SERVER_LOBBY_PORT);

@@ -497,6 +497,44 @@ void Server::monitorLobby() {
                     else
                         state = 100;
                 }
+                else if(state == 22) { //Pause game
+                    std::string lobbyID;
+                    lobby.getRecievedPacket() >> lobbyID;
+
+                    int lobbyIndex = findLobbyById(lobbies, lobbyID);
+
+                    if(lobbyIndex < SERVER_NB_MAX_LOBBY && lobbyIndex >= 0 &&
+                       lobbies[lobbyIndex].status == LobbyStatus::LOBBY_PLAYING) {
+
+                        std::cout << "LOBBY : Game paused in lobby " << lobbies[lobbyIndex].id << std::endl<< std::endl;
+
+                        state = 34;
+                        packet << state;
+                        lobby.send(packet, lobby.getSender(), lobby.getSenderPort());
+                        sendRoomLobbyNotif(lobbyIndex, state, 1);
+                    }
+                    else
+                        state = 100;
+                }
+                else if(state == 23) { //Resume game
+                    std::string lobbyID;
+                    lobby.getRecievedPacket() >> lobbyID;
+
+                    int lobbyIndex = findLobbyById(lobbies, lobbyID);
+
+                    if(lobbyIndex < SERVER_NB_MAX_LOBBY && lobbyIndex >= 0 &&
+                       lobbies[lobbyIndex].status == LobbyStatus::LOBBY_PLAYING) {
+
+                        std::cout << "LOBBY : Game resume in lobby " << lobbies[lobbyIndex].id << std::endl<< std::endl;
+
+                        state = 35;
+                        packet << state;
+                        lobby.send(packet, lobby.getSender(), lobby.getSenderPort());
+                        sendRoomLobbyNotif(lobbyIndex, state, 1);
+                    }
+                    else
+                        state = 100;
+                }
                 else if(state == 40) { // Get lobby list
 
                     packet << state;
