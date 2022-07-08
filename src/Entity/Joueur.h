@@ -11,7 +11,6 @@
 
 class Joueur : public Entity {
 private:
-    sf::Vector2f serv_pos_;
     bool controlledByPlayer_;
     std::string name_;
 public:
