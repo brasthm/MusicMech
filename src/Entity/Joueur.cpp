@@ -107,3 +107,7 @@ void Joueur::setDataFromServer(sf::Packet &packet)  {
     serv_pos_.x = x;
     serv_pos_.y = y;
 }
+
+void Joueur::reset() {
+    debuff_.clense();
+}

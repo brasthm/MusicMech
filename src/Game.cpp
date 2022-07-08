@@ -1314,7 +1314,7 @@ void Game::load() {
 
     std::cout << "Mechanics number : " << mechanicList_.size() << std::endl;
 
-    //song_.setTime(sf::seconds(187));
+    song_.setTime(sf::seconds(173));
 
     std::sort(mechanicList_.begin(), mechanicList_.end(),
               [] (Mechanic* m1, Mechanic* m2) {return *m1 < *m2;});
@@ -1423,6 +1423,10 @@ void Game::reset(float beat) {
 
     for(auto & totem:totems_) {
         totem.setActive(false);
+    }
+
+    for(auto & joueur:joueurs_) {
+        joueur.reset();
     }
 }
 
