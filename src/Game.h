@@ -30,6 +30,7 @@ public:
     Game(Client *client);
     void run(sf::RenderWindow &window, const std::string& roomID);
     void load();
+    void reset(float beat);
 };
 
 

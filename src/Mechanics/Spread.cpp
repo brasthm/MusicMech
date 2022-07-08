@@ -25,43 +25,8 @@ Spread::Spread(float beat, float radius, int nbShare, float active, const Target
     active_ = active;
     newRadius_ = radius_;
 
-    sf::Uint32 outlineColor=0, fillColorPlayerIndicator=0, fillColor=0, fillColorFailed=0, approachColor=0;
+    setColor();
 
-    if(isShare_) {
-        if(target_.timing == TARGET_FOLLOW) {
-            outlineColor = 0xDAFB9388;
-            fillColor = 0x89CA7E88;
-            fillColorFailed = 0x42753888;
-            fillColorPlayerIndicator = 0xDAFB9300;
-            approachColor = 0x79CE1B88;
-        }
-        else {
-            outlineColor = 0xDAFB9388;
-            fillColor = 0x89C17E88;
-            fillColorFailed = 0x42753888;
-            fillColorPlayerIndicator = 0xDAFB9300;
-            approachColor = 0x79CE1B88;
-        }
-    }
-    else {
-        outlineColor = 0xFFD5CB88;
-        fillColor = 0xB64F38FF;
-        fillColorFailed = 0x781F0B88;
-        fillColorPlayerIndicator = 0xFFD5CB00;
-        approachColor = 0xD3522788;
-    }
-
-    backColor_.setSpeed({0.1, 0.1, 0.1, 0.5});
-
-    approachCircle_.setFillColor(approachColor);
-    playerIndicator_.setOutlineColor(outlineColor);
-    playerIndicator_.setFillColor(fillColorPlayerIndicator);
-    backColor_.addTarget("good", fillColor);
-    backColor_.addTarget("failed", fillColorFailed);
-    base_.setOutlineColor(sf::Color(outlineColor));
-
-
-    backColor_.initCurrent("failed");
 
     base_.setRadius(radius_);
 
@@ -173,4 +138,56 @@ void Spread::updatePosition(EntityManager &entityManager) {
     base_.setPosition(position_.x - radius_, position_.y - radius_);
     approachCircle_.setCenter(position_);
     playerIndicator_.updatePosition(position_);
+}
+
+void Spread::reset(float beat) {
+
+    setColor();
+
+
+    base_.setRadius(radius_);
+    base_.setPosition(position_.x - radius_, position_.y - radius_);
+    approachCircle_.setDistance(radius_ + 10);
+
+
+    Mechanic::reset(beat);
+}
+
+void Spread::setColor() {
+    sf::Uint32 outlineColor=0, fillColorPlayerIndicator=0, fillColor=0, fillColorFailed=0, approachColor=0;
+
+    if(isShare_) {
+        if(target_.timing == TARGET_FOLLOW) {
+            outlineColor = 0xDAFB9388;
+            fillColor = 0x89CA7E88;
+            fillColorFailed = 0x42753888;
+            fillColorPlayerIndicator = 0xDAFB9300;
+            approachColor = 0x79CE1B88;
+        }
+        else {
+            outlineColor = 0xDAFB9388;
+            fillColor = 0x89C17E88;
+            fillColorFailed = 0x42753888;
+            fillColorPlayerIndicator = 0xDAFB9300;
+            approachColor = 0x79CE1B88;
+        }
+    }
+    else {
+        outlineColor = 0xFFD5CB88;
+        fillColor = 0xB64F38FF;
+        fillColorFailed = 0x781F0B88;
+        fillColorPlayerIndicator = 0xFFD5CB00;
+        approachColor = 0xD3522788;
+    }
+
+    backColor_.setSpeed({0.1, 0.1, 0.1, 0.5});
+
+    approachCircle_.setFillColor(approachColor);
+    playerIndicator_.setOutlineColor(outlineColor);
+    playerIndicator_.setFillColor(fillColorPlayerIndicator);
+    backColor_.addTarget("good", fillColor);
+    backColor_.addTarget("failed", fillColorFailed);
+
+    backColor_.initCurrent("failed");
+    base_.setOutlineColor(sf::Color(outlineColor));
 }

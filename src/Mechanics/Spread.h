@@ -23,6 +23,7 @@ class Spread : public Mechanic {
     sf::Vector2f position_;
 
     void updatePosition(EntityManager &entityManager);
+    void setColor();
 
 
 public:
@@ -33,6 +34,7 @@ public:
     void onPassed(const sf::Time &elapsed, float currentBeat, float currentPart, EntityManager &entities) override;
     void onFade(const sf::Time &elapsed, float currentBeat, float currentPart, EntityManager &entities) override;
     void onInit(const sf::Time &elapsed, float currentBeat, float currentPart, EntityManager &entities) override;
+    void reset(float beat) override;
 };
 
 

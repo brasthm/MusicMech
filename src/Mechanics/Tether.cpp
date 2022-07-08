@@ -71,12 +71,20 @@ void Tether::onCheck(const sf::Time &elapsed, float currentBeat, float currentPa
     else good = Utils::distance(pos1_, pos2_) >= minDist_;
 
     if(good) {
+        timer_ = sf::seconds(0);
         passed_ = true;
         borderColor_.setCurrentTarget("passed");
         backColor_.setCurrentTarget("passed");
         indicatorColor_.setCurrentTarget("passed");
     }
     else {
+        if(continu_) {
+            float mercy = active_ > 16 ? 4:2;
+            if(currentBeat > beat_ - active_ + mercy)
+                timer_ += elapsed;
+            if(timer_ >= sf::seconds(1))
+                checked_ = true;
+        }
         passed_ = false;
         borderColor_.setCurrentTarget("failed");
         backColor_.setCurrentTarget("failed");
@@ -175,5 +183,15 @@ void Tether::onFade(const sf::Time &elapsed, float currentBeat, float currentPar
     borderColor_.setCurrentColor(3, 255*(1-currentPart));
     indicatorColor_.setCurrentColor(3, 255*(1-currentPart));
     drawArrow_ = false;
+}
+
+void Tether::reset(float beat) {
+    backColor_.setCurrentColor(3, 255);
+    borderColor_.setCurrentColor(3, 255);
+    indicatorColor_.setCurrentColor(3, 255);
+
+    timer_ = sf::seconds(0);
+
+    Mechanic::reset(beat);
 }
 

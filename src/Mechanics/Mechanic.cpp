@@ -14,6 +14,7 @@ Mechanic::Mechanic() {
     played_ = checked_ = passed_ = draw_ = init_ = false;
     active_ = 4;
     drawPriority_ = 0;
+    activate_ = true;
 }
 
 void Mechanic::playSound() {
@@ -28,6 +29,8 @@ void Mechanic::setSoundName(const std::string& name) {
 }
 
 void Mechanic::update(const sf::Time &elapsed, float currentBeat, EntityManager &entities) {
+    if(!activate_) return;
+
     float n = std::abs(currentBeat - beat_);
     float currentPart = n - std::floor(n);
 
@@ -80,7 +83,8 @@ void Mechanic::update(const sf::Time &elapsed, float currentBeat, EntityManager 
 }
 
 void Mechanic::draw(const sf::Time &elapsed, sf::RenderWindow &window) {
-    onDraw(elapsed, window);
+    if(activate_)
+        onDraw(elapsed, window);
 }
 
 int Mechanic::getDrawPriority() const {
@@ -100,4 +104,17 @@ float Mechanic::getBeat() const {
 float Mechanic::getActive() const {
     return active_;
 }
+
+bool Mechanic::isFailed() const {
+    return checked_ && !passed_;
+}
+
+void Mechanic::reset(float beat) {
+    checked_ = false;
+    init_ = false;
+    played_ = false;
+
+    activate_ = beat_ >= beat;
+}
+
 

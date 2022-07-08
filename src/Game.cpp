@@ -49,11 +49,14 @@ void Game::run(sf::RenderWindow &window, const std::string& roomID) {
     }
 
 
+    bool godmode = false;
+
+
     sf::Clock fps, send;
 
     int current = client_->getIndex();
 
-    sf::Text fps_text, beat_text;
+    sf::Text fps_text, beat_text, godmode_text;
 
     fps_text.setFont(RessourceLoader::getFont("font/Roboto-Regular.ttf"));
     fps_text.setCharacterSize(30);
@@ -63,6 +66,11 @@ void Game::run(sf::RenderWindow &window, const std::string& roomID) {
 
     beat_text.setPosition(0,32);
 
+    godmode_text.setFont(RessourceLoader::getFont("font/Roboto-Regular.ttf"));
+    godmode_text.setCharacterSize(30);
+
+    godmode_text.setPosition(0,32*2);
+
 
     joueurs_[current].setActive(true);
     joueurs_[current].setControlledByPlayer(true);
@@ -70,75 +78,148 @@ void Game::run(sf::RenderWindow &window, const std::string& roomID) {
 
     std::cout << "Current : " << current << std::endl;
 
+    sf::Texture texture;
 
     sf::Clock displayTest;
 
     song_.play();
 
-    bool exit=false, interupted=false;
+    bool exit=false, interupted=false, sent=false, failed = false, resume=false;
+
+    window.setKeyRepeatEnabled(false);
     while (!exit)
     {
-
-        sf::Event event{};
-        while (window.pollEvent(event))
-        {
-            if (event.type == sf::Event::Closed)
-                exit=true;
-        }
-
         sf::Time currentPos = song_.getCurrentTime();
         float currentBeat_float = song_.getCumulativeNBeats(currentPos.asMilliseconds());
 
         sf::Time elapsedTime = fps.getElapsedTime();
         fps.restart();
 
+        sf::Event event{};
+        while (window.pollEvent(event))
+        {
+            if (event.type == sf::Event::Closed)
+                exit=true;
+            if(event.type == sf::Event::KeyPressed) {
+                if(event.key.code == sf::Keyboard::G) {
+                    godmode = true;
+                }
+                if(event.key.code == sf::Keyboard::H) {
+                    godmode = false;
+                }
+
+
+                if(event.key.code == sf::Keyboard::V) {
+                    auto checkpoint = song_.getPreviousCheckpoint(currentPos.asSeconds());
+                    reset(checkpoint.second);
+                    song_.setTime(sf::seconds(checkpoint.first));
+                }
+                if(event.key.code == sf::Keyboard::B) {
+                    auto checkpoint = song_.getCurrentCheckpoint(currentPos.asSeconds());
+                    reset(checkpoint.second);
+                    song_.setTime(sf::seconds(checkpoint.first));
+                }
+                if(event.key.code == sf::Keyboard::N) {
+                    auto checkpoint = song_.getNextCheckpoint(currentPos.asSeconds());
+                    reset(checkpoint.second);
+                    song_.setTime(sf::seconds(checkpoint.first));
+                }
+
+            }
+        }
+
+        godmode_text.setString(godmode ? "Godmode : true":"Godmode : false");
+
         fps_text.setString(std::to_string(1.f/elapsedTime.asSeconds()));
         beat_text.setString(std::to_string(currentBeat_float));
 
+        bool newfailed = false;
 
-        for(int i = 0; i < joueurs_.size(); i++) {
-            joueurs_[i].update(elapsedTime, currentBeat_float, window.hasFocus());
-        }
+        if(!failed) {
+            for(auto & joueur : joueurs_) {
+                joueur.update(elapsedTime, currentBeat_float, window.hasFocus());
+            }
 
-        for(int  i = 0; i < NB_MAX_TOTEM; i++) {
-            totems_[i].update(elapsedTime, currentBeat_float, window.hasFocus());
-        }
+            for(auto & totem : totems_) {
+                totem.update(elapsedTime, currentBeat_float, window.hasFocus());
+            }
 
-        for(int i = 0; i < mechanicList_.size(); i++) {
-            mechanicList_[i]->update(elapsedTime, currentBeat_float, em_);
-        }
+            for(auto & mech : mechanicList_) {
+                mech->update(elapsedTime, currentBeat_float, em_);
+                newfailed = newfailed || mech->isFailed();
+            }
 
-        if(send.getElapsedTime().asMilliseconds() > CLIENT_TICK_MS) {
-            client_->sendPlayerData((int)joueurs_[current].getPosX(), (int)joueurs_[current].getPosY());
-            send.restart();
-        }
-
-        if(sf::Keyboard::isKeyPressed(sf::Keyboard::R)) {
-            displayTest.restart();
-            load();
+            if(send.getElapsedTime().asMilliseconds() > CLIENT_TICK_MS) {
+                client_->sendPlayerData((int)joueurs_[current].getPosX(), (int)joueurs_[current].getPosY());
+                send.restart();
+            }
         }
 
         if(!exit) {
-            interupted = !client_->updateFromServerPlayerPosition(joueurs_);
+            int res = client_->updateFromServerPlayerPosition(joueurs_);
+            interupted = res == 1;
+            newfailed = newfailed || res == 2;
+            if(failed) resume = resume || res == 3;
             exit = interupted;
         }
 
         window.clear(sf::Color(0x2A2431FF));
 
-        for(int i = 0; i < mechanicList_.size(); i++) {
-            mechanicList_[i]->draw(elapsedTime, window);
+        if(!failed) {
+            for(int i = 0; i < mechanicList_.size(); i++) {
+                mechanicList_[i]->draw(elapsedTime, window);
+            }
+
+            for(int  i = 0; i < NB_MAX_TOTEM; i++) {
+                totems_[i].draw(window);
+            }
+
+            for(int i = 0; i < NB_MAX_JOUEURS; i++) {
+                joueurs_[i].draw(window);
+            }
+        }
+        else {
+            sf::RectangleShape screen;
+            screen.setTexture(&texture);
+            screen.setSize({(float)texture.getSize().x, (float)texture.getSize().y});
+            window.draw(screen);
         }
 
-        for(int  i = 0; i < NB_MAX_TOTEM; i++) {
-            totems_[i].draw(window);
+        if(!failed) failed = !godmode && newfailed;
+        if(failed) {
+            if(!sent) {
+                song_.pause();
+                std::cout << "failed" << std::endl;
+                client_->sendPauseGame(roomID);
+                sent = true;
+
+                texture.create(window.getSize().x, window.getSize().y);
+                texture.update(window);
+
+
+                auto checkpoint = song_.getCurrentCheckpoint(currentPos.asSeconds());
+                std::cout << checkpoint.first << " " << checkpoint.second << std::endl;
+
+                reset(checkpoint.second);
+                song_.setTime(sf::seconds(checkpoint.first));
+            }
+
+            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Return)) {
+                client_->sendResumeGame(roomID);
+                resume = true;
+            }
         }
 
-        for(int i = 0; i < NB_MAX_JOUEURS; i++) {
-            joueurs_[i].draw(window);
+        if(resume) {
+            sent = false;
+            failed = false;
+            song_.play();
+            resume = false;
         }
 
         window.draw(fps_text);
         window.draw(beat_text);
+        window.draw(godmode_text);
         window.display();
     }
 
@@ -157,6 +238,19 @@ void Game::load() {
         delete mechanicList_[i];
     }
     mechanicList_.clear();
+
+    song_.resetCheckpoints();
+    song_.addCheckpoint(0,0);
+    song_.addCheckpoint(18,48);
+    song_.addCheckpoint(30,78);
+    song_.addCheckpoint(44,112);
+    song_.addCheckpoint(58,140);
+    song_.addCheckpoint(89,212);
+    song_.addCheckpoint(104,248);
+    song_.addCheckpoint(120,280);
+    song_.addCheckpoint(133,308);
+    song_.addCheckpoint(146,344);
+    song_.addCheckpoint(173,412);
 
 
     mechanicList_.emplace_back(new Tether(15,
@@ -590,8 +684,8 @@ void Game::load() {
                                           Target(TARGET_POS, {500,500})));
 
 
-    mechanicList_.emplace_back(new ActivateTotem(208, Target(TARGET_ENTITY, TARGET_TOTEMS, 0), false));
-    mechanicList_.emplace_back(new ActivateTotem(208, Target(TARGET_ENTITY, TARGET_TOTEMS, 1), false));
+    mechanicList_.emplace_back(new ActivateTotem(212, Target(TARGET_ENTITY, TARGET_TOTEMS, 0), false));
+    mechanicList_.emplace_back(new ActivateTotem(212, Target(TARGET_ENTITY, TARGET_TOTEMS, 1), false));
 
 
     // COUPLET 1
@@ -787,7 +881,7 @@ void Game::load() {
 
     // INTRO
 
-    for(int ii = 0; ii < 28; ii++) {
+    for(int ii = 0; ii < 26; ii++) {
         auto i = static_cast<float>(ii);
         mechanicList_.emplace_back(new Spread(282+i+0.5f, 100, 1, 4,
                                               Target(TARGET_POS,
@@ -811,15 +905,15 @@ void Game::load() {
     mechanicList_.emplace_back(new ActivateTotem(308, Target(TARGET_ENTITY, TARGET_TOTEMS, 3), true));
 
 
-    mechanicList_.emplace_back(new Tether(344,
+    mechanicList_.emplace_back(new Tether(342,
                                           Target(TARGET_ENTITY, TARGET_PLAYERS, 0),
                                           Target(TARGET_ENTITY, TARGET_TOTEMS, 2),
-                                          300, 36, true, true));
+                                          300, 34, true, true));
 
-    mechanicList_.emplace_back(new Tether(344,
+    mechanicList_.emplace_back(new Tether(342,
                                           Target(TARGET_ENTITY, TARGET_PLAYERS, 1),
                                           Target(TARGET_ENTITY, TARGET_TOTEMS, 3),
-                                          300, 36, true, true));
+                                          300, 34, true, true));
 
     mechanicList_.emplace_back(new Spread(312, 150, 2, 4,
                                           Target(TARGET_ENTITY, TARGET_PLAYERS, 0, TARGET_FOLLOW)));
@@ -1226,7 +1320,10 @@ void Game::load() {
               [] (Mechanic* m1, Mechanic* m2) {return *m1 < *m2;});
 }
 
-/*void Game::load() {
+
+/*
+
+void Game::load() {
 
     song_.load("Beatmaps/1772712 DECO 27 - Ai Kotoba IV feat. Hatsune Miku/DECO27 - Ai Kotoba IV feat. Hatsune Miku ([Hatsune Miku]) [Daisuki].osu", mechanicList_);
     for(int i = 0; i < mechanicList_.size(); i++) {
@@ -1264,10 +1361,11 @@ void Game::load() {
     }
 
     mechanicList_.emplace_back(new Spread(5, 100, 1, 4, Target(TARGET_RANDOM, TARGET_PLAYERS, TARGET_FOLLOW)));
-    mechanicList_.emplace_back(new Tether(70,
+
+     mechanicList_.emplace_back(new Tether(70,
                                           Target(TARGET_ENTITY, TARGET_PLAYERS, 0),
                                           Target(TARGET_ENTITY, TARGET_PLAYERS, 1),
-                                          300, 40, true, true));
+                                          300, 70, true, true));
 
     mechanicList_.emplace_back(new Tether(21,
                                           Target(TARGET_ENTITY, TARGET_PLAYERS, 0),
@@ -1305,14 +1403,29 @@ void Game::load() {
                                           Target(TARGET_FURTHEST, TARGET_TOTEMS, 0, new Target(TARGET_ENTITY, TARGET_PLAYERS, 0), TARGET_ONINIT),
                                           100, 4, true, false));
 
-    std::sort(mechanicList_.begin(), mechanicList_.end(), compareMech);
-}*/
+
+
+    std::sort(mechanicList_.begin(), mechanicList_.end(),
+              [] (Mechanic* m1, Mechanic* m2) {return *m1 < *m2;});
+}
+     */
 
 Game::~Game() {
     for(int i = 0; i < mechanicList_.size(); i++) {
         delete mechanicList_[i];
     }
 }
+
+void Game::reset(float beat) {
+    for(auto & i : mechanicList_) {
+        i->reset(beat);
+    }
+
+    for(auto & totem:totems_) {
+        totem.setActive(false);
+    }
+}
+
 
 
 
