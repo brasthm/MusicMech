@@ -110,17 +110,17 @@ void Game::run(sf::RenderWindow &window, const std::string& roomID) {
 
 
                 if(event.key.code == sf::Keyboard::V) {
-                    auto checkpoint = song_.getPreviousCheckpoint(currentPos.asSeconds());
+                    auto checkpoint = song_.getPreviousCheckpoint(currentBeat_float);
                     reset(checkpoint.second);
                     song_.setTime(sf::seconds(checkpoint.first));
                 }
                 if(event.key.code == sf::Keyboard::B) {
-                    auto checkpoint = song_.getCurrentCheckpoint(currentPos.asSeconds());
+                    auto checkpoint = song_.getCurrentCheckpoint(currentBeat_float);
                     reset(checkpoint.second);
                     song_.setTime(sf::seconds(checkpoint.first));
                 }
                 if(event.key.code == sf::Keyboard::N) {
-                    auto checkpoint = song_.getNextCheckpoint(currentPos.asSeconds());
+                    auto checkpoint = song_.getNextCheckpoint(currentBeat_float);
                     reset(checkpoint.second);
                     song_.setTime(sf::seconds(checkpoint.first));
                 }
@@ -197,7 +197,7 @@ void Game::run(sf::RenderWindow &window, const std::string& roomID) {
                 texture.update(window);
 
 
-                auto checkpoint = song_.getCurrentCheckpoint(currentPos.asSeconds());
+                auto checkpoint = song_.getCurrentCheckpoint(currentBeat_float);
                 std::cout << checkpoint.first << " " << checkpoint.second << std::endl;
 
                 reset(checkpoint.second);
