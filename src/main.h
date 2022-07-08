@@ -38,8 +38,8 @@ static constexpr unsigned short SERVER_ADMIN_PORT = 54000;
 static constexpr unsigned short SERVER_CONNECT_PORT = 54001;
 static constexpr unsigned short SERVER_GAME_PORT = 54002;
 static constexpr unsigned short SERVER_LOBBY_PORT = 54003;
-static constexpr int SERVER_TICK_MS = 100;
-static constexpr int CLIENT_TICK_MS = 100;
+static constexpr int SERVER_TICK_MS = 50;
+static constexpr int CLIENT_TICK_MS = 50;
 static constexpr int SERVER_SLEEP = 10;
 
 
