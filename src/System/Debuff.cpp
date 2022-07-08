@@ -50,3 +50,7 @@ void Debuff::apply(DebuffType type, float end) {
 DebuffType Debuff::type() {
     return type_;
 }
+
+void Debuff::clense() {
+    type_ = DEBUFF_NONE;
+}

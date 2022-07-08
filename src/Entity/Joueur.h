@@ -19,6 +19,7 @@ public:
     void draw(sf::RenderWindow &window) override;
     void setControlledByPlayer(bool b) {controlledByPlayer_=b;};
     void setDataFromServer(sf::Packet &packet);
+    void reset();
 };
 
 
