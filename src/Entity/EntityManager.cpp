@@ -61,7 +61,7 @@ void EntityManager::addTotem(Entity *totem) {
 
 sf::Vector2f EntityManager::getPosition(Target &target) {
     Entity *en = getEntity(target);
-    return en == nullptr ? target.pos:en->getPos();
+    return en == nullptr ? target.pos:en->getServerPos();
 }
 
 int EntityManager::getRandomSequence(int n) {
