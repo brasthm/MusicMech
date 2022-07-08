@@ -187,7 +187,7 @@ int Song::getCheckpoint(float time) {
     int i = 0;
 
 
-    while(i < checkpoints_.size() && time > checkpoints_[i].first) {
+    while(i < checkpoints_.size() && time > checkpoints_[i].second) {
         i++;
     }
 

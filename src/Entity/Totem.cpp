@@ -45,6 +45,8 @@ void Totem::update(sf::Time elapsed, float beat, bool hasFocus) {
             if (!Utils::sameSign(newDiffY, diffY))
                 pos_.y = targetPos_.y;
         }
+
+        serv_pos_ = pos_;
     }
 }
 
