@@ -30,6 +30,9 @@ public:
     void onPassed(const sf::Time &elapsed, float currentBeat, float currentPart, EntityManager &em) override;
     void onFade(const sf::Time &elapsed, float currentBeat, float currentPart, EntityManager &em) override;
     void reset(float beat) override;
+
+    std::string toString() override;
+
 };
 
 inline std::ostream& operator <<(std::ostream& stream, Tether& tower) {

@@ -13,3 +13,10 @@ ActivateTotem::ActivateTotem(float beat, const Target& target, bool val) : targe
 void ActivateTotem::onPassed(const sf::Time &elapsed, float currentBeat, float currentPart, EntityManager &entities) {
     entities.setActive(target_, val_);
 }
+
+std::string ActivateTotem::toString() {
+    std::string res =  "ACTIVATE," + std::to_string(beat_) + "," + std::to_string(val_) + ",";
+    res += target_.to_string();
+
+    return res;
+}

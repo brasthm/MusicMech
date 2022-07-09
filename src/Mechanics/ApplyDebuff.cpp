@@ -14,3 +14,12 @@ ApplyDebuff::ApplyDebuff(float beat, const Target& target, DebuffType type, floa
 void ApplyDebuff::onPassed(const sf::Time &elapsed, float currentBeat, float currentPart, EntityManager &entities) {
     entities.applyDebuff(target_, type_, end_);
 }
+
+std::string ApplyDebuff::toString() {
+    std::string res =  "DEBUFF," + std::to_string(beat_) + "," + std::to_string(type_) + ","
+    + std::to_string(end_-beat_) + ",";
+
+    res += target_.to_string();
+
+    return res;
+}
