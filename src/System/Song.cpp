@@ -12,7 +12,10 @@
 #include "RessourceLoader.h"
 
 #include "../Mechanics/Spread.h"
-
+#include "../Mechanics/Tether.h"
+#include "../Mechanics/ApplyDebuff.h"
+#include "../Mechanics/MoveEntity.h"
+#include "../Mechanics/ActivateTotem.h"
 
 Song::Song(const std::string& osuFile, std::vector<Mechanic*> &mechs) {
     load(osuFile, mechs);
@@ -94,12 +97,19 @@ void Song::load(const std::string& osuFile, std::vector<Mechanic *> &mechs) {
         return;
     }
 
+
+    timingPoints_.clear();
+    checkpoints_.clear();
+    for(auto &mech:mechs)
+        delete mech;
+    mechs.clear();
+
     // parse osu file
 
     std::vector<std::string> toParse;
     toParse.emplace_back("AudioFilename:");
     toParse.emplace_back("[TimingPoints]");
-    toParse.emplace_back("[HitObjects]");
+    toParse.emplace_back("[Objects]");
     auto parsing = toParse.begin();
 
     std::string line;
@@ -117,13 +127,13 @@ void Song::load(const std::string& osuFile, std::vector<Mechanic *> &mechs) {
         if (line.rfind(*parsing, 0) == 0)  // if line starts with *parsing
         {
             if (*parsing == "AudioFilename:") {
-                std::string audioFile = Utils::trim(Utils::split(line, ':')[1]);
-                std::filesystem::path audioPath = std::filesystem::path(osuPath).parent_path() / audioFile;
+                audioFile_ = Utils::trim(Utils::split(line, ':')[1]);
+                std::filesystem::path audioPath = std::filesystem::path(osuPath).parent_path() / audioFile_;
                 if (!music_.openFromFile(audioPath.string()))
-                    std::cout << "Error: could not open music file " << audioFile << std::endl;
+                    std::cout << "Error: could not open music file " << audioFile_ << std::endl;
                 parsing++;
             }
-            else if (*parsing == "[TimingPoints]" || *parsing == "[HitObjects]") {
+            else if (*parsing == "[TimingPoints]" || *parsing == "[Objects]") {
                 std::cout << "parsing " << *parsing << std::endl;
                 readnow = true;
                 continue;
@@ -136,9 +146,8 @@ void Song::load(const std::string& osuFile, std::vector<Mechanic *> &mechs) {
                 //std::cout << line << std::endl;
 
                 if (*parsing == "[TimingPoints]") {
-                    float beatOffset = std::stoi(words[0]);
+                    float beatOffset = std::stof(words[0]);
                     float beatLength = std::stof(words[1]);
-                    int meter        = std::stoi(words[2]);
                     int uninherited  = std::stoi(words[6]);
 
                     if (uninherited == 1)
@@ -148,16 +157,84 @@ void Song::load(const std::string& osuFile, std::vector<Mechanic *> &mechs) {
                         currentTimingPoint_ = timingPoints_.begin();
                     }
                 }
-                else if (*parsing == "[HitObjects]") {
-                    float x, y, time, type;
-                    x = std::stof(words[0]);
-                    y = std::stof(words[1]);
-                    time = std::stof(words[2]);
-                    type = std::stof(words[3]);
-                    //std::cout << x << ' ' << y << ' ' << time << ' ' << type << std::endl;
+                else if (*parsing == "[Checkpoints]") {
+                    float timestamp = std::stof(words[0]);
+                    float beat = std::stof(words[1]);
 
-                    mechs.emplace_back(new Spread(getCumulativeNBeats(time), 70, 1, 4, Target(TARGET_POS, {x, y})));
-                    //std::cout << mechs.back()->toString() << std::endl;
+                    checkpoints_.emplace_back(timestamp, beat);
+                }
+                else if (*parsing == "[Objects]") {
+                    if(words[0] == "SPREAD") {
+                        float beat, active, radius;
+                        int nbShare;
+
+                        beat = std::stof(words[1]);
+                        nbShare = std::stoi(words[2]);
+                        radius = std::stof(words[3]);
+                        active = std::stof(words[4]);
+
+                        Target t;
+
+                        t.parse(5, words);
+                        mechs.emplace_back(new Spread(beat, radius, nbShare, active, t));
+                    }
+                    else if(words[0] == "TETHER") {
+                        float beat, minDist, active;
+                        bool inward, continu;
+
+                        Target t1, t2;
+
+                        beat = std::stof(words[1]);
+                        minDist = std::stof(words[2]);
+                        active = std::stof(words[3]);
+
+                        inward = std::stoi(words[4]) == 1;
+                        continu = std::stoi(words[5]) == 1;
+
+                        int off = t1.parse(6, words);
+                        t2.parse(off, words);
+
+                        mechs.emplace_back(new Tether(beat, t1, t2, minDist, active, inward, continu));
+                    }
+                    else if(words[0] == "MOVE") {
+                        float beat, speed;
+                        bool isInstant;
+
+                        beat = std::stof(words[1]);
+                        speed = std::stof(words[2]);
+                        isInstant = std::stoi(words[3]) == 1;
+
+                        Target entity, target;
+
+                        int off = entity.parse(4, words);
+                        target.parse(off, words);
+
+                        mechs.emplace_back(new MoveEntity(beat, entity, target, speed, isInstant));
+                    }
+                    else if(words[0] == "DEBUFF") {
+                        float beat, duration;
+                        DebuffType debufftype;
+
+                        Target t;
+
+                        beat = std::stof(words[1]);
+                        debufftype = static_cast<DebuffType>(std::stoi(words[2]));
+                        duration = std::stof(words[3]);
+                        t.parse(4, words);
+
+                        mechs.emplace_back(new ApplyDebuff(beat, t, debufftype, duration));
+                    }
+                    else if(words[0] == "ACTIVATE") {
+                        float beat;
+                        bool val;
+                        Target t;
+
+                        beat = std::stof(words[1]);
+                        val = std::stoi(words[2]) == 1;
+                        t.parse(3, words);
+
+                        mechs.emplace_back(new ActivateTotem(beat, t, val));
+                    }
                 }
             }
         }
@@ -234,4 +311,22 @@ std::pair<float, float> Song::getNextCheckpoint(float time) {
 
 void Song::resetCheckpoints() {
     checkpoints_.clear();
+}
+
+void Song::save(const std::string& filename, const std::vector<Mechanic *> &mechs) {
+    std::ofstream file(filename);
+
+    file << "AudioFilename: " << audioFile_ << std::endl;
+    file << "[TimingPoints]" << std::endl;
+    for(auto & timingPoint : timingPoints_) {
+        file << timingPoint.beatOffset << "," << timingPoint.beatLength << ",4,2,1,60,1,0" << std::endl;
+    }
+    file << "[Checkpoints]" << std::endl;
+    for(auto &checkpoint:checkpoints_) {
+        file << checkpoint.first << "," << checkpoint.second << std::endl;
+    }
+    file << "[Objects]" << std::endl;
+    for(auto &mech:mechs)
+        file << mech->toString() << std::endl;
+
 }

@@ -195,3 +195,14 @@ void Tether::reset(float beat) {
     Mechanic::reset(beat);
 }
 
+std::string Tether::toString() {
+    std::string res;
+
+    res = "TETHER," + std::to_string(beat_) + "," + std::to_string(minDist_) + "," +
+            std::to_string(active_) + "," + std::to_string(inward_) + "," + std::to_string(continu_) + ",";
+
+    res += anchor1_.to_string() + "," + anchor2_.to_string();
+
+    return res;
+}
+

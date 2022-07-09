@@ -191,3 +191,14 @@ void Spread::setColor() {
     backColor_.initCurrent("failed");
     base_.setOutlineColor(sf::Color(outlineColor));
 }
+
+std::string Spread::toString() {
+    std::string res;
+
+    res = "SPREAD," + std::to_string(beat_) + "," + std::to_string(nbShare_) + "," +
+            std::to_string(radius_) + "," + std::to_string(active_) + ",";
+
+    res += target_.to_string();
+
+    return res;
+}

@@ -50,6 +50,39 @@ Target::Target(const Target &t) {
     target = t.target != nullptr ? new Target(*t.target) : nullptr;
 }
 
+std::string Target::to_string() const {
+    std::string res;
+    res = std::to_string(timing) + "," + std::to_string(type) + "," +std::to_string(team) +
+            "," + std::to_string(pos.x) + "," + std::to_string(pos.y) + "," +  std::to_string(id) + ",";
+
+    if(target == nullptr)
+        res += "NULL";
+    else
+        res += "TARGET," + target->to_string();
+    return res;
+}
+
+Target::Target() = default;
+
+int Target::parse(int offset, const std::vector<std::string> &words) {
+    timing = static_cast<TargetTiming>(std::stoi(words[offset]));
+    type = static_cast<TargetType>(std::stoi(words[offset+1]));
+    team = static_cast<TargetTeam>(std::stoi(words[offset+2]));
+    pos.x = std::stof(words[offset+3]);
+    pos.y = std::stof(words[offset+4]);
+    id = std::stoi(words[offset+5]);
+
+    if(words[offset+6] == "NULL") {
+        target = nullptr;
+    }
+    else {
+        target = new Target();
+        return target->parse(offset+7, words);
+    }
+
+    return offset + 7;
+}
+
 
 void EntityManager::addPlayer(Entity *player) {
     players_.push_back(player);

@@ -105,6 +105,12 @@ int main() {
             lm.run(mainWindow, g, c);
 
         }
+        else if(cmd == "save") {
+            Game g(&c);
+            g.load();
+            g.save("[2P] DECO27 - Ai Kotoba IV feat. Hatsune Miku.mm");
+
+        }
         else if (cmd == "load") {
             std::vector<Mechanic*> mechanicList;
             Song song = Song("Beatmaps/546820 YUC'e - Future Candy/YUC'e - Future Candy (Nathan) [Insane].osu", mechanicList);

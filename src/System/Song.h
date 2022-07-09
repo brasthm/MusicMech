@@ -25,6 +25,7 @@ private:
 	std::vector<TIMING_POINT> timingPoints_;
 	std::vector<TIMING_POINT>::iterator currentTimingPoint_;
 	std::vector<std::pair<float, float>> checkpoints_;
+    std::string audioFile_;
 
 
 	int getCheckpoint(float time);
@@ -36,6 +37,9 @@ public:
 	void load(const std::string& osuFile, std::vector<Mechanic*> &mech);
 	sf::Time getCurrentTime();
 	TIMING_POINT getCurrentBeat(int ms);
+
+
+	void save(const std::string& file, const std::vector<Mechanic*> &mech);
 
 
 

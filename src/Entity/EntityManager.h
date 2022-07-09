@@ -33,11 +33,16 @@ public:
     TargetTeam team = TARGET_PLAYERS;
     Target *target = nullptr;
 
+    Target();
     Target(const Target &t);
     Target(TargetType, sf::Vector2f);
     Target(TargetType, TargetTeam, int, TargetTiming = TARGET_ONINIT);
     Target(TargetType, TargetTeam, TargetTiming tt = TARGET_ONINIT);
     Target(TargetType, TargetTeam, int, Target*, TargetTiming);
+
+
+    std::string to_string() const;
+    int parse(int offset, const std::vector<std::string> &words);
 
     ~Target();
 };
