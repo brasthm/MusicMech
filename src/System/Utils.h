@@ -6,6 +6,7 @@
 #define MUSICMECH_SERVER_UTILS_H
 
 #include <string>
+#include <array>
 #include <sstream>
 #include <vector>
 #include <SFML/Graphics.hpp>
