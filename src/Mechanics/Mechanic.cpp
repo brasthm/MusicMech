@@ -11,7 +11,7 @@
 
 Mechanic::Mechanic() {
     beat_ = 0;
-    played_ = checked_ = passed_ = draw_ = init_ = false;
+    played_ = checked_ = passed_ = draw_ = init_ = earlypassed_ = false;
     active_ = 4;
     drawPriority_ = 0;
     activate_ = true;
@@ -47,6 +47,11 @@ void Mechanic::update(const sf::Time &elapsed, float currentBeat, EntityManager 
         }
 
         onCheck(elapsed, currentBeat, currentPart, entities);
+
+        if(beat_ - currentBeat <= 1 && currentPart > 0.75 && passed_) {
+            earlypassed_ = passed_;
+        }
+
         onApproach(elapsed, currentBeat, currentPart, entities);
     }
     else if(currentBeat > beat_ && currentBeat - beat_ < 1) {
@@ -62,7 +67,7 @@ void Mechanic::update(const sf::Time &elapsed, float currentBeat, EntityManager 
             onCheck(elapsed, currentBeat, currentPart, entities);
         }
 
-        if(!checked_ && passed_) {
+        if(!checked_ && (passed_||earlypassed_)) {
             playSound();
             onPassed(elapsed, currentBeat, currentPart, entities);
 
@@ -113,6 +118,7 @@ void Mechanic::reset(float beat) {
     checked_ = false;
     init_ = false;
     played_ = false;
+    earlypassed_ = false;
 
     activate_ = beat_ >= beat;
 }

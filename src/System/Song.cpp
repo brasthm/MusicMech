@@ -17,28 +17,13 @@
 #include "../Mechanics/MoveEntity.h"
 #include "../Mechanics/ActivateTotem.h"
 
-Song::Song(const std::string& osuFile, std::vector<Mechanic*> &mechs) {
-    load(osuFile, mechs);
-}
-
-void Song::play()
+std::pair<float, float> Song::getCurrentBeat(float ms)
 {
-    music_.setVolume(50);
-    music_.play();
-}
-
-sf::Time Song::getCurrentTime()
-{
-    return music_.getPlayingOffset();
-}
-
-TIMING_POINT Song::getCurrentBeat(int ms)
-{
-    while (currentTimingPoint_ != timingPoints_.begin()  &&  ms < currentTimingPoint_->beatOffset)
+    while (currentTimingPoint_ != timingPoints_.begin()  &&  ms < currentTimingPoint_->first)
         currentTimingPoint_--;
 
     auto nextTimingPoint = std::next(currentTimingPoint_);
-    while (nextTimingPoint != timingPoints_.end()  &&  ms >= nextTimingPoint->beatOffset) {
+    while (nextTimingPoint != timingPoints_.end()  &&  ms >= nextTimingPoint->first) {
         currentTimingPoint_++;
         nextTimingPoint++;
     }
@@ -46,47 +31,47 @@ TIMING_POINT Song::getCurrentBeat(int ms)
     return *currentTimingPoint_;
 }
 
-float Song::getBeatOffset(int ms) {
-    return (float)getCurrentBeat(ms).beatOffset;
+float Song::getBeatOffset(float ms) {
+    return (float)getCurrentBeat(ms).first;
 }
 
-float Song::getBeatLength(int ms) {
-    return getCurrentBeat(ms).beatLength;
+float Song::getBeatLength(float ms) {
+    return getCurrentBeat(ms).second;
 }
 
-float Song::getCurrentBeatOffset()
+float Song::getCurrentBeatOffset(sf::Time current)
 {
-    return getBeatOffset(getCurrentTime().asMilliseconds());
+    return getBeatOffset(current.asMilliseconds());
 }
 
-float Song::getCurrentBeatLength()
+float Song::getCurrentBeatLength(sf::Time current)
 {
-    return getBeatLength(getCurrentTime().asMilliseconds());
+    return getBeatLength(current.asMilliseconds());
 }
 
-float Song::getCumulativeNBeats(int ms) {
+float Song::getCumulativeNBeats(float ms) {
     float nBeats = 0;
-    std::vector<TIMING_POINT>::iterator t1, t2;
+    std::vector<std::pair<float, float>>::iterator t1, t2;
     t1 = timingPoints_.begin();
     t2 = std::next(t1);
     //std::cout << timingPoints_.size() << " ";
 
-    while (t2 != timingPoints_.end() && ms > t2->beatOffset) {
+    while (t2 != timingPoints_.end() && ms > t2->first) {
 
-        nBeats += (t2->beatOffset - t1->beatOffset) / t1->beatLength;
+        nBeats += (t2->first - t1->first) / t1->second;
 
         t1++;
         t2++;
     }
 
-    nBeats += (ms - t1->beatOffset) / t1->beatLength;
+    nBeats += (ms - t1->first) / t1->second;
 
     //std::cout << std::endl;
     return nBeats;
 }
 
 
-void Song::load(const std::string& osuFile, std::vector<Mechanic *> &mechs) {
+void Song::load(const std::string& osuFile, sf::Music *music, std::vector<Mechanic *> &mechs) {
     std::string osuPath = RessourceLoader::getPath(osuFile);
 
     // open osu file
@@ -107,8 +92,10 @@ void Song::load(const std::string& osuFile, std::vector<Mechanic *> &mechs) {
     // parse osu file
 
     std::vector<std::string> toParse;
-    toParse.emplace_back("AudioFilename:");
+    if(music != nullptr)
+        toParse.emplace_back("AudioFilename:");
     toParse.emplace_back("[TimingPoints]");
+    toParse.emplace_back("[Checkpoints]");
     toParse.emplace_back("[Objects]");
     auto parsing = toParse.begin();
 
@@ -127,14 +114,15 @@ void Song::load(const std::string& osuFile, std::vector<Mechanic *> &mechs) {
         if (line.rfind(*parsing, 0) == 0)  // if line starts with *parsing
         {
             if (*parsing == "AudioFilename:") {
-                audioFile_ = Utils::trim(Utils::split(line, ':')[1]);
-                std::filesystem::path audioPath = std::filesystem::path(osuPath).parent_path() / audioFile_;
-                if (!music_.openFromFile(audioPath.string()))
-                    std::cout << "Error: could not open music file " << audioFile_ << std::endl;
-                parsing++;
+                if(music != nullptr) {
+                    audioFile_ = Utils::trim(Utils::split(line, ':')[1]);
+                    std::filesystem::path audioPath = std::filesystem::path(osuPath).parent_path() / audioFile_;
+                    if (!music->openFromFile(audioPath.string()))
+                        std::cout << "Error: could not open music file " << audioFile_ << std::endl;
+                    parsing++;
+                }
             }
-            else if (*parsing == "[TimingPoints]" || *parsing == "[Objects]") {
-                std::cout << "parsing " << *parsing << std::endl;
+            else if (*parsing == "[TimingPoints]" || *parsing == "[Objects]" || *parsing == "[Checkpoints]") {
                 readnow = true;
                 continue;
             }
@@ -152,8 +140,8 @@ void Song::load(const std::string& osuFile, std::vector<Mechanic *> &mechs) {
 
                     if (uninherited == 1)
                     {
-                        std::cout << "  offset: " << beatOffset << ", ms per beat : " << beatLength << " (" << 60 / (beatLength / 1000) << " bpm)" << std::endl;
-                        timingPoints_.push_back(TIMING_POINT(beatOffset, beatLength));
+                        std::cout << "timingpoint" << std::endl;
+                        timingPoints_.emplace_back(beatOffset, beatLength);
                         currentTimingPoint_ = timingPoints_.begin();
                     }
                 }
@@ -239,18 +227,9 @@ void Song::load(const std::string& osuFile, std::vector<Mechanic *> &mechs) {
             }
         }
     }
-    std::cout << "  converted " << mechs.size() << " hit objects to mechanics" << std::endl;
-    std::cout << "beatmap parsed!" << std::endl;
     file.close();
 }
 
-void Song::setTime(sf::Time time) {
-    music_.setPlayingOffset(time);
-}
-
-void Song::pause() {
-    music_.pause();
-}
 
 void Song::addCheckpoint(float time, float beat) {
     checkpoints_.emplace_back(time, beat);
@@ -319,7 +298,7 @@ void Song::save(const std::string& filename, const std::vector<Mechanic *> &mech
     file << "AudioFilename: " << audioFile_ << std::endl;
     file << "[TimingPoints]" << std::endl;
     for(auto & timingPoint : timingPoints_) {
-        file << timingPoint.beatOffset << "," << timingPoint.beatLength << ",4,2,1,60,1,0" << std::endl;
+        file << timingPoint.first << "," << timingPoint.second << ",4,2,1,60,1,0" << std::endl;
     }
     file << "[Checkpoints]" << std::endl;
     for(auto &checkpoint:checkpoints_) {
@@ -330,3 +309,6 @@ void Song::save(const std::string& filename, const std::vector<Mechanic *> &mech
         file << mech->toString() << std::endl;
 
 }
+
+Song::~Song() = default;
+Song::Song() = default;

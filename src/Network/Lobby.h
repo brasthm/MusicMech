@@ -10,6 +10,11 @@
 
 #include "PlayerInfo.h"
 #include "../main.h"
+#include "../System/Song.h"
+#include "../Entity/EntityManager.h"
+#include "../Entity/Totem.h"
+#include "../Entity/Joueur.h"
+#include "../Mechanics/Mechanic.h"
 
 enum LobbyStatus {
     LOBBY_AVAILABLE,
@@ -19,16 +24,37 @@ enum LobbyStatus {
 };
 
 class Lobby {
+
+private:
+    Song song_;
+    sf::Clock timer_;
+    sf::Time position_;
+    EntityManager manager_;
+
+    std::vector<Totem> totems_;
+    std::vector<Joueur> joueurs_;
+    std::vector<Mechanic*> mechanics_;
+
+    float currentBeat_;
+
+
 public:
     inline Lobby() {
         status = LobbyStatus::LOBBY_AVAILABLE;
         limit = nbIn = 0;
         for(int i = 0; i < NB_MAX_JOUEURS; i++) {
             players.emplace_back(nullptr);
+            joueurs_.emplace_back();
         }
-        name = "";
+        for(int i = 0; i < NB_MAX_TOTEM; i++) {
+            totems_.emplace_back();
+        }
 
+        name = "";
         id = "";
+
+        failed = false;
+
     };
 
     std::string name;
@@ -36,6 +62,12 @@ public:
     std::vector<PlayerInfo*> players;
     sf::Uint8 nbIn, limit;
     std::string id;
+    bool failed, paused;
+
+    void startGame();
+    void updateGame(sf::Time elapsed);
+    void load(const std::string &filename);
+    std::pair<float, float> getCheckpoint();
 
 };
 

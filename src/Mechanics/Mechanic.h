@@ -15,7 +15,7 @@ protected:
     float beat_;
     std::string sound_;
     bool played_, checked_;
-    bool passed_;
+    bool passed_, earlypassed_;
     bool draw_;
     bool init_;
     bool activate_;

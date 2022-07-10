@@ -82,14 +82,16 @@ void Game::run(sf::RenderWindow &window, const std::string& roomID) {
 
     sf::Clock displayTest;
 
-    song_.play();
+    music_.play();
 
     bool exit=false, interupted=false, sent=false, failed = false, resume=false;
+
+    std::pair<float, float> checkpoint;
 
     window.setKeyRepeatEnabled(false);
     while (!exit)
     {
-        sf::Time currentPos = song_.getCurrentTime();
+        sf::Time currentPos = music_.getPlayingOffset();
         float currentBeat_float = song_.getCumulativeNBeats(currentPos.asMilliseconds());
 
         sf::Time elapsedTime = fps.getElapsedTime();
@@ -107,24 +109,6 @@ void Game::run(sf::RenderWindow &window, const std::string& roomID) {
                 if(event.key.code == sf::Keyboard::H) {
                     godmode = false;
                 }
-
-
-                if(event.key.code == sf::Keyboard::V) {
-                    auto checkpoint = song_.getPreviousCheckpoint(currentBeat_float);
-                    reset(checkpoint.second);
-                    song_.setTime(sf::seconds(checkpoint.first));
-                }
-                if(event.key.code == sf::Keyboard::B) {
-                    auto checkpoint = song_.getCurrentCheckpoint(currentBeat_float);
-                    reset(checkpoint.second);
-                    song_.setTime(sf::seconds(checkpoint.first));
-                }
-                if(event.key.code == sf::Keyboard::N) {
-                    auto checkpoint = song_.getNextCheckpoint(currentBeat_float);
-                    reset(checkpoint.second);
-                    song_.setTime(sf::seconds(checkpoint.first));
-                }
-
             }
         }
 
@@ -146,7 +130,7 @@ void Game::run(sf::RenderWindow &window, const std::string& roomID) {
 
             for(auto & mech : mechanicList_) {
                 mech->update(elapsedTime, currentBeat_float, em_);
-                newfailed = newfailed || mech->isFailed();
+                //newfailed = newfailed || mech->isFailed();
             }
 
             if(send.getElapsedTime().asMilliseconds() > CLIENT_TICK_MS) {
@@ -156,10 +140,10 @@ void Game::run(sf::RenderWindow &window, const std::string& roomID) {
         }
 
         if(!exit) {
-            int res = client_->updateFromServerPlayerPosition(joueurs_);
+            int res = client_->updateFromServerPlayerPosition(joueurs_, checkpoint);
             interupted = res == 1;
-            newfailed = newfailed || res == 2;
-            if(failed) resume = resume || res == 3;
+            newfailed = res == 2;
+            if(failed) resume = res == 3;
             exit = interupted;
         }
 
@@ -188,20 +172,17 @@ void Game::run(sf::RenderWindow &window, const std::string& roomID) {
         if(!failed) failed = !godmode && newfailed;
         if(failed) {
             if(!sent) {
-                song_.pause();
+                music_.pause();
                 std::cout << "failed" << std::endl;
-                client_->sendPauseGame(roomID);
                 sent = true;
 
                 texture.create(window.getSize().x, window.getSize().y);
                 texture.update(window);
 
-
-                auto checkpoint = song_.getCurrentCheckpoint(currentBeat_float);
                 std::cout << checkpoint.first << " " << checkpoint.second << std::endl;
 
                 reset(checkpoint.second);
-                song_.setTime(sf::seconds(checkpoint.first));
+                music_.setPlayingOffset(sf::seconds(checkpoint.first));
             }
 
             if(sf::Keyboard::isKeyPressed(sf::Keyboard::Return)) {
@@ -213,7 +194,7 @@ void Game::run(sf::RenderWindow &window, const std::string& roomID) {
         if(resume) {
             sent = false;
             failed = false;
-            song_.play();
+            music_.play();
             resume = false;
         }
 
@@ -232,8 +213,9 @@ void Game::run(sf::RenderWindow &window, const std::string& roomID) {
 
 void Game::load() {
     song_.load(
-            "Beatmaps/1772712 DECO 27 - Ai Kotoba IV feat. Hatsune Miku/DECO27 - Ai Kotoba IV feat. Hatsune Miku ([Hatsune Miku]) [Daisuki].osu",
+            "Beatmaps/1772712 DECO 27 - Ai Kotoba IV feat. Hatsune Miku/[2P] DECO27 - Ai Kotoba IV feat. Hatsune Miku.mm",
             //"Beatmaps/1772712 DECO 27 - Ai Kotoba IV feat. Hatsune Miku/[TEST] DECO27 - Ai Kotoba IV feat. Hatsune Miku.mm",
+            &music_,
             mechanicList_);
 
 

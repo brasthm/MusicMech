@@ -14,3 +14,8 @@ void Entity::setTarget(const sf::Vector2f &pos, float speed, bool isInstant) {
 void Entity::applyDebuff(DebuffType type, float end) {
     debuff_.apply(type, end);
 }
+
+void Entity::setPosition(float x, float y) {
+    pos_.x = x;
+    pos_.y = y;
+}

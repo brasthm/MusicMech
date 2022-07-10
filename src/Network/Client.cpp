@@ -84,7 +84,7 @@ void Client::sendPlayerData(sf::Int32 x, sf::Int32 y) {
     packetID_++;
 }
 
-int Client::updateFromServerPlayerPosition(std::vector<Joueur> &joueurs) {
+int Client::updateFromServerPlayerPosition(std::vector<Joueur> &joueurs, std::pair<float, float> &checkpoint) {
     if(clientSocket_.recieve()) {
         sf::Uint8 state = 0;
 
@@ -95,15 +95,17 @@ int Client::updateFromServerPlayerPosition(std::vector<Joueur> &joueurs) {
                 joueurs[i].setDataFromServer(clientSocket_.getRecievedPacket());
             }
         }
-        else if (state == 34) {
-            return 2;
-        }
-        else if (state == 35) {
-            return 3;
-        }
-        else if(state == 33) {
+        else if(state == 33) { // INTERRUPT
             return 1;
         }
+        else if (state == 34) { // PAUSE
+            clientSocket_.getRecievedPacket() >> checkpoint.first >> checkpoint.second;
+            return 2;
+        }
+        else if (state == 35) { // RESUME
+            return 3;
+        }
+
 
     }
 
