@@ -23,7 +23,7 @@ public:
     void sendCommand(const std::string& cmd);
     void sendPlayerData(sf::Int32 x, sf::Int32 y);
     int getIndex() const {return index_;};
-    int updateFromServerPlayerPosition(std::vector<Joueur> &joueurs);
+    int updateFromServerPlayerPosition(std::vector<Joueur> &joueurs, std::pair<float, float> &checkpoint);
 
     bool requestLobbyCreation(std::string &lobbyIndex, std::string name);
     bool requestLobbyJoin(std::vector<Lobby> &lobbylist, std::string& lobbyIndex);

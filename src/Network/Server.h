@@ -29,6 +29,7 @@ protected:
     void monitorPlayerData();
     void sendPlayerData();
     void monitorLobby();
+    void updateLobbies(sf::Time elapsed);
 
 
     bool checkConnected(sf::IpAddress address, unsigned short port);

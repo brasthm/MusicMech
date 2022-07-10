@@ -65,7 +65,7 @@ void Spread::onCheck(const sf::Time &elapsed, float currentBeat, float cuurentPa
     passed_ = nbIn_ == nbShare_;
 
     if(isShare_) {
-        if(passed_) {
+        if(passed_ || earlypassed_) {
             backColor_.setCurrentTarget("good");
         }
         else {
@@ -157,12 +157,12 @@ void Spread::setColor() {
     sf::Uint32 outlineColor=0, fillColorPlayerIndicator=0, fillColor=0, fillColorFailed=0, approachColor=0;
 
     if(isShare_) {
-        if(target_.timing == TARGET_FOLLOW) {
-            outlineColor = 0xDAFB9388;
-            fillColor = 0x89CA7E88;
-            fillColorFailed = 0x42753888;
-            fillColorPlayerIndicator = 0xDAFB9300;
-            approachColor = 0x79CE1B88;
+    if(target_.timing == TARGET_FOLLOW && nbShare_ == 1 && target_.team == TARGET_PLAYERS) {
+            outlineColor = 0xFFD5CB88;
+            fillColor = 0xB64F3888;
+            fillColorFailed = 0x781F0B88;
+            fillColorPlayerIndicator = 0xFFD5CB00;
+            approachColor = 0xD3522788;
         }
         else {
             outlineColor = 0xDAFB9388;

@@ -31,12 +31,18 @@ void Server::run() {
     bool loop = true;
     serverTick.restart();
 
+    sf::Clock fps;
+
     while(loop) {
+        sf::Time elapsedTime = fps.getElapsedTime();
+        fps.restart();
+
         monitorAdminCommand(loop);
         monitorConnectRequest();
         monitorLobby();
         monitorPlayerData();
         sendPlayerData();
+        updateLobbies(elapsedTime);
 
         std::this_thread::sleep_for(std::chrono::milliseconds(SERVER_SLEEP));
     }
@@ -462,6 +468,9 @@ void Server::monitorLobby() {
                                 lobbies[lobbyIndex].players[i]->status = PlayerStatus::PLAYER_PLAYING;
                         }
 
+                        lobbies[lobbyIndex].load("Beatmaps/1772712 DECO 27 - Ai Kotoba IV feat. Hatsune Miku/[2P] DECO27 - Ai Kotoba IV feat. Hatsune Miku.mm");
+                        lobbies[lobbyIndex].startGame();
+
                         std::cout << "LOBBY : Game launched in lobby " << lobbies[lobbyIndex].id << std::endl<< std::endl;
 
                         state = 30;
@@ -526,6 +535,8 @@ void Server::monitorLobby() {
                        lobbies[lobbyIndex].status == LobbyStatus::LOBBY_PLAYING) {
 
                         std::cout << "LOBBY : Game resume in lobby " << lobbies[lobbyIndex].id << std::endl<< std::endl;
+
+                        lobbies[lobbyIndex].startGame();
 
                         state = 35;
                         packet << state;
@@ -599,6 +610,28 @@ void Server::sendRoomLobbyNotif(int index, sf::Uint8 state, sf::Uint8 param) {
                 p << param;
             lobby.send(p, lobbies[index].players[i]->address, lobbies[index].players[i]->port);
         }
+    }
+}
+
+void Server::updateLobbies(sf::Time elapsed) {
+    for(auto & lobbie : lobbies) {
+        if(lobbie.status == LOBBY_PLAYING) {
+            lobbie.updateGame(elapsed);
+            if(lobbie.failed && !lobbie.paused) {
+                std::cout << "failed" << std::endl;
+                sf::Uint8 state = 34;
+                auto checkpoint = lobbie.getCheckpoint();
+                sf::Packet p;
+                p << state << checkpoint.first << checkpoint.second;
+                for(sf::Uint8 i = 0; i < NB_MAX_JOUEURS; i++) {
+                    if(lobbie.players[i] != nullptr) {
+                        lobby.send(p, lobbie.players[i]->address, lobbie.players[i]->port);
+                    }
+                }
+                lobbie.paused = true;
+            }
+        }
+
     }
 }
 

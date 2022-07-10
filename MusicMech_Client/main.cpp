@@ -111,15 +111,6 @@ int main() {
             g.save("[2P] DECO27 - Ai Kotoba IV feat. Hatsune Miku.mm");
 
         }
-        else if (cmd == "load") {
-            std::vector<Mechanic*> mechanicList;
-            Song song = Song("Beatmaps/546820 YUC'e - Future Candy/YUC'e - Future Candy (Nathan) [Insane].osu", mechanicList);
-            song.play();
-            while (true) {
-                std::cout << song.getCurrentBeatOffset() << " " << song.getCurrentBeatLength() << std::endl;
-                std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-            }
-        }
         else if(cmd != "exit") {
             c.sendCommand(cmd);
         }

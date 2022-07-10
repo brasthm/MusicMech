@@ -29,6 +29,7 @@ public:
     inline bool getActive() {return  active_; };
 
     void setTarget(const sf::Vector2f &, float speed, bool isInstant);
+    void setPosition(float x, float y);
 
     virtual void update(sf::Time elapsed, float beat, bool hasFocus) = 0;
     virtual void draw(sf::RenderWindow &window) = 0;

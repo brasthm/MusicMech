@@ -70,7 +70,7 @@ void Tether::onCheck(const sf::Time &elapsed, float currentBeat, float currentPa
     if(inward_) good = Utils::distance(pos1_, pos2_) <= minDist_;
     else good = Utils::distance(pos1_, pos2_) >= minDist_;
 
-    if(good) {
+    if(good || earlypassed_) {
         timer_ = sf::seconds(0);
         passed_ = true;
         borderColor_.setCurrentTarget("passed");

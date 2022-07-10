@@ -11,46 +11,33 @@
 
 #include "../Mechanics/Mechanic.h"
 
-struct TIMING_POINT {
-	float beatOffset;
-	float beatLength;
-
-	TIMING_POINT() = default;
-    inline TIMING_POINT(float bOffset, float bLength) { beatLength = bLength; beatOffset = bOffset;};
-};
 
 class Song {
 private:
-	sf::Music music_;
-	std::vector<TIMING_POINT> timingPoints_;
-	std::vector<TIMING_POINT>::iterator currentTimingPoint_;
+    std::vector<std::pair<float, float>> timingPoints_;
+	std::vector<std::pair<float, float>>::iterator currentTimingPoint_;
 	std::vector<std::pair<float, float>> checkpoints_;
     std::string audioFile_;
 
 
 	int getCheckpoint(float time);
 public:
-    Song() = default;
-	Song(const std::string& osuFile, std::vector<Mechanic*> &mech);
-	void play();
-	void pause();
-	void load(const std::string& osuFile, std::vector<Mechanic*> &mech);
-	sf::Time getCurrentTime();
-	TIMING_POINT getCurrentBeat(int ms);
+    Song();
+	~Song();
+	void load(const std::string& osuFile, sf::Music *music, std::vector<Mechanic*> &mech);
+    std::pair<float, float> getCurrentBeat(float ms);
 
 
 	void save(const std::string& file, const std::vector<Mechanic*> &mech);
 
 
 
-	float getBeatOffset(int ms);
-    float getBeatLength(int ms);
-	float getCurrentBeatOffset();
-	float getCurrentBeatLength();
+	float getBeatOffset(float ms);
+    float getBeatLength(float ms);
+	float getCurrentBeatOffset(sf::Time current);
+	float getCurrentBeatLength(sf::Time current);
 
-	float getCumulativeNBeats(int ms);
-
-	void setTime(sf::Time time);
+	float getCumulativeNBeats(float ms);
 
 	void addCheckpoint(float time, float beat);
 	void resetCheckpoints();

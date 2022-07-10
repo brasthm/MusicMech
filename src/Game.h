@@ -17,6 +17,7 @@
 
 class Game {
 private:
+    sf::Music music_;
     Client *client_;
     bool online_;
     EntityManager em_;
