@@ -5,6 +5,7 @@
 #include "ArrowShape.h"
 #include <cmath>
 #include "../System/Utils.h"
+#include "../main.h"
 
 ArrowShape::ArrowShape() {
     position_=sf::Vector2f(0,0);
@@ -71,5 +72,5 @@ void ArrowShape::setColorSpeed(const std::array<float, 4> &speed) {
 }
 
 float ArrowShape::getWidth() const {
-    return scale_*(float)((40.)*std::cos(M_PI/4.));
+    return scale_*(float)((40.)*std::cos(PI/4.));
 }
