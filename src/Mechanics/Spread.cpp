@@ -50,6 +50,7 @@ void Spread::onDraw(const sf::Time &elapsed, sf::RenderWindow &window) {
 void Spread::onCheck(const sf::Time &elapsed, float currentBeat, float cuurentPart, EntityManager &entities) {
     nbIn_ = 0;
 
+    //std::cout << entities.getSizePlayers() << std::endl;
     for(int  i = 0; i < entities.getSizePlayers(); i++) {
         Target t(TARGET_ENTITY, TARGET_PLAYERS, i);
         if(!entities.getActive(t))

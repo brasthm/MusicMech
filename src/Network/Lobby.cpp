@@ -68,6 +68,10 @@ void Lobby::startGame() {
     for(auto & joueur:joueurs_) {
         joueur.reset();
     }
+    for(int i = 0; i < players.size(); i++) {
+        if(players[i] != nullptr)
+            joueurs_[i].setActive(true);
+    }
 }
 
 void Lobby::updateGame(sf::Time elapsed) {
@@ -92,10 +96,8 @@ void Lobby::updateGame(sf::Time elapsed) {
 
             if(mech->isFailed()) {
                 std::cout << mech->toString() << std::endl;
-                std::cout << joueurs_[0].getPosX() << " " << joueurs_[0].getPosY() << std::endl;
                 Target t = Target(TARGET_ENTITY, TARGET_PLAYERS, 0, TARGET_FOLLOW);
                 std::cout << manager_.getPosition(t).x << " " << manager_.getPosition(t).y << std::endl;
-                std::cout << manager_.getEntity(t) << " " << &joueurs_[0] << std::endl;
 
                 failed = true;
             }
