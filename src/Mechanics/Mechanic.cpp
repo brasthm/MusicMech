@@ -29,7 +29,9 @@ void Mechanic::setSoundName(const std::string& name) {
 }
 
 void Mechanic::update(const sf::Time &elapsed, float currentBeat, EntityManager &entities) {
-    if(!activate_) return;
+    if(!activate_) {
+        return;
+    }
 
     float n = std::abs(currentBeat - beat_);
     float currentPart = n - std::floor(n);

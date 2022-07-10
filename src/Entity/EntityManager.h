@@ -59,9 +59,9 @@ private:
     int getRandomSequence(int n);
     int getBySorted(const Target&target, bool descending=false);
 
+    Entity *getEntity(Target &target);
 
 public:
-    Entity *getEntity(Target &target);
     EntityManager() = default;
     void addPlayer(Entity* player);
     void addTotem(Entity* totem);
