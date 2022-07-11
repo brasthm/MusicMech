@@ -40,6 +40,16 @@ float Utils::distance(sf::Vector2f a, sf::Vector2f b) {
     return std::sqrt(diff.x * diff.x + diff.y * diff.y);
 }
 
+sf::Vector2f Utils::remapLength(sf::Vector2f v, float fromMin, float fromMax, float toMin, float toMax, bool clamp)
+{
+    float length = std::sqrt(v.x * v.x + v.y * v.y);
+    sf::Vector2f dir = (length > 0) ? v / length : v;
+    length = (length - fromMin) / (fromMax - fromMin) * (toMax - toMin) + toMin;
+    if (clamp)
+        length = std::clamp(length, toMin, toMax);
+    return dir * length;
+}
+
 std::array<float, 4> Utils::RGBtoHSV(const sf::Color &color) {
     float R = color.r / 255.f;
     float G = color.g / 255.f;

@@ -6,6 +6,7 @@
 #include "../main.h"
 #include "../System/Utils.h"
 
+#include <array>
 #include <cmath>
 #include <iostream>
 
@@ -44,6 +45,29 @@ void Joueur::update(sf::Time elapsed, float beat, bool hasFocus) {
             if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right)) {
                 vecDep.x = 1;
             }
+
+            float deadzone = 0.15;
+            float maxzone = 0.85;
+            const std::array<sf::Joystick::Axis, 2> stickX = { sf::Joystick::X, sf::Joystick::U };  // left stick, right stick
+            const std::array<sf::Joystick::Axis, 2> stickY = { sf::Joystick::Y, sf::Joystick::V };
+            //std::cout << "---" << std::endl;
+            for (int gamepad = 0; gamepad < 8; gamepad++)
+            {
+                if (!sf::Joystick::isConnected(gamepad))
+                    continue;
+                //std::cout << "gamepad " << gamepad << " - x: " << sf::Joystick::getAxisPosition(gamepad, sf::Joystick::X) << ", y: " << sf::Joystick::getAxisPosition(gamepad, sf::Joystick::Y) << ", povx: " << sf::Joystick::getAxisPosition(gamepad, sf::Joystick::PovX) << ", povy: " << sf::Joystick::getAxisPosition(gamepad, sf::Joystick::PovY) << ", z: " << sf::Joystick::getAxisPosition(gamepad, sf::Joystick::Z) << ", r: " << sf::Joystick::getAxisPosition(gamepad, sf::Joystick::R) << ", u: " << sf::Joystick::getAxisPosition(gamepad, sf::Joystick::U) << ", v: " << sf::Joystick::getAxisPosition(gamepad, sf::Joystick::V) << std::endl;
+
+                for (size_t stick = 0; stick < stickX.size(); stick++)
+                {
+                    if (!sf::Joystick::hasAxis(gamepad, stickX[stick]) || !sf::Joystick::hasAxis(gamepad, stickY[stick]))
+                        continue;
+                    sf::Vector2f stickPos = sf::Vector2f(sf::Joystick::getAxisPosition(gamepad, stickX[stick]) / 100,
+                                                         sf::Joystick::getAxisPosition(gamepad, stickY[stick]) / 100);
+                    vecDep += Utils::remapLength(stickPos, deadzone, maxzone, 0, 1, true);
+                    //auto p = Utils::remapLength(stickPos, deadzone, maxzone, 0, 1, true);
+                    //std::cout << "stick " << stick << ": " << p.x << ", " << p.y << std::endl;
+                }
+            }
         }
         else if (!controlledByPlayer_){
             vecDep = serv_pos_ - pos_;
@@ -52,7 +76,9 @@ void Joueur::update(sf::Time elapsed, float beat, bool hasFocus) {
         float length = std::sqrt(vecDep.x * vecDep.x + vecDep.y * vecDep.y);
 
         if(length != 0) {
-            vecDep = vecDep/length;
+            if (length > 1)
+                vecDep = vecDep/length;
+
             float diffX, diffY;
             if(!controlledByPlayer_) {
                 diffX = vecDep.x;

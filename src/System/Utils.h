@@ -18,6 +18,7 @@ namespace Utils {
     std::vector<std::string> split(std::string s, char delim);
     float distance(sf::Vector2f a, sf::Vector2f b);
     float distance(const std::array<float, 4> &a, const std::array<float, 4> &b);
+    sf::Vector2f remapLength(sf::Vector2f v, float fromMin, float fromMax, float toMin, float toMax, bool clamp = false);
     std::array<float, 4> RGBtoHSV(const sf::Color& color);
     sf::Color HSVtoRGB(const std::array<float, 4> &color);
     std::string paddLeft(std::string s, int nbPad, char padChar = ' ');
