@@ -5,115 +5,230 @@
 #include <SFML/Graphics.hpp>
 #include <iomanip>
 
-#include "../src/Network/Client.h"
 #include "../src/Game.h"
-#include "../src/System/Song.h"
+#include "../src/LobbySelection.h"
+#include "../src/Title.h"
 #include "../src/LobbyMenu.h"
+#include "../src/RoomCreation.h"
+#include "../src/BeatmapSelection.h"
+#include "../src/RoomMenu.h"
 
-int main() {
+#include "../src/System/Song.h"
+#include "../src/System/SongData.h"
+#include "../src/System/RessourceLoader.h"
+#include "../src/Network/Client.h"
+#include "../src/Graphics/BackgoundAnimation.h"
+
+int console() {
     std::string cmd, nom;
-
-    std::cout << "Pseudo : ";
-    std::cin >> nom;
 
     Client c(nom);
 
-    while(cmd != "exit") {
+    while (cmd != "exit") {
 
         std::cout << ">> ";
         std::cin >> cmd;
 
-        if(cmd == "connect") {
-            if(c.connectToServer())
+        if (cmd == "connect") {
+            if (c.connectToServer())
                 std::cout << "Connected" << std::endl;
             else
                 std::cout << "Connection failed" << std::endl;
         }
-        else if(cmd == "disconnect") {
-            if(c.disconectToServer())
+        else if (cmd == "disconnect") {
+            if (c.disconectToServer())
                 std::cout << "Disconnected" << std::endl;
             else
                 std::cout << "Disconnection failed" << std::endl;
         }
-        else if(cmd == "lc") {
-            std::string lobbyname, lobbyid;
+        else if (cmd == "lc") {
+            std::string lobbyname;
             std::cin >> lobbyname;
-            if(c.requestLobbyCreation(lobbyid, lobbyname))
-                std::cout << "Lobby created : " << lobbyid << std::endl;
+            if (c.requestLobbyCreation(lobbyname, "0", "4P"))
+                std::cout << "Lobby created : " << c.getLobbyIndex() << std::endl;
             else
                 std::cout << "Lobby creation failled" << std::endl;
         }
-        else if(cmd == "lj") {
+        else if (cmd == "lj") {
             std::string lobbyid;
             std::cin >> lobbyid;
 
             //c.requestLobbyJoin(lobbyid);
         }
-        else if(cmd == "ld") {
+        else if (cmd == "ld") {
             std::string lobbyid;
             std::cin >> lobbyid;
 
             //c.requestLobbyDisconnect(lobbyid);
         }
-        else if(cmd == "lroom") {
-            std::string lobbyid;
-            std::cin >> lobbyid;
-
-            Lobby l;
-
-            if(c.requestLobbyInfo(l, lobbyid)) {
-                std::cout << l.name <<  " : " << (int)l.nbIn << "/" << (int)l.limit << std::endl;
-                for(int i = 0; i < NB_MAX_JOUEURS; i++)
-                    std::cout << "    " << l.players[i]->name << std::endl;
-            }
-            else
-                std::cout << "Erreur" << std::endl;
-
-            for(int i = 0; i < NB_MAX_JOUEURS; i++)
-                delete l.players[i];
-        }
-        else if(cmd == "llist") {
-            std::vector<Lobby> lobbylist(SERVER_NB_MAX_LOBBY);
-
-            if(c.requestLobbyList(lobbylist)) {
-                std::cout << "|        ID |         Player |                               Name |      |" << std::endl;
-                std::cout << "|------------------------------------------------------------------------|" << std::endl;
-                for(int i = 0; i < SERVER_NB_MAX_LOBBY; i++) {
-                    if(lobbylist[i].status != LobbyStatus::LOBBY_AVAILABLE) {
-                        std::cout << "|" << std::setw(10) << lobbylist[i].id << " ";
-                        std::cout << "|" << std::setw(15) << lobbylist[i].players[0]->name << " ";
-                        std::cout << "|" << std::setw(35) << lobbylist[i].name << " ";
-                        std::string sortie = std::to_string(lobbylist[i].nbIn) + "/" + std::to_string(lobbylist[i].limit);
-                        std::cout << "|" << std::setw(5) << sortie << " |" << std::endl;
+        else if (cmd == "ctrlr") {
+            sf::RenderWindow mainWindow(sf::VideoMode(WIDOW_WIDTH / 10.f, WIDOW_HEIGHT / 10.f), "Sychrobeat");
+            while (mainWindow.isOpen()) {
+                sf::Event event{};
+                while (mainWindow.pollEvent(event))
+                {
+                    if (event.type == sf::Event::Closed) {
+                        mainWindow.close();
+                    }
+                    if (event.type == sf::Event::JoystickButtonPressed) {
+                        std::cout << "Button " << event.joystickButton.button << std::endl;
                     }
                 }
+
+                mainWindow.display();
             }
 
-            for(int i=0; i < SERVER_NB_MAX_LOBBY; i++) {
-                for(int j = 0; j < NB_MAX_JOUEURS; j++) {
-                    delete lobbylist[i].players[j];
-                }
-            }
         }
-        else if(cmd == "run") {
+        else if (cmd == "run") {
+            Title t;
             LobbyMenu lm;
+            LobbySelection ls;
+            SongDatabase sd;
+            RoomCreation rc;
+            BeatmapSelection bs;
+            RoomMenu rm;
+
+            Game g;
+
+            BackgroundAnimation bg;
+
+            sf::Music title;
+            title.openFromFile(RessourceLoader::getPath("Music/Hysteric Night Girl.mp3"));
+            title.setVolume(10);
+            title.setLoop(true);
+
             sf::ContextSettings settings;
-            settings.antialiasingLevel = 8;
-            sf::RenderWindow mainWindow(sf::VideoMode(ARENA_WIDTH,ARENA_HEIGHT), "MusicMech", sf::Style::Default, settings);
-            Game g(&c);
-            g.load();
-            lm.run(mainWindow, g, c);
+            settings.antialiasingLevel = 16;
+            sf::RenderWindow mainWindow(sf::VideoMode(WIDOW_WIDTH, WIDOW_HEIGHT), "Sychrobeat", sf::Style::Fullscreen, settings);
+            int val;
+            std::string roomName;
+            title.play();
+            val = t.run(mainWindow, bg, &c);
+            if (val == -1) return 0;
+            while (val != -1) {
+                roomName = "";
+                val = ls.run(mainWindow, bg, &c, sd);
+                if (val == 1) {
+                    title.pause();
+                    while (val != -1) {
+                        val = rc.run(mainWindow, bg, &c, sd, roomName);
+                        if (val == 1) val = bs.run(mainWindow, bg, &c, &sd);
+                        if (val == 2) {
+                            while (val != -1) {
+                                val = rm.run(mainWindow, bg, &c, &sd, &g, true, val == 1, false);
+                                if (val == 1) val = bs.run(mainWindow, bg, &c, &sd);
+                                if (val == 2) g.run(mainWindow, &c, true);
+                            }
+                        }
+
+                    }
+
+                    val = 0;
+                    title.play();
+                }
+                if (val == 2) {
+                    title.pause();
+                    val = 0;
+                    while (val != -1) {
+                        val = rm.run(mainWindow, bg, &c, &sd, &g, false, false, val == 2);
+                        if (val == 2) g.run(mainWindow, &c, false);
+                    }
+                    val = 0;
+                    title.play();
+                }
+
+            }
+
+            //Game g(&c);
+            //g.load();
+            //lm.run(mainWindow, g, c);
+            c.disconectToServer();
+        }
+        else if (cmd == "save") {
+            Game g;
+            g.load("");
+            g.save("output.txt");
 
         }
-        else if(cmd == "save") {
-            Game g(&c);
-            g.load();
-            g.save("[2P] DECO27 - Ai Kotoba IV feat. Hatsune Miku.mm");
-
-        }
-        else if(cmd != "exit") {
+        else if (cmd != "exit") {
             c.sendCommand(cmd);
         }
     }
+}
+
+
+int game()
+{
+    Client c("");
+
+    Title t;
+    LobbyMenu lm;
+    LobbySelection ls;
+    SongDatabase sd;
+    RoomCreation rc;
+    BeatmapSelection bs;
+    RoomMenu rm;
+
+    Game g;
+
+    BackgroundAnimation bg;
+
+    sf::Music title;
+    title.openFromFile(RessourceLoader::getPath("Music/Hysteric Night Girl.mp3"));
+    title.setVolume(10);
+    title.setLoop(true);
+
+    sf::ContextSettings settings;
+    settings.antialiasingLevel = 16;
+    sf::RenderWindow mainWindow(sf::VideoMode(WIDOW_WIDTH, WIDOW_HEIGHT), "Sychrobeat", sf::Style::Fullscreen, settings);
+    int val;
+    std::string roomName;
+    title.play();
+    val = t.run(mainWindow, bg, &c);
+    if (val == -1) return 0;
+    while (val != -1) {
+        roomName = "";
+        val = ls.run(mainWindow, bg, &c, sd);
+        if (val == 1) {
+            title.pause();
+            while (val != -1) {
+                val = rc.run(mainWindow, bg, &c, sd, roomName);
+                if (val == 1) val = bs.run(mainWindow, bg, &c, &sd);
+                if (val == 2) {
+                    while (val != -1) {
+                        val = rm.run(mainWindow, bg, &c, &sd, &g, true, val == 1, false);
+                        if (val == 1) val = bs.run(mainWindow, bg, &c, &sd);
+                        if (val == 2) g.run(mainWindow, &c, true);
+                    }
+                }
+
+            }
+
+            val = 0;
+            title.play();
+        }
+        if (val == 2) {
+            title.pause();
+            val = 0;
+            while (val != -1) {
+                val = rm.run(mainWindow, bg, &c, &sd, &g, false, false, val == 2);
+                if (val == 2) g.run(mainWindow, &c, false);
+            }
+            val = 0;
+            title.play();
+        }
+
+    }
+
+    //Game g(&c);
+    //g.load();
+    //lm.run(mainWindow, g, c);
+    c.disconectToServer();
+}
+
+int main() {
+    
+    //console();
+    game();
     return 0;
 }

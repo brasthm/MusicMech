@@ -1,0 +1,327 @@
+int mode;
+
+    song_.addCheckpoint(0, 0);
+
+    mode = 0;
+    for (int i = 0; i < 2; i++) {
+        for (int j = 0; j < 4; j++) {
+            float pad = (j + mode) % 2 == 0 ? 2 * i : 2 * i + 1;
+            mechanicList_.emplace_back(new NopeZone(8, 250, 250, 0, 8, Target(TARGET_POS, { 250 * pad, 250 * (float)j })));
+        }
+    }
+
+    mode = 1;
+    for (int i = 0; i < 2; i++) {
+        for (int j = 0; j < 4; j++) {
+            float pad = (j + mode) % 2 == 0 ? 2 * i : 2 * i + 1;
+            mechanicList_.emplace_back(new NopeZone(16, 250, 250, 0, 8, Target(TARGET_POS, { 250 * pad, 250 * (float)j })));
+        }
+    }
+
+    mechanicList_.emplace_back(new ActivateTotem(0, Target(TARGET_ENTITY, TARGET_TOTEMS, 0), true));
+    mechanicList_.emplace_back(new MoveEntity(0, Target(TARGET_ENTITY, TARGET_TOTEMS, 0), Target(TARGET_POS, { 250, 500 }), 1000, true));
+    mechanicList_.emplace_back(new ActivateTotem(0, Target(TARGET_ENTITY, TARGET_TOTEMS, 1), true));
+    mechanicList_.emplace_back(new MoveEntity(0, Target(TARGET_ENTITY, TARGET_TOTEMS, 1), Target(TARGET_POS, { 500, 750 }), 1000, true));
+    mechanicList_.emplace_back(new ActivateTotem(0, Target(TARGET_ENTITY, TARGET_TOTEMS, 2), true));
+    mechanicList_.emplace_back(new MoveEntity(0, Target(TARGET_ENTITY, TARGET_TOTEMS, 2), Target(TARGET_POS, { 750, 500 }), 1000, true));
+    mechanicList_.emplace_back(new ActivateTotem(0, Target(TARGET_ENTITY, TARGET_TOTEMS, 3), true));
+    mechanicList_.emplace_back(new MoveEntity(0, Target(TARGET_ENTITY, TARGET_TOTEMS, 3), Target(TARGET_POS, { 500, 250 }), 1000, true));
+
+
+
+    mechanicList_.emplace_back(new Tether(32, Target(TARGET_ENTITY, TARGET_TOTEMS, 0), Target(TARGET_ENTITY, TARGET_PLAYERS, 0), 500, 16, true, true));
+    mechanicList_.emplace_back(new Tether(32, Target(TARGET_ENTITY, TARGET_TOTEMS, 1), Target(TARGET_ENTITY, TARGET_PLAYERS, 1), 500, 12, true, true));
+    mechanicList_.emplace_back(new Tether(32, Target(TARGET_ENTITY, TARGET_TOTEMS, 2), Target(TARGET_ENTITY, TARGET_PLAYERS, 2), 500, 8, true, true));
+    mechanicList_.emplace_back(new Tether(32, Target(TARGET_ENTITY, TARGET_TOTEMS, 3), Target(TARGET_ENTITY, TARGET_PLAYERS, 3), 500, 4, true, true));
+
+    //Riff
+
+    song_.addCheckpoint(12, 32.1);
+
+
+    mechanicList_.emplace_back(new ActivateTotem(32.2, Target(TARGET_ENTITY, TARGET_TOTEMS, 0), true));
+    mechanicList_.emplace_back(new ActivateTotem(32.2, Target(TARGET_ENTITY, TARGET_TOTEMS, 1), true));
+    mechanicList_.emplace_back(new ActivateTotem(32.2, Target(TARGET_ENTITY, TARGET_TOTEMS, 2), true));
+    mechanicList_.emplace_back(new ActivateTotem(32.2, Target(TARGET_ENTITY, TARGET_TOTEMS, 3), true));
+    mechanicList_.emplace_back(new MoveEntity(32.2, Target(TARGET_ENTITY, TARGET_TOTEMS, 0), Target(TARGET_POS, { 250, 500 }), 1000, true));
+    mechanicList_.emplace_back(new MoveEntity(32.2, Target(TARGET_ENTITY, TARGET_TOTEMS, 1), Target(TARGET_POS, { 500, 750 }), 1000, true));
+    mechanicList_.emplace_back(new MoveEntity(32.2, Target(TARGET_ENTITY, TARGET_TOTEMS, 2), Target(TARGET_POS, { 750, 500 }), 1000, true));
+    mechanicList_.emplace_back(new MoveEntity(32.2, Target(TARGET_ENTITY, TARGET_TOTEMS, 3), Target(TARGET_POS, { 500, 250 }), 1000, true));
+
+    mechanicList_.emplace_back(new Tether(64, Target(TARGET_ENTITY, TARGET_TOTEMS, 0), Target(TARGET_ENTITY, TARGET_PLAYERS, 0), 500, 32, true, true));
+    mechanicList_.emplace_back(new Tether(64, Target(TARGET_ENTITY, TARGET_TOTEMS, 1), Target(TARGET_ENTITY, TARGET_PLAYERS, 1), 500, 32, true, true));
+    mechanicList_.emplace_back(new Tether(64, Target(TARGET_ENTITY, TARGET_TOTEMS, 2), Target(TARGET_ENTITY, TARGET_PLAYERS, 2), 500, 32, true, true));
+    mechanicList_.emplace_back(new Tether(64, Target(TARGET_ENTITY, TARGET_TOTEMS, 3), Target(TARGET_ENTITY, TARGET_PLAYERS, 3), 500, 32, true, true));
+
+    mode = 0;
+    for (int i = 0; i < 2; i++) {
+        for (int j = 0; j < 4; j++) {
+            float pad = (j + mode) % 2 == 0 ? 2 * i : 2 * i + 1;
+            mechanicList_.emplace_back(new NopeZone(64, 250, 250, 0, 32, Target(TARGET_POS, { 250 * pad, 250 * (float)j })));
+        }
+    }
+    
+    for (int i = 0; i < 2; i++) {
+        for (int j = 0; j < 4; j++) {
+            mechanicList_.emplace_back(new Spread(38 + 16 * i, 250, 1, 6, Target(TARGET_ENTITY, TARGET_PLAYERS, j, TARGET_FOLLOW)));
+        }
+        for (int j = 0; j < 2; j++) {
+            mechanicList_.emplace_back(new Spread(46 + 16 * i, 250, 2, 6, Target(TARGET_ENTITY, TARGET_PLAYERS, 2*j, TARGET_FOLLOW)));
+        }
+    }
+
+    // Couplet
+
+
+    song_.addCheckpoint(25, 64.1);
+
+
+    mechanicList_.emplace_back(new ActivateTotem(64.2, Target(TARGET_ENTITY, TARGET_TOTEMS, 0), true));
+    mechanicList_.emplace_back(new ActivateTotem(64.2, Target(TARGET_ENTITY, TARGET_TOTEMS, 1), true));
+    mechanicList_.emplace_back(new ActivateTotem(64.2, Target(TARGET_ENTITY, TARGET_TOTEMS, 2), true));
+    mechanicList_.emplace_back(new ActivateTotem(64.2, Target(TARGET_ENTITY, TARGET_TOTEMS, 3), true, 0x0000ffff));
+    mechanicList_.emplace_back(new MoveEntity(64.2, Target(TARGET_ENTITY, TARGET_TOTEMS, 0), Target(TARGET_POS, { 250, 500 }), 1000, true));
+    mechanicList_.emplace_back(new MoveEntity(64.2, Target(TARGET_ENTITY, TARGET_TOTEMS, 1), Target(TARGET_POS, { 500, 750 }), 1000, true));
+    mechanicList_.emplace_back(new MoveEntity(64.2, Target(TARGET_ENTITY, TARGET_TOTEMS, 2), Target(TARGET_POS, { 750, 500 }), 1000, true));
+    mechanicList_.emplace_back(new MoveEntity(64.2, Target(TARGET_ENTITY, TARGET_TOTEMS, 3), Target(TARGET_POS, { 500, 250 }), 1000, true));
+
+    mechanicList_.emplace_back(new Tether(128, Target(TARGET_ENTITY, TARGET_TOTEMS, 0), Target(TARGET_ENTITY, TARGET_PLAYERS, 0), 500, 64, true, true));
+    mechanicList_.emplace_back(new Tether(128, Target(TARGET_ENTITY, TARGET_TOTEMS, 1), Target(TARGET_ENTITY, TARGET_PLAYERS, 1), 500, 64, true, true));
+    mechanicList_.emplace_back(new Tether(128, Target(TARGET_ENTITY, TARGET_TOTEMS, 2), Target(TARGET_ENTITY, TARGET_PLAYERS, 2), 500, 64, true, true));
+    mechanicList_.emplace_back(new Tether(128, Target(TARGET_ENTITY, TARGET_TOTEMS, 3), Target(TARGET_ENTITY, TARGET_PLAYERS, 3), 500, 64, true, true));
+
+
+    mode = 0;
+    for (int i = 0; i < 2; i++) {
+        for (int j = 0; j < 4; j++) {
+            float pad = (j + mode) % 2 == 0 ? 2 * i : 2 * i + 1;
+            mechanicList_.emplace_back(new NopeZone(128, 250, 250, 0, 64, Target(TARGET_POS, { 250 * pad, 250 * (float)j })));
+        }
+    }
+
+    for (int i = 0; i < 4; i++) {
+        mechanicList_.emplace_back(new Cone(72 + 8 * i, 30, 1500, 1, 0, Target(TARGET_ENTITY, TARGET_TOTEMS, 3 - i), Target(TARGET_ENTITY, TARGET_PLAYERS, 3 - i)));
+
+        if (i >= 1) {
+            mechanicList_.emplace_back(new ActivateTotem(64 + 8 * i, Target(TARGET_ENTITY, TARGET_TOTEMS, 3 - i + 1), true, 0xffffffff));
+            mechanicList_.emplace_back(new ActivateTotem(64 + 8 * i, Target(TARGET_ENTITY, TARGET_TOTEMS, 3 - i), true, 0x0000ffff));
+        }
+    }
+
+    mechanicList_.emplace_back(new ActivateTotem(96, Target(TARGET_ENTITY, TARGET_TOTEMS, 0), true, 0xffffffff));
+    mechanicList_.emplace_back(new ActivateTotem(96, Target(TARGET_ENTITY, TARGET_TOTEMS, 3), true, 0xff0000ff));
+
+    for (int i = 0; i < 4; i++) {
+        mechanicList_.emplace_back(new Spread(104 + 8 * i, 500, 1, 0, Target(TARGET_ENTITY, TARGET_PLAYERS, 3 - i)));
+
+        if (i >= 1) {
+            mechanicList_.emplace_back(new ActivateTotem(96 + 8 * i, Target(TARGET_ENTITY, TARGET_TOTEMS, 3 - i + 1), true, 0xffffffff));
+            mechanicList_.emplace_back(new ActivateTotem(96 + 8 * i, Target(TARGET_ENTITY, TARGET_TOTEMS, 3 - i), true, 0xff0000ff));
+        }
+    }
+
+    //Riff
+
+    song_.addCheckpoint(51, 128.1);
+
+
+    mechanicList_.emplace_back(new ActivateTotem(128.2, Target(TARGET_ENTITY, TARGET_TOTEMS, 0), true));
+    mechanicList_.emplace_back(new ActivateTotem(128.2, Target(TARGET_ENTITY, TARGET_TOTEMS, 1), true));
+    mechanicList_.emplace_back(new ActivateTotem(128.2, Target(TARGET_ENTITY, TARGET_TOTEMS, 2), true));
+    mechanicList_.emplace_back(new ActivateTotem(128.2, Target(TARGET_ENTITY, TARGET_TOTEMS, 3), true));
+    mechanicList_.emplace_back(new MoveEntity(128.2, Target(TARGET_ENTITY, TARGET_TOTEMS, 0), Target(TARGET_POS, { 250, 500 }), 1000, true));
+    mechanicList_.emplace_back(new MoveEntity(128.2, Target(TARGET_ENTITY, TARGET_TOTEMS, 1), Target(TARGET_POS, { 500, 750 }), 1000, true));
+    mechanicList_.emplace_back(new MoveEntity(128.2, Target(TARGET_ENTITY, TARGET_TOTEMS, 2), Target(TARGET_POS, { 750, 500 }), 1000, true));
+    mechanicList_.emplace_back(new MoveEntity(128.2, Target(TARGET_ENTITY, TARGET_TOTEMS, 3), Target(TARGET_POS, { 500, 250 }), 1000, true));
+
+    mechanicList_.emplace_back(new Tether(160, Target(TARGET_ENTITY, TARGET_TOTEMS, 0), Target(TARGET_ENTITY, TARGET_PLAYERS, 0), 500, 32, true, true));
+    mechanicList_.emplace_back(new Tether(160, Target(TARGET_ENTITY, TARGET_TOTEMS, 1), Target(TARGET_ENTITY, TARGET_PLAYERS, 1), 500, 32, true, true));
+    mechanicList_.emplace_back(new Tether(160, Target(TARGET_ENTITY, TARGET_TOTEMS, 2), Target(TARGET_ENTITY, TARGET_PLAYERS, 2), 500, 32, true, true));
+    mechanicList_.emplace_back(new Tether(160, Target(TARGET_ENTITY, TARGET_TOTEMS, 3), Target(TARGET_ENTITY, TARGET_PLAYERS, 3), 500, 32, true, true));
+
+    mode = 1;
+    for (int i = 0; i < 2; i++) {
+        for (int j = 0; j < 4; j++) {
+            float pad = (j + mode) % 2 == 0 ? 2 * i : 2 * i + 1;
+            mechanicList_.emplace_back(new NopeZone(160, 250, 250, 0, 32, Target(TARGET_POS, { 250 * pad, 250 * (float)j })));
+        }
+    }
+
+    for (int i = 0; i < 2; i++) {
+        for (int j = 0; j < 4; j++) {
+            mechanicList_.emplace_back(new Spread(134 + 16 * i, 250, 1, 6, Target(TARGET_ENTITY, TARGET_PLAYERS, j, TARGET_FOLLOW)));
+            mechanicList_.emplace_back(new Spread(142 + 16 * i, 250, 0, 8, Target(TARGET_ENTITY, TARGET_PLAYERS, j, TARGET_ONINIT)));
+        }
+        for (int j = 0; j < 2; j++) {
+            mechanicList_.emplace_back(new Spread(142 + 16 * i, 250, 2, 6, Target(TARGET_ENTITY, TARGET_PLAYERS, 2 * j, TARGET_FOLLOW)));
+            if(i != 1)
+                mechanicList_.emplace_back(new Spread(150 + 16 * i, 250, 0, 8, Target(TARGET_ENTITY, TARGET_PLAYERS, j, TARGET_ONINIT)));
+        }
+    }
+
+    //Riff
+
+    song_.addCheckpoint(64, 160.1);
+
+
+    mechanicList_.emplace_back(new ActivateTotem(160.2, Target(TARGET_ENTITY, TARGET_TOTEMS, 0), true));
+    mechanicList_.emplace_back(new ActivateTotem(160.2, Target(TARGET_ENTITY, TARGET_TOTEMS, 1), true));
+    mechanicList_.emplace_back(new ActivateTotem(160.2, Target(TARGET_ENTITY, TARGET_TOTEMS, 2), true));
+    mechanicList_.emplace_back(new ActivateTotem(160.2, Target(TARGET_ENTITY, TARGET_TOTEMS, 3), true, 0x0000ffff));
+    mechanicList_.emplace_back(new MoveEntity(160.2, Target(TARGET_ENTITY, TARGET_TOTEMS, 0), Target(TARGET_POS, { 250, 500 }), 1000, true));
+    mechanicList_.emplace_back(new MoveEntity(160.2, Target(TARGET_ENTITY, TARGET_TOTEMS, 1), Target(TARGET_POS, { 500, 750 }), 1000, true));
+    mechanicList_.emplace_back(new MoveEntity(160.2, Target(TARGET_ENTITY, TARGET_TOTEMS, 2), Target(TARGET_POS, { 750, 500 }), 1000, true));
+    mechanicList_.emplace_back(new MoveEntity(160.2, Target(TARGET_ENTITY, TARGET_TOTEMS, 3), Target(TARGET_POS, { 500, 250 }), 1000, true));
+
+    mechanicList_.emplace_back(new Tether(192, Target(TARGET_ENTITY, TARGET_TOTEMS, 0), Target(TARGET_ENTITY, TARGET_PLAYERS, 0), 500, 32, true, true));
+    mechanicList_.emplace_back(new Tether(192, Target(TARGET_ENTITY, TARGET_TOTEMS, 1), Target(TARGET_ENTITY, TARGET_PLAYERS, 1), 500, 32, true, true));
+    mechanicList_.emplace_back(new Tether(192, Target(TARGET_ENTITY, TARGET_TOTEMS, 2), Target(TARGET_ENTITY, TARGET_PLAYERS, 2), 500, 32, true, true));
+    mechanicList_.emplace_back(new Tether(192, Target(TARGET_ENTITY, TARGET_TOTEMS, 3), Target(TARGET_ENTITY, TARGET_PLAYERS, 3), 500, 32, true, true));
+
+    mode = 0;
+    for (int i = 0; i < 2; i++) {
+        for (int j = 0; j < 4; j++) {
+            float pad = (j + mode) % 2 == 0 ? 2 * i : 2 * i + 1;
+            mechanicList_.emplace_back(new NopeZone(176, 250, 250, 0, 16, Target(TARGET_POS, { 250 * pad, 250 * (float)j })));
+        }
+    }
+
+    mode = 1;
+    for (int i = 0; i < 2; i++) {
+        for (int j = 0; j < 4; j++) {
+            float pad = (j + mode) % 2 == 0 ? 2 * i : 2 * i + 1;
+            mechanicList_.emplace_back(new NopeZone(192, 250, 250, 0, 16, Target(TARGET_POS, { 250 * pad, 250 * (float)j })));
+        }
+    }
+
+
+    for (int i = 0; i < 8; i++) {
+
+        if (i % 2 == 0) {
+            mechanicList_.emplace_back(new Cone(164 + 4 * i, 30, 1500, 1, 0, Target(TARGET_ENTITY, TARGET_TOTEMS, (7 - i) % 4), Target(TARGET_ENTITY, TARGET_PLAYERS, (7 - i) % 4)));
+
+            if (i >= 1) {
+                mechanicList_.emplace_back(new ActivateTotem(160 + 4 * i, Target(TARGET_ENTITY, TARGET_TOTEMS, (7 - i + 1) % 4), true, 0xffffffff));
+                mechanicList_.emplace_back(new ActivateTotem(160 + 4 * i, Target(TARGET_ENTITY, TARGET_TOTEMS, (7 - i) % 4), true, 0x0000ffff));
+            }
+        }
+        else {
+            mechanicList_.emplace_back(new Spread(164 + 4 * i, 500, 1, 0, Target(TARGET_ENTITY, TARGET_PLAYERS, (7 - i) % 4)));
+
+            if (i >= 1) {
+                mechanicList_.emplace_back(new ActivateTotem(160 + 4 * i, Target(TARGET_ENTITY, TARGET_TOTEMS, (7 - i + 1) % 4), true, 0xffffffff));
+                mechanicList_.emplace_back(new ActivateTotem(160 + 4 * i, Target(TARGET_ENTITY, TARGET_TOTEMS, (7 - i) % 4), true, 0xff0000ff));
+            }
+        }
+        
+    }
+    
+    // Refrain 2
+
+    song_.addCheckpoint(81, 192.1);
+
+
+    mechanicList_.emplace_back(new ActivateTotem(192.2, Target(TARGET_ENTITY, TARGET_TOTEMS, 0), true, 0xff0000ff));
+    mechanicList_.emplace_back(new ActivateTotem(192.2, Target(TARGET_ENTITY, TARGET_TOTEMS, 1), true, 0xff0000ff));
+    mechanicList_.emplace_back(new ActivateTotem(192.2, Target(TARGET_ENTITY, TARGET_TOTEMS, 2), true, 0xff0000ff));
+    mechanicList_.emplace_back(new ActivateTotem(192.2, Target(TARGET_ENTITY, TARGET_TOTEMS, 3), true, 0xff0000ff));
+    mechanicList_.emplace_back(new MoveEntity(192.2, Target(TARGET_ENTITY, TARGET_TOTEMS, 0), Target(TARGET_POS, { 250, 500 }), 1000, true));
+    mechanicList_.emplace_back(new MoveEntity(192.2, Target(TARGET_ENTITY, TARGET_TOTEMS, 1), Target(TARGET_POS, { 500, 750 }), 1000, true));
+    mechanicList_.emplace_back(new MoveEntity(192.2, Target(TARGET_ENTITY, TARGET_TOTEMS, 2), Target(TARGET_POS, { 750, 500 }), 1000, true));
+    mechanicList_.emplace_back(new MoveEntity(192.2, Target(TARGET_ENTITY, TARGET_TOTEMS, 3), Target(TARGET_POS, { 500, 250 }), 1000, true));
+
+    mechanicList_.emplace_back(new Tether(256, Target(TARGET_ENTITY, TARGET_TOTEMS, 0), Target(TARGET_ENTITY, TARGET_PLAYERS, 0), 500, 64, true, true));
+    mechanicList_.emplace_back(new Tether(256, Target(TARGET_ENTITY, TARGET_TOTEMS, 1), Target(TARGET_ENTITY, TARGET_PLAYERS, 1), 500, 64, true, true));
+    mechanicList_.emplace_back(new Tether(256, Target(TARGET_ENTITY, TARGET_TOTEMS, 2), Target(TARGET_ENTITY, TARGET_PLAYERS, 2), 500, 64, true, true));
+    mechanicList_.emplace_back(new Tether(256, Target(TARGET_ENTITY, TARGET_TOTEMS, 3), Target(TARGET_ENTITY, TARGET_PLAYERS, 3), 500, 64, true, true));
+
+    mode = 0;
+    for (int i = 0; i < 2; i++) {
+        for (int j = 0; j < 4; j++) {
+            float pad = (j + mode) % 2 == 0 ? 2 * i : 2 * i + 1;
+            mechanicList_.emplace_back(new NopeZone(224, 250, 250, 0, 32, Target(TARGET_POS, { 250 * pad, 250 * (float)j })));
+        }
+    }
+
+    mode = 1;
+    for (int i = 0; i < 2; i++) {
+        for (int j = 0; j < 4; j++) {
+            float pad = (j + mode) % 2 == 0 ? 2 * i : 2 * i + 1;
+            mechanicList_.emplace_back(new NopeZone(256, 250, 250, 0, 32, Target(TARGET_POS, { 250 * pad, 250 * (float)j })));
+        }
+    }
+
+
+    for (int j = 0; j < 4; j++) {
+        mechanicList_.emplace_back(new Spread(208, 500, 1, 0, Target(TARGET_ENTITY, TARGET_PLAYERS, j)));
+    }
+    mechanicList_.emplace_back(new ActivateTotem(208, Target(TARGET_ENTITY, TARGET_TOTEMS, 0), true, 0xff0000ff));
+    mechanicList_.emplace_back(new ActivateTotem(208, Target(TARGET_ENTITY, TARGET_TOTEMS, 1), true, 0x0000ffff));
+    mechanicList_.emplace_back(new ActivateTotem(208, Target(TARGET_ENTITY, TARGET_TOTEMS, 2), true, 0xffffffff));
+    mechanicList_.emplace_back(new ActivateTotem(208, Target(TARGET_ENTITY, TARGET_TOTEMS, 3), true, 0xffffffff));
+
+    mechanicList_.emplace_back(new Spread(224, 500, 1, 0, Target(TARGET_ENTITY, TARGET_PLAYERS, 0)));
+    mechanicList_.emplace_back(new Cone(224, 30, 1500, 1, 0, Target(TARGET_ENTITY, TARGET_TOTEMS, 1), Target(TARGET_ENTITY, TARGET_PLAYERS, 1)));
+    mechanicList_.emplace_back(new Spread(224, 250, 3, 16, Target(TARGET_ENTITY, TARGET_PLAYERS, 2, TARGET_FOLLOW)));
+
+
+    mechanicList_.emplace_back(new ActivateTotem(224, Target(TARGET_ENTITY, TARGET_TOTEMS, 0), true, 0x0000ffff));
+    mechanicList_.emplace_back(new ActivateTotem(224, Target(TARGET_ENTITY, TARGET_TOTEMS, 1), true, 0xff0000ff));
+    mechanicList_.emplace_back(new ActivateTotem(224, Target(TARGET_ENTITY, TARGET_TOTEMS, 2), true, 0xff0000ff));
+    mechanicList_.emplace_back(new ActivateTotem(224, Target(TARGET_ENTITY, TARGET_TOTEMS, 3), true, 0x0000ffff));
+
+    mechanicList_.emplace_back(new Spread(240, 250, 2, 16, Target(TARGET_ENTITY, TARGET_PLAYERS, 3, TARGET_FOLLOW)));
+    mechanicList_.emplace_back(new Cone(240, 30, 1500, 1, 0, Target(TARGET_ENTITY, TARGET_TOTEMS, 0), Target(TARGET_ENTITY, TARGET_PLAYERS, 0)));
+    mechanicList_.emplace_back(new Cone(240, 30, 1500, 1, 0, Target(TARGET_ENTITY, TARGET_TOTEMS, 3), Target(TARGET_ENTITY, TARGET_PLAYERS, 3)));
+    mechanicList_.emplace_back(new Spread(240, 500, 1, 0, Target(TARGET_ENTITY, TARGET_PLAYERS, 1)));
+    mechanicList_.emplace_back(new Spread(240, 500, 1, 0, Target(TARGET_ENTITY, TARGET_PLAYERS, 2)));
+
+
+    mechanicList_.emplace_back(new ActivateTotem(240, Target(TARGET_ENTITY, TARGET_TOTEMS, 0), true, 0x0000ffff));
+    mechanicList_.emplace_back(new ActivateTotem(240, Target(TARGET_ENTITY, TARGET_TOTEMS, 1), true, 0x0000ffff));
+    mechanicList_.emplace_back(new ActivateTotem(240, Target(TARGET_ENTITY, TARGET_TOTEMS, 2), true, 0x0000ffff));
+    mechanicList_.emplace_back(new ActivateTotem(240, Target(TARGET_ENTITY, TARGET_TOTEMS, 3), true, 0x0000ffff));
+
+    mechanicList_.emplace_back(new Cone(256, 30, 1500, 1, 0, Target(TARGET_ENTITY, TARGET_TOTEMS, 0), Target(TARGET_ENTITY, TARGET_PLAYERS, 0)));
+    mechanicList_.emplace_back(new Cone(256, 30, 1500, 1, 0, Target(TARGET_ENTITY, TARGET_TOTEMS, 1), Target(TARGET_ENTITY, TARGET_PLAYERS, 1)));
+    mechanicList_.emplace_back(new Cone(256, 30, 1500, 1, 0, Target(TARGET_ENTITY, TARGET_TOTEMS, 2), Target(TARGET_ENTITY, TARGET_PLAYERS, 2)));
+    mechanicList_.emplace_back(new Cone(256, 30, 1500, 1, 0, Target(TARGET_ENTITY, TARGET_TOTEMS, 3), Target(TARGET_ENTITY, TARGET_PLAYERS, 3)));
+
+    mechanicList_.emplace_back(new Spread(256, 250, 2, 16, Target(TARGET_ENTITY, TARGET_PLAYERS, 0, TARGET_FOLLOW)));
+    mechanicList_.emplace_back(new Spread(256, 250, 2, 16, Target(TARGET_ENTITY, TARGET_PLAYERS, 1, TARGET_FOLLOW)));
+
+
+    // Outro
+    song_.addCheckpoint(81, 256.1);
+
+    mechanicList_.emplace_back(new ActivateTotem(256.2, Target(TARGET_ENTITY, TARGET_TOTEMS, 0), true, 0xffffffff));
+    mechanicList_.emplace_back(new ActivateTotem(256.2, Target(TARGET_ENTITY, TARGET_TOTEMS, 1), true, 0xffffffff));
+    mechanicList_.emplace_back(new ActivateTotem(256.2, Target(TARGET_ENTITY, TARGET_TOTEMS, 2), true, 0xffffffff));
+    mechanicList_.emplace_back(new ActivateTotem(256.2, Target(TARGET_ENTITY, TARGET_TOTEMS, 3), true, 0xffffffff));
+    mechanicList_.emplace_back(new MoveEntity(256.2, Target(TARGET_ENTITY, TARGET_TOTEMS, 0), Target(TARGET_POS, { 250, 500 }), 1000, true));
+    mechanicList_.emplace_back(new MoveEntity(256.2, Target(TARGET_ENTITY, TARGET_TOTEMS, 1), Target(TARGET_POS, { 500, 750 }), 1000, true));
+    mechanicList_.emplace_back(new MoveEntity(256.2, Target(TARGET_ENTITY, TARGET_TOTEMS, 2), Target(TARGET_POS, { 750, 500 }), 1000, true));
+    mechanicList_.emplace_back(new MoveEntity(256.2, Target(TARGET_ENTITY, TARGET_TOTEMS, 3), Target(TARGET_POS, { 500, 250 }), 1000, true));
+
+
+    mode = 0;
+    for (int i = 0; i < 2; i++) {
+        for (int j = 0; j < 4; j++) {
+            float pad = (j + mode) % 2 == 0 ? 2 * i : 2 * i + 1;
+            mechanicList_.emplace_back(new NopeZone(288, 250, 250, 0, 32, Target(TARGET_POS, { 250 * pad, 250 * (float)j })));
+        }
+    }
+
+    mechanicList_.emplace_back(new Tether(300, Target(TARGET_ENTITY, TARGET_TOTEMS, 0), Target(TARGET_ENTITY, TARGET_PLAYERS, 0), 500, 64, true, true));
+    mechanicList_.emplace_back(new Tether(300, Target(TARGET_ENTITY, TARGET_TOTEMS, 1), Target(TARGET_ENTITY, TARGET_PLAYERS, 1), 500, 64, true, true));
+    mechanicList_.emplace_back(new Tether(300, Target(TARGET_ENTITY, TARGET_TOTEMS, 2), Target(TARGET_ENTITY, TARGET_PLAYERS, 2), 500, 64, true, true));
+    mechanicList_.emplace_back(new Tether(300, Target(TARGET_ENTITY, TARGET_TOTEMS, 3), Target(TARGET_ENTITY, TARGET_PLAYERS, 3), 500, 64, true, true));
+
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 4; j++) {
+            mechanicList_.emplace_back(new Spread(264 + 8 * i, 250, 1, 6, Target(TARGET_ENTITY, TARGET_PLAYERS, j, TARGET_FOLLOW)));
+            mechanicList_.emplace_back(new Spread(288, 250, 0, 24 - 8*i, Target(TARGET_ENTITY, TARGET_PLAYERS, j, TARGET_ONINIT)));
+        }
+    }
+
+    mechanicList_.emplace_back(new Spread(286, 250, 4, 6, Target(TARGET_ENTITY, TARGET_PLAYERS, 0, TARGET_FOLLOW)));

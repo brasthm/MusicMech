@@ -38,7 +38,7 @@ Spread::Spread(float beat, float radius, int nbShare, float active, const Target
     drawPriority_ = target_.timing == TARGET_FOLLOW ? 15: isShare_ ? 10 : 0;
 }
 
-void Spread::onDraw(const sf::Time &elapsed, sf::RenderWindow &window) {
+void Spread::onDraw(const sf::Time &elapsed, sf::RenderTarget &window) {
     if(draw_) {
         approachCircle_.draw(window);
         base_.setFillColor(backColor_.getCurrentColor());
@@ -92,7 +92,6 @@ void Spread::onApproach(const sf::Time &elapsed, float currentBeat, float curren
             backColor_.setCurrentTarget("good");
             backColor_.updateColor(elapsed);
         }
-
     }
 
     if(target_.timing == TARGET_FOLLOW) {
@@ -101,7 +100,7 @@ void Spread::onApproach(const sf::Time &elapsed, float currentBeat, float curren
 }
 
 void Spread::onPassed(const sf::Time &elapsed, float currentBeat, float currentPart, EntityManager &entities) {
-    if(isShare_) newRadius_ = radius_ * (1.f + 0.5f * (1.f - currentPart));
+    if(isShare_ && active_ != 0) newRadius_ = radius_ * (1.f + 0.5f * (1.f - currentPart));
 
     if(target_.timing == TARGET_ONBEAT) {
         updatePosition(entities);
@@ -158,7 +157,7 @@ void Spread::setColor() {
     sf::Uint32 outlineColor=0, fillColorPlayerIndicator=0, fillColor=0, fillColorFailed=0, approachColor=0;
 
     if(isShare_) {
-    if(target_.timing == TARGET_FOLLOW && nbShare_ == 1 && target_.team == TARGET_PLAYERS) {
+        if(target_.timing == TARGET_FOLLOW && nbShare_ == 1 && target_.team == TARGET_PLAYERS) {
             outlineColor = 0xFFD5CB88;
             fillColor = 0xB64F3888;
             fillColorFailed = 0x781F0B88;

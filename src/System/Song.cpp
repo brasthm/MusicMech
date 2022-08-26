@@ -13,9 +13,22 @@
 
 #include "../Mechanics/Spread.h"
 #include "../Mechanics/Tether.h"
-#include "../Mechanics/ApplyDebuff.h"
-#include "../Mechanics/MoveEntity.h"
+#include "../Mechanics/Cone.h"
+#include "../Mechanics/Donut.h"
+#include "../Mechanics/NopeZone.h"
 #include "../Mechanics/ActivateTotem.h"
+#include "../Mechanics/MoveEntity.h"
+#include "../Mechanics/ApplyDebuff.h"
+#include "../Mechanics/AddArena.h"
+#include "../Mechanics/ZoomArena.h"
+#include "../Mechanics/RotateArena.h"
+#include "../Mechanics/MoveArena.h"
+#include "../Mechanics/SnapArena.h"
+#include "../Mechanics/RemoveArena.h"
+#include "../Mechanics/DisplayImage.h"
+#include "../Mechanics/ClearArenaa.h"
+#include "../Mechanics/EndMap.h"
+
 
 std::pair<float, float> Song::getCurrentBeat(float ms)
 {
@@ -71,7 +84,7 @@ float Song::getCumulativeNBeats(float ms) {
 }
 
 
-void Song::load(const std::string& osuFile, sf::Music *music, std::vector<Mechanic *> &mechs) {
+void Song::load(const std::string& osuFile, sf::Music *music, std::vector<Mechanic *> &mechs, Arena* arena) {
     std::string osuPath = RessourceLoader::getPath(osuFile);
 
     // open osu file
@@ -88,12 +101,15 @@ void Song::load(const std::string& osuFile, sf::Music *music, std::vector<Mechan
     for(auto &mech:mechs)
         delete mech;
     mechs.clear();
+    if (arena != nullptr)
+        arena->clear();
 
     // parse osu file
 
     std::vector<std::string> toParse;
     if(music != nullptr)
         toParse.emplace_back("AudioFilename:");
+    toParse.emplace_back("[Arena]");
     toParse.emplace_back("[TimingPoints]");
     toParse.emplace_back("[Checkpoints]");
     toParse.emplace_back("[Objects]");
@@ -122,7 +138,8 @@ void Song::load(const std::string& osuFile, sf::Music *music, std::vector<Mechan
                     parsing++;
                 }
             }
-            else if (*parsing == "[TimingPoints]" || *parsing == "[Objects]" || *parsing == "[Checkpoints]") {
+            else if (*parsing == "[Arena]" || *parsing == "[TimingPoints]" || *parsing == "[Objects]" 
+                || *parsing == "[Checkpoints]") {
                 readnow = true;
                 continue;
             }
@@ -136,7 +153,7 @@ void Song::load(const std::string& osuFile, sf::Music *music, std::vector<Mechan
                 if (*parsing == "[TimingPoints]") {
                     float beatOffset = std::stof(words[0]);
                     float beatLength = std::stof(words[1]);
-                    int uninherited  = std::stoi(words[6]);
+                    int uninherited = std::stoi(words[6]);
 
                     if (uninherited == 1)
                     {
@@ -144,6 +161,10 @@ void Song::load(const std::string& osuFile, sf::Music *music, std::vector<Mechan
                         timingPoints_.emplace_back(beatOffset, beatLength);
                         currentTimingPoint_ = timingPoints_.begin();
                     }
+                }
+                else if (*parsing == "[Arena]"){
+                    if(arena != nullptr)
+                        arena->addRect(std::stof(words[0]), std::stof(words[1]), std::stof(words[2]), std::stof(words[3]));
                 }
                 else if (*parsing == "[Checkpoints]") {
                     float timestamp = std::stof(words[0]);
@@ -216,13 +237,150 @@ void Song::load(const std::string& osuFile, sf::Music *music, std::vector<Mechan
                         float beat;
                         bool val;
                         Target t;
+                        sf::Uint32 color;
 
                         beat = std::stof(words[1]);
                         val = std::stoi(words[2]) == 1;
+                        color = std::stoul(words[3]);
+                        t.parse(4, words);
+
+                        mechs.emplace_back(new ActivateTotem(beat, t, val, color));
+                    }
+                    else if (words[0] == "CONE") {
+                        float beat, active, width, distance;
+                        int nbShare;
+
+                        beat = std::stof(words[1]);
+                        nbShare = std::stoi(words[2]);
+                        width = std::stof(words[3]);
+                        distance = std::stof(words[4]);
+                        active = std::stof(words[5]);
+
+                        Target t1, t2;
+
+                        int off = t1.parse(6, words);
+                        t2.parse(off, words);
+
+                        mechs.emplace_back(new Cone(beat, width, distance, nbShare, active, t1, t2));
+                    }
+                    else if (words[0] == "DONUT") {
+                        float beat, active, minDist, maxDist;
+                        int nbShare;
+
+                        beat = std::stof(words[1]);
+                        nbShare = std::stoi(words[2]);
+                        minDist = std::stof(words[3]);
+                        maxDist = std::stof(words[4]);
+                        active = std::stof(words[5]);
+
+                        Target t;
+
+                        t.parse(6, words);
+
+                        mechs.emplace_back(new Donut(beat, minDist, maxDist, nbShare, active, t));
+                    }
+                    else if (words[0] == "NOPEZONE") {
+                        float beat, active, width, height;
+                        int nbShare;
+
+                        beat = std::stof(words[1]);
+                        nbShare = std::stoi(words[2]);
+                        width = std::stof(words[3]);
+                        height = std::stof(words[4]);
+                        active = std::stof(words[5]);
+
+                        Target t;
+
+                        t.parse(6, words);
+
+                        mechs.emplace_back(new NopeZone(beat, width, height, nbShare, active, t));
+                    }
+                    else if(words[0] == "MOVEARENA") {
+                        float beat, speed;
+                        Target t;
+
+                        beat = std::stof(words[1]);
+                        speed = std::stof(words[2]);
                         t.parse(3, words);
 
-                        mechs.emplace_back(new ActivateTotem(beat, t, val));
+                        mechs.emplace_back(new MoveArena(beat, t, speed));
                     }
+                    else if (words[0] == "REMOVEARENA") {
+                        float beat, index;
+
+                        beat = std::stof(words[1]);
+                        index = std::stof(words[2]);
+
+                        mechs.emplace_back(new RemoveArena(beat, index));
+                    }
+                    else if (words[0] == "ROTATEARENA") {
+                        float beat, angle, speed;
+
+                        beat = std::stof(words[1]);
+                        angle = std::stof(words[2]);
+                        speed = std::stof(words[3]);
+
+                        mechs.emplace_back(new RotateArena(beat, angle, speed));
+                    }
+                    else if (words[0] == "SNAPARENA") {
+                        float beat, activate;
+
+                        Target t;
+
+                        beat = std::stof(words[1]);
+                        activate = std::stof(words[2]);
+                        t.parse(3, words);
+
+                        mechs.emplace_back(new SnapArena(beat, activate, t));
+                    }
+                    else if (words[0] == "ZOOMARENA") {
+                        float beat, val, speed;
+
+                        beat = std::stof(words[1]);
+                        val = std::stof(words[2]);
+                        speed = std::stof(words[3]);
+
+                        mechs.emplace_back(new ZoomArena(beat, val, speed));
+                    }
+                    else if (words[0] == "DISPLAYIMAGE") {
+                        float beat, active;
+                        std::string path;
+
+                        beat = std::stof(words[1]);
+                        path = words[2];
+                        active = std::stoi(words[3]);
+
+                        Target t;
+                        t.parse(4, words);
+
+                        mechs.emplace_back(new DisplayImage(beat, path, active, t));
+                    }
+                    else if (words[0] == "ADDARENA") {
+                        float beat, ww, hh, xx, yy;
+
+                        beat = std::stof(words[1]);
+                        xx = std::stof(words[2]);
+                        yy = std::stof(words[3]);
+                        ww = std::stof(words[4]);
+                        hh = std::stof(words[5]);
+
+                        mechs.emplace_back(new AddArena(beat, xx, yy, ww, hh));
+                    }
+                    else if (words[0] == "CLEARARENA") {
+                        float beat;
+
+                        beat = std::stof(words[1]);
+
+                        mechs.emplace_back(new ClearArena(beat));
+                    }
+                    else if (words[0] == "ENDMAP") {
+                    float beat;
+
+                    beat = std::stof(words[1]);
+
+                    mechs.emplace_back(new EndMap(beat));
+                    }
+
                 }
             }
         }
@@ -292,10 +450,17 @@ void Song::resetCheckpoints() {
     checkpoints_.clear();
 }
 
-void Song::save(const std::string& filename, const std::vector<Mechanic *> &mechs) {
+void Song::save(const std::string& filename, const std::vector<Mechanic *> &mechs, Arena &arena) {
     std::ofstream file(filename);
 
-    file << "AudioFilename: " << audioFile_ << std::endl;
+    file << "[Arena]" << std::endl;
+    for (int i = 0; i < arena.getNbRects(); i++) {
+        auto rect = arena.getRects(i);
+        file << rect.left << "," << rect.top << "," << rect.width << "," << rect.height << std::endl;
+
+    }
+
+
     file << "[TimingPoints]" << std::endl;
     for(auto & timingPoint : timingPoints_) {
         file << timingPoint.first << "," << timingPoint.second << ",4,2,1,60,1,0" << std::endl;

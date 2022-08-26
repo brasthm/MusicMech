@@ -11,10 +11,12 @@
 #include "PlayerInfo.h"
 #include "../main.h"
 #include "../System/Song.h"
+#include "../System/Arena.h"
 #include "../Entity/EntityManager.h"
 #include "../Entity/Totem.h"
 #include "../Entity/Joueur.h"
 #include "../Mechanics/Mechanic.h"
+
 
 enum LobbyStatus {
     LOBBY_AVAILABLE,
@@ -37,7 +39,6 @@ private:
 
     float currentBeat_;
 
-
 public:
     inline Lobby() {
         status = LobbyStatus::LOBBY_AVAILABLE;
@@ -57,7 +58,7 @@ public:
 
     };
 
-    std::string name;
+    std::string name, beatmap, mode;
     LobbyStatus status;
     std::vector<PlayerInfo*> players;
     sf::Uint8 nbIn, limit;
@@ -68,6 +69,7 @@ public:
     void updateGame(sf::Time elapsed);
     void load(const std::string &filename);
     std::pair<float, float> getCheckpoint();
+    void resetTimer();
 
 };
 

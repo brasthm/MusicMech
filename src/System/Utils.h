@@ -25,6 +25,12 @@ namespace Utils {
     std::array<float, 4> diff(const std::array<float, 4> &a, const std::array<float, 4> &b);
     bool sameSign(float a, float b);
 
+    float min(float a, float b);
+    float max(float a, float b);
+
+    float sign(sf::Vector2f p1, sf::Vector2f p2, sf::Vector2f p3);
+    bool pointInTriangle(sf::Vector2f pt, sf::Vector2f v1, sf::Vector2f v2, sf::Vector2f v3);
+
     inline std::string& ltrim(std::string& s, const char* t = " \t\n\r\f\v")
     {
         s.erase(0, s.find_first_not_of(t));

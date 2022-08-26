@@ -18,9 +18,11 @@ Mechanic::Mechanic() {
 }
 
 void Mechanic::playSound() {
-    if(!played_ && !sound_.empty()) {
-        DJ::playSound(sound_);
-        played_ = true;
+    if (!IS_SERVER) {
+        if (!played_ && !sound_.empty()) {
+            DJ::playSound(sound_);
+            played_ = true;
+        }
     }
 }
 
@@ -89,7 +91,7 @@ void Mechanic::update(const sf::Time &elapsed, float currentBeat, EntityManager 
 
 }
 
-void Mechanic::draw(const sf::Time &elapsed, sf::RenderWindow &window) {
+void Mechanic::draw(const sf::Time &elapsed, sf::RenderTarget &window) {
     if(activate_)
         onDraw(elapsed, window);
 }
@@ -114,6 +116,12 @@ float Mechanic::getActive() const {
 
 bool Mechanic::isFailed() const {
     return checked_ && !passed_;
+}
+
+void Mechanic::negateFailed()
+{
+    if (checked_)
+        passed_ = true;
 }
 
 void Mechanic::reset(float beat) {

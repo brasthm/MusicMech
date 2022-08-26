@@ -11,12 +11,12 @@
 
 class Tether : public Mechanic {
     Target anchor1_, anchor2_;
-    sf::Vector2f pos1_, pos2_;
+    sf::Vector2f pos1_, pos2_, shift1_, shift2_;
     float minDist_;
     sf::RectangleShape tether_, indicator_;
     ShiftColor borderColor_, backColor_, indicatorColor_;
     bool drawArrow_;
-    sf::Time timer_;
+    sf::Time timer_, vibrate_;
 
     bool inward_, continu_;
 
@@ -24,7 +24,7 @@ class Tether : public Mechanic {
 
 public:
     Tether(float beat, const Target& t1, const Target& t2, float minDist, float active, bool inward, bool continu);
-    void onDraw(const sf::Time &elapsed, sf::RenderWindow &window) override;
+    void onDraw(const sf::Time &elapsed, sf::RenderTarget &window) override;
     void onCheck(const sf::Time &elapsed, float currentBeat, float cuurentPart, EntityManager &em) override;
     void onApproach(const sf::Time &elapsed, float currentBeat, float cuurentPart, EntityManager &em) override;
     void onPassed(const sf::Time &elapsed, float currentBeat, float currentPart, EntityManager &em) override;

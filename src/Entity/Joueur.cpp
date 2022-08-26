@@ -26,7 +26,7 @@ Joueur::Joueur() {
     baseSpeed_ = speed_;
 }
 
-void Joueur::update(sf::Time elapsed, float beat, bool hasFocus) {
+void Joueur::update(sf::Time elapsed, Arena* arena, float beat, bool hasFocus) {
 
     if(active_) {
         debuff_.update(elapsed, beat);
@@ -46,8 +46,8 @@ void Joueur::update(sf::Time elapsed, float beat, bool hasFocus) {
                 vecDep.x = 1;
             }
 
-            float deadzone = 0.15;
-            float maxzone = 0.85;
+            float deadzone = JOYSTICK_DEADZONE/100;
+            float maxzone = JOYSTICK_MAXZONE/100;
             const std::array<sf::Joystick::Axis, 2> stickX = { sf::Joystick::X, sf::Joystick::U };  // left stick, right stick
             const std::array<sf::Joystick::Axis, 2> stickY = { sf::Joystick::Y, sf::Joystick::V };
             //std::cout << "---" << std::endl;
@@ -87,6 +87,10 @@ void Joueur::update(sf::Time elapsed, float beat, bool hasFocus) {
 
             pos_ += vecDep*speed_*elapsed.asSeconds();
 
+            if (!arena->contains(pos_)) {
+                pos_ = arena->getClosest(pos_);
+            }
+
             if(!controlledByPlayer_) {
                 float newDiffX, newDiffY;
                 newDiffX = serv_pos_.x - pos_.x;
@@ -102,26 +106,17 @@ void Joueur::update(sf::Time elapsed, float beat, bool hasFocus) {
 
 }
 
-void Joueur::draw(sf::RenderWindow &window) {
+void Joueur::draw(sf::RenderTarget &window) {
     if(active_) {
         shape_.setPosition(serv_pos_);
-
         debuff_.draw(window, pos_);
+        shape_.setFillColor(sf::Color(color_ - 0x88));
 
-        if(controlledByPlayer_) {
-            shape_.setFillColor(sf::Color(0x3B00EA80));
-        }
-
-        else
-            shape_.setFillColor(sf::Color(0xFF007D80));
-
-        window.draw(shape_);
+        //window.draw(shape_);
 
         shape_.setPosition(pos_);
-        if(controlledByPlayer_)
-            shape_.setFillColor(sf::Color(0x3B00EAFF));
-        else
-            shape_.setFillColor(sf::Color(0xFF007DFF));
+
+        shape_.setFillColor(sf::Color(color_));
         window.draw(shape_);
     }
 }

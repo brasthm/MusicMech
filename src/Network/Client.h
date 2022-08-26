@@ -16,8 +16,12 @@ private:
     UDP_Port clientSocket_;
     sf::Int32 clientSeed_, challengeResponse_, index_;
     sf::Uint16 packetID_;
+    std::vector<Lobby> lobbyList_;
+    std::string lobbyIndex_;
+    int lobbyInd_, playerIndex_;
 public:
-    Client(std::string name);
+    Client(std::string name = "");
+    ~Client();
     bool connectToServer();
     bool disconectToServer();
     void sendCommand(const std::string& cmd);
@@ -25,18 +29,29 @@ public:
     int getIndex() const {return index_;};
     int updateFromServerPlayerPosition(std::vector<Joueur> &joueurs, std::pair<float, float> &checkpoint);
 
-    bool requestLobbyCreation(std::string &lobbyIndex, std::string name);
-    bool requestLobbyJoin(std::vector<Lobby> &lobbylist, std::string& lobbyIndex);
-    bool requestLobbyDisconnect(std::vector<Lobby> &lobbylist,  std::string& lobbyIndex);
-    bool requestLobbyList(std::vector<Lobby> &lobbylist);
-    bool requestLobbyInfo(Lobby &lobbylist, const std::string& id);
-    bool requestLaunchGame(const std::string& id);
-    bool sendEndGame(const std::string& id);
-    bool sendPauseGame(const std::string& id);
-    bool sendResumeGame(const std::string& id);
+    void changeName(const std::string& name);
 
-    bool monitorLobby(std::vector<Lobby> &lobbylist, std::string &roomID, int &state);
+    bool requestLobbyCreation(const std::string& name, const std::string& beatmap, const std::string& mode);
+    bool requestLobbyJoin(const std::string& lobbyIndex);
+    bool requestLobbyDisconnect();
+    bool requestLobbyList();
+    bool requestLobbyInfo(const std::string& lobbyIndex);
+    bool requestLaunchGame();
+    bool sendEndGame();
+    bool sendPauseGame();
+    bool sendResumeGame();
+    bool sendReady(sf::Uint32 color);
+    bool requestBeatmapChange(const std::string& beatmap, const std::string& mode);
 
+    bool monitorLobby(int &state);
+
+
+    std::string getLobbyIndex();
+    Lobby& getCurrentLobby();
+
+    Lobby& getLobby(int i);
+
+    int getPlayerIndex();
 
 };
 

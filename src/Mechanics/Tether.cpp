@@ -5,6 +5,7 @@
 #include "Tether.h"
 
 #include "../System/Utils.h"
+#include "../System/Random.h"
 #include "../main.h"
 #include <cmath>
 #include <iostream>
@@ -50,7 +51,7 @@ Tether::Tether(float beat, const Target& t1, const Target& t2, float minDist, fl
     Mechanic::setSoundName("Sound/normal-hitnormal.wav");
 }
 
-void Tether::onDraw(const sf::Time &elapsed, sf::RenderWindow &window) {
+void Tether::onDraw(const sf::Time &elapsed, sf::RenderTarget &window) {
     if(draw_) {
         tether_.setFillColor(backColor_.getCurrentColor());
         tether_.setOutlineColor(borderColor_.getCurrentColor());
@@ -79,11 +80,14 @@ void Tether::onCheck(const sf::Time &elapsed, float currentBeat, float currentPa
     }
     else {
         if(continu_) {
-            float mercy = active_ > 16 ? 4:2;
+            float mercy =  active_ > 4 ? 2 : 0;
             if(currentBeat > beat_ - active_ + mercy)
                 timer_ += elapsed;
-            if(timer_ >= sf::seconds(1))
+            if(timer_ >= sf::seconds(2))
                 checked_ = true;
+            if (timer_ >= sf::seconds(1)) {
+                vibrate_ += elapsed;
+            }
         }
         passed_ = false;
         borderColor_.setCurrentTarget("failed");
@@ -99,6 +103,19 @@ void Tether::onApproach(const sf::Time &elapsed, float currentBeat, float curren
     
     pos1_ = em.getPosition(anchor1_);
     pos2_ = em.getPosition(anchor2_);
+
+    if (timer_.asSeconds() > 1) {
+        if (vibrate_.asMilliseconds() > 50) {
+            vibrate_ = sf::seconds(0);
+            shift1_.x = Random::randint(-10, 10);
+            shift1_.y = Random::randint(-10, 10);
+            shift2_.x = Random::randint(-10, 10);
+            shift2_.y = Random::randint(-10, 10);
+        }
+        pos1_ += shift1_;
+        pos2_ += shift2_;
+    }
+
     
     
     

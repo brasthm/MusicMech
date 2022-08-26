@@ -9,6 +9,7 @@
 #include "../main.h"
 #include "PlayerInfo.h"
 #include "Lobby.h"
+#include "../System/SongData.h"
 
 #include <vector>
 #include <map>
@@ -23,6 +24,8 @@ private:
     std::vector<Lobby> lobbies;
     sf::Int32 serverSeed;
     sf::Clock serverTick;
+
+    SongDatabase songs;
 protected:
     void monitorAdminCommand(bool &loop);
     void monitorConnectRequest();

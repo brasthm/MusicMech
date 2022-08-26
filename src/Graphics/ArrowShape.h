@@ -18,7 +18,7 @@ private:
 
 public:
     ArrowShape();
-    void draw(sf::RenderWindow &window);
+    void draw(sf::RenderTarget &window);
     void update(const sf::Time &elapsed);
     void setPosition(sf::Vector2f pos);
     void setScale(float scale);

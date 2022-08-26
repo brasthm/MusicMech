@@ -1,0 +1,142 @@
+// Couplet 1
+song_.addCheckpoint(0, 0);
+    song_.addCheckpoint(9, 16);
+    mechanicList_.emplace_back(new Spread(20, 250, 1, 4, Target(TARGET_POS, {500, 500})));
+    mechanicList_.emplace_back(new Spread(28, 250, 2, 4, Target(TARGET_POS, { 500, 500 })));
+    mechanicList_.emplace_back(new Spread(37, 250, 3, 4, Target(TARGET_POS, { 500, 500 })));
+    mechanicList_.emplace_back(new Spread(44, 250, 4, 4, Target(TARGET_POS, { 500, 500 })));
+
+    // Couplet 2
+    song_.addCheckpoint(33, 50);
+
+    mechanicList_.emplace_back(new Tether(54, Target(TARGET_ENTITY, TARGET_PLAYERS, 0, TARGET_FOLLOW), 
+        Target(TARGET_ENTITY, TARGET_PLAYERS, 1, TARGET_FOLLOW), 600, 4, false, false));
+    mechanicList_.emplace_back(new Tether(54, Target(TARGET_ENTITY, TARGET_PLAYERS, 2, TARGET_FOLLOW),
+        Target(TARGET_ENTITY, TARGET_PLAYERS, 3, TARGET_FOLLOW), 600, 4, false, false));
+
+    mechanicList_.emplace_back(new Tether(60, Target(TARGET_ENTITY, TARGET_PLAYERS, 0, TARGET_FOLLOW),
+        Target(TARGET_ENTITY, TARGET_PLAYERS, 1, TARGET_FOLLOW), 200, 4, true, false));
+    mechanicList_.emplace_back(new Tether(60, Target(TARGET_ENTITY, TARGET_PLAYERS, 2, TARGET_FOLLOW),
+        Target(TARGET_ENTITY, TARGET_PLAYERS, 3, TARGET_FOLLOW), 200, 4, true, false));
+
+    // Refrain
+
+    song_.addCheckpoint(43, 64);
+
+    for (int ii = 0; ii < 8; ii++) {
+        int i = static_cast<float>(ii);
+        mechanicList_.emplace_back(new Spread(64 + 4 * i, 150 + 50*i, 1, 4, Target(TARGET_ENTITY, TARGET_PLAYERS, 0, TARGET_FOLLOW)));
+        mechanicList_.emplace_back(new Spread(65 + 4 * i, 150 + 50*i, 1, 4, Target(TARGET_ENTITY, TARGET_PLAYERS, 1, TARGET_FOLLOW)));
+        mechanicList_.emplace_back(new Spread(66 + 4 * i, 150 + 50*i, 1, 4, Target(TARGET_ENTITY, TARGET_PLAYERS, 2, TARGET_FOLLOW)));
+        mechanicList_.emplace_back(new Spread(67 + 4 * i, 150 + 50*i, 1, 4, Target(TARGET_ENTITY, TARGET_PLAYERS, 3, TARGET_FOLLOW)));
+    }
+
+    // Couplet 1
+
+    song_.addCheckpoint(66, 96);
+
+
+    mechanicList_.emplace_back(new Cone(100, 30, 1000, 1, 4, Target(TARGET_POS, { 500, 500 }), Target(TARGET_ENTITY, TARGET_PLAYERS, 0, TARGET_FOLLOW)));
+    mechanicList_.emplace_back(new Cone(108, 30, 1000, 2, 4, Target(TARGET_POS, { 500, 500 }), Target(TARGET_ENTITY, TARGET_PLAYERS, 1, TARGET_FOLLOW)));
+    mechanicList_.emplace_back(new Cone(117, 30, 1000, 3, 4, Target(TARGET_POS, { 500, 500 }), Target(TARGET_ENTITY, TARGET_PLAYERS, 2, TARGET_FOLLOW)));
+    mechanicList_.emplace_back(new Cone(124, 30, 1000, 4, 4, Target(TARGET_POS, { 500, 500 }), Target(TARGET_ENTITY, TARGET_PLAYERS, 3, TARGET_FOLLOW)));
+
+    // Couplet 2
+
+    song_.addCheckpoint(90, 130);
+
+    mechanicList_.emplace_back(new NopeZone(134, 500, 1000, 0, 4, Target(TARGET_POS, { 0, 0 })));
+    mechanicList_.emplace_back(new NopeZone(142, 500, 1000, 0, 4, Target(TARGET_POS, { 500, 0 })));
+
+    mechanicList_.emplace_back(new Tether(134, Target(TARGET_ENTITY, TARGET_PLAYERS, 0, TARGET_FOLLOW),
+        Target(TARGET_ENTITY, TARGET_PLAYERS, 1, TARGET_FOLLOW), 600, 4, false, false));
+    mechanicList_.emplace_back(new Tether(134, Target(TARGET_ENTITY, TARGET_PLAYERS, 2, TARGET_FOLLOW),
+        Target(TARGET_ENTITY, TARGET_PLAYERS, 3, TARGET_FOLLOW), 600, 4, false, false));
+
+    mechanicList_.emplace_back(new Tether(142, Target(TARGET_ENTITY, TARGET_PLAYERS, 0, TARGET_FOLLOW),
+        Target(TARGET_ENTITY, TARGET_PLAYERS, 1, TARGET_FOLLOW), 200, 4, true, false));
+    mechanicList_.emplace_back(new Tether(142, Target(TARGET_ENTITY, TARGET_PLAYERS, 2, TARGET_FOLLOW),
+        Target(TARGET_ENTITY, TARGET_PLAYERS, 3, TARGET_FOLLOW), 200, 4, true, false));
+
+
+    // Refrain 
+
+    song_.addCheckpoint(100, 144);
+
+    for (int i = 0; i < 8; i++) {
+        mechanicList_.emplace_back(new Cone(144 + i * 4, 15 + 15 * i, 2000, 1, 4, Target(TARGET_POS, { 500, 500 }), Target(TARGET_ENTITY, TARGET_PLAYERS, 0, TARGET_FOLLOW)));
+        mechanicList_.emplace_back(new Cone(145 + i * 4, 15 + 15 * i, 2000, 1, 4, Target(TARGET_POS, { 500, 500 }), Target(TARGET_ENTITY, TARGET_PLAYERS, 1, TARGET_FOLLOW)));
+        mechanicList_.emplace_back(new Cone(146 + i * 4, 15 + 15 * i, 2000, 1, 4, Target(TARGET_POS, { 500, 500 }), Target(TARGET_ENTITY, TARGET_PLAYERS, 2, TARGET_FOLLOW)));
+        mechanicList_.emplace_back(new Cone(147 + i * 4, 15 + 15 * i, 2000, 1, 4, Target(TARGET_POS, { 500, 500 }), Target(TARGET_ENTITY, TARGET_PLAYERS, 3, TARGET_FOLLOW)));
+    }
+
+    // Couplet 1
+
+    song_.addCheckpoint(123, 176);
+
+    mechanicList_.emplace_back(new Spread(180, 250, 1, 4, Target(TARGET_POS, { 500, 500 })));
+    mechanicList_.emplace_back(new Cone(188, 30, 1000, 2, 4, Target(TARGET_POS, { 500, 500 }), Target(TARGET_ENTITY, TARGET_PLAYERS, 1, TARGET_FOLLOW)));
+    mechanicList_.emplace_back(new Spread(197, 250, 3, 4, Target(TARGET_POS, { 500, 500 })));
+    mechanicList_.emplace_back(new Cone(204, 30, 1000, 4, 4, Target(TARGET_POS, { 500, 500 }), Target(TARGET_ENTITY, TARGET_PLAYERS, 3, TARGET_FOLLOW)));
+
+    // Couplet 2
+
+    song_.addCheckpoint(145, 208);
+
+    mechanicList_.emplace_back(new NopeZone(212, 500, 1000, 0, 4, Target(TARGET_POS, { 0, 0 })));
+    mechanicList_.emplace_back(new NopeZone(216, 1000, 500, 0, 4, Target(TARGET_POS, { 0, 0 })));
+    mechanicList_.emplace_back(new NopeZone(220, 500, 1000, 0, 4, Target(TARGET_POS, { 500, 0 })));
+    mechanicList_.emplace_back(new NopeZone(224, 1000, 500, 0, 4, Target(TARGET_POS, { 0, 500 })));
+
+    mechanicList_.emplace_back(new Tether(212, Target(TARGET_ENTITY, TARGET_PLAYERS, 0, TARGET_FOLLOW),
+        Target(TARGET_ENTITY, TARGET_PLAYERS, 1, TARGET_FOLLOW), 600, 4, false, false));
+    mechanicList_.emplace_back(new Tether(212, Target(TARGET_ENTITY, TARGET_PLAYERS, 2, TARGET_FOLLOW),
+        Target(TARGET_ENTITY, TARGET_PLAYERS, 3, TARGET_FOLLOW), 600, 4, false, false));
+
+    mechanicList_.emplace_back(new Tether(216, Target(TARGET_ENTITY, TARGET_PLAYERS, 0, TARGET_FOLLOW),
+        Target(TARGET_ENTITY, TARGET_PLAYERS, 1, TARGET_FOLLOW), 200, 4, true, false));
+    mechanicList_.emplace_back(new Tether(216, Target(TARGET_ENTITY, TARGET_PLAYERS, 2, TARGET_FOLLOW),
+        Target(TARGET_ENTITY, TARGET_PLAYERS, 3, TARGET_FOLLOW), 200, 4, true, false));
+
+
+    mechanicList_.emplace_back(new Tether(220, Target(TARGET_ENTITY, TARGET_PLAYERS, 0, TARGET_FOLLOW),
+        Target(TARGET_ENTITY, TARGET_PLAYERS, 2, TARGET_FOLLOW), 600, 4, false, false));
+    mechanicList_.emplace_back(new Tether(220, Target(TARGET_ENTITY, TARGET_PLAYERS, 1, TARGET_FOLLOW),
+        Target(TARGET_ENTITY, TARGET_PLAYERS, 3, TARGET_FOLLOW), 600, 4, false, false));
+
+    mechanicList_.emplace_back(new Tether(224, Target(TARGET_ENTITY, TARGET_PLAYERS, 0, TARGET_FOLLOW),
+        Target(TARGET_ENTITY, TARGET_PLAYERS, 2, TARGET_FOLLOW), 200, 4, true, false));
+    mechanicList_.emplace_back(new Tether(224, Target(TARGET_ENTITY, TARGET_PLAYERS, 1, TARGET_FOLLOW),
+        Target(TARGET_ENTITY, TARGET_PLAYERS, 3, TARGET_FOLLOW), 200, 4, true, false));
+
+
+    // Refrain
+
+    song_.addCheckpoint(180, 256);
+
+    mechanicList_.emplace_back(new NopeZone(268, 500, 1000, 0, 16, Target(TARGET_POS, { 0, 0 })));
+
+
+    for (int i = 0; i < 3; i++) {
+        mechanicList_.emplace_back(new Spread(256 + 4 * i, 150 + 30 * i, 1, 4, Target(TARGET_ENTITY, TARGET_PLAYERS, 0, TARGET_FOLLOW)));
+        mechanicList_.emplace_back(new Spread(257 + 4 * i, 150 + 30 * i, 1, 4, Target(TARGET_ENTITY, TARGET_PLAYERS, 2, TARGET_FOLLOW)));
+        mechanicList_.emplace_back(new Cone(258 + i * 4, 15 + 15 * i, 2000, 1, 4, Target(TARGET_POS, { 500, 500 }), Target(TARGET_ENTITY, TARGET_PLAYERS, 1, TARGET_FOLLOW)));
+        mechanicList_.emplace_back(new Cone(259 + i * 4, 15 + 15 * i, 2000, 1, 4, Target(TARGET_POS, { 500, 500 }), Target(TARGET_ENTITY, TARGET_PLAYERS, 3, TARGET_FOLLOW)));
+    }
+
+    mechanicList_.emplace_back(new NopeZone(284, 500, 1000, 0, 16, Target(TARGET_POS, { 500, 0 })));
+
+    for (int i = 0; i < 4; i++) {
+        mechanicList_.emplace_back(new Spread(272 + 4 * i, 150 + 30 * i, 1, 4, Target(TARGET_ENTITY, TARGET_PLAYERS, 1, TARGET_FOLLOW)));
+        mechanicList_.emplace_back(new Spread(273 + 4 * i, 150 + 30 * i, 1, 4, Target(TARGET_ENTITY, TARGET_PLAYERS, 3, TARGET_FOLLOW)));
+        mechanicList_.emplace_back(new Cone(274 + i * 4, 15 + 15 * i, 2000, 1, 4, Target(TARGET_POS, { 500, 500 }), Target(TARGET_ENTITY, TARGET_PLAYERS, 0, TARGET_FOLLOW)));
+        mechanicList_.emplace_back(new Cone(275 + i * 4, 15 + 15 * i, 2000, 1, 4, Target(TARGET_POS, { 500, 500 }), Target(TARGET_ENTITY, TARGET_PLAYERS, 2, TARGET_FOLLOW)));
+    }
+
+
+
+    mechanicList_.emplace_back(new Spread(292, 250, 4, 4, Target(TARGET_POS, { 300, 300 })));
+    mechanicList_.emplace_back(new Spread(296, 200, 4, 4, Target(TARGET_POS, { 400, 400 })));
+    mechanicList_.emplace_back(new Spread(300, 150, 4, 4, Target(TARGET_POS, { 500, 500 })));
+    mechanicList_.emplace_back(new Spread(304, 100, 4, 4, Target(TARGET_POS, { 600, 600 })));
+    mechanicList_.emplace_back(new Spread(308, 50, 4, 4, Target(TARGET_POS, { 700, 700 })));

@@ -92,9 +92,19 @@ void EntityManager::addTotem(Entity *totem) {
     totems_.push_back(totem);
 }
 
+void EntityManager::addArena(Arena* arena)
+{
+    arena_ = arena;
+}
+
 sf::Vector2f EntityManager::getPosition(Target &target) {
     Entity *en = getEntity(target);
     return en == nullptr ? target.pos:en->getPos();
+}
+
+Arena* EntityManager::getArena()
+{
+    return arena_;
 }
 
 int EntityManager::getRandomSequence(int n) {
@@ -187,18 +197,18 @@ int EntityManager::getBySorted(const Target &target, bool descending) {
 
     std::vector<std::pair<int, float>> distances;
 
-    Entity *t = getEntity(*target.target);
+    sf::Vector2f t = getPosition(*target.target);
 
     if(target.team == TARGET_TOTEMS) {
         for(int  i = 0; i < totems_.size(); i++)
             if(totems_[i]->getActive())
-                distances.emplace_back(i, Utils::distance(t->getPos(), totems_[i]->getPos()));
+                distances.emplace_back(i, Utils::distance(t, totems_[i]->getPos()));
     }
 
     if(target.team == TARGET_PLAYERS) {
         for(int  i = 0; i < players_.size(); i++)
             if(players_[i]->getActive())
-                distances.emplace_back(i, Utils::distance(t->getPos(), players_[i]->getPos()));
+                distances.emplace_back(i, Utils::distance(t, players_[i]->getPos()));
     }
 
     if(descending) {
@@ -219,8 +229,9 @@ int EntityManager::getBySorted(const Target &target, bool descending) {
     return distances[target.id].first;
 }
 
-void EntityManager::setActive(Target &target, bool val) {
+void EntityManager::setActive(Target &target, bool val, sf::Uint32 color) {
     getEntity(target)->setActive(val);
+    getEntity(target)->setColor(color);
 }
 
 void EntityManager::setTargetPosition(Target &entity, Target &target, float speed, bool isInstant) {
@@ -244,16 +255,75 @@ void EntityManager::clearPlayers() {
 }
 
 void EntityManager::clearTotems() {
-    players_.clear();
+    totems_.clear();
+}
+
+void EntityManager::clearArena()
+{
+    if(arena_ != nullptr)
+        arena_ = nullptr;
+}
+
+void EntityManager::resetArena()
+{
+    arena_->clear();
 }
 
 void EntityManager::clear() {
     clearTotems();
     clearPlayers();
+    clearArena();
     current_ = 0;
+    cleared_ = false;
 }
 
 void EntityManager::applyDebuff(Target &target, DebuffType type, float end) {
     getEntity(target)->applyDebuff(type, end);
+}
+
+void EntityManager::zoomArena(float val, float speed)
+{
+    if (arena_ != nullptr)
+        arena_->zoom(val, speed);
+}
+
+void EntityManager::rotateArena(float val, float speed)
+{
+    if (arena_ != nullptr)
+        arena_->rotate(val, speed);
+}
+
+void EntityManager::moveArena(float x, float y, float speed)
+{
+    if (arena_ != nullptr)
+        arena_->move(x, y, speed);
+}
+
+void EntityManager::snapArena(float x, float y)
+{
+    if (arena_ != nullptr)
+        arena_->snap(x, y);
+}
+
+void EntityManager::addArenaPortion(float x, float y, float w, float h)
+{
+    if (arena_ != nullptr)
+        arena_->addRect(x, y, w, h);
+}
+
+void EntityManager::removeArenaPortion(int index)
+{
+    if (arena_ != nullptr)
+        arena_->erase(index);
+}
+
+void EntityManager::startEndAnim()
+{
+    cleared_ = true;
+}
+
+bool EntityManager::getCleared()
+{
+    return cleared_;
 }
 

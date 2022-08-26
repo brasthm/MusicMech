@@ -20,7 +20,7 @@ public:
                     float c, float g);
     void updatePosition(sf::Vector2f position);
     void updateAlpha(float alpha);
-    void draw(sf::RenderWindow &window);
+    void draw(sf::RenderTarget &window);
     void updateLight(int nb);
 
     void setFillColor(sf::Uint32 fillColor);
