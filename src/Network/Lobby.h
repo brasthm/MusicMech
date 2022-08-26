@@ -55,7 +55,7 @@ public:
         id = "";
 
         failed = false;
-
+        paused = true;
     };
 
     std::string name, beatmap, mode;
