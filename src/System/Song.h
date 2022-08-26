@@ -24,11 +24,11 @@ private:
 public:
     Song();
 	~Song();
-	void load(const std::string& osuFile, sf::Music *music, std::vector<Mechanic*> &mech);
+	void load(const std::string& osuFile, sf::Music *music, std::vector<Mechanic*> &mech, Arena* arena);
     std::pair<float, float> getCurrentBeat(float ms);
 
 
-	void save(const std::string& file, const std::vector<Mechanic*> &mech);
+	void save(const std::string& file, const std::vector<Mechanic*> &mech, Arena &arena);
 
 
 

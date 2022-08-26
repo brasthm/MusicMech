@@ -28,20 +28,21 @@ public:
     Mechanic();
     ~Mechanic() = default;
     void update(const sf::Time &elapsed, float currentBeat, EntityManager &entities);
-    void draw(const sf::Time &elapsed, sf::RenderWindow &window);
+    void draw(const sf::Time &elapsed, sf::RenderTarget &window);
 
     int getDrawPriority() const;
     bool operator< (const Mechanic& mech) const;
     float getBeat() const;
     float getActive() const;
     bool isFailed() const;
+    void negateFailed();
 
     virtual void reset(float beat);
 
 
     virtual std::string toString() { return ""; };
     virtual inline void onInit(const sf::Time &elapsed, float currentBeat, float currentPart, EntityManager &entities) {};
-    virtual inline void onDraw(const sf::Time &elapsed, sf::RenderWindow &window) {};
+    virtual inline void onDraw(const sf::Time &elapsed, sf::RenderTarget &window) {};
     virtual inline void onCheck(const sf::Time &elapsed, float currentBeat, float currentPart, EntityManager &entities) {};
     virtual inline void onApproach(const sf::Time &elapsed, float currentBeat, float currentPart, EntityManager &entities) {};
     virtual inline void onPassed(const sf::Time &elapsed, float currentBeat, float currentPart, EntityManager &entities) {};

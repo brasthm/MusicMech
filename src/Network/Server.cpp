@@ -75,6 +75,12 @@ void Server::monitorAdminCommand(bool &loop) {
         else if(cmd == "timeout") {
 
         }
+        else if (cmd == "GOD_MODE") {
+            GOD_MODE = !GOD_MODE;
+            std::string s = GOD_MODE ? "God mode activated" : "God mode desactivated";
+            packet << s;
+            admin.send(packet, admin.getSender(), admin.getSenderPort());
+        }
         else if(cmd == "PLAYER_LIST") {
             std::string res;
 
@@ -300,8 +306,14 @@ void Server::sendPlayerData() {
                         packet << connected << lobbies[j].players[i]->x << lobbies[j].players[i]->y;
                     }
                     else {
-                        sf::Int32 err = 0;
-                        packet << false << err << err;
+                        if (GOD_MODE) {
+                            sf::Int32 err = 200 * i + 200;
+                            packet << true << err << 100;
+                        }
+                        else {
+                            sf::Int32 err = 0;
+                            packet << false << 0 << 0;
+                        }
                     }
 
                 }
@@ -347,12 +359,14 @@ void Server::monitorLobby() {
                     if(connectedPlayers[index].status == PlayerStatus::PLAYER_IDLE) {
                         int lobbyIndex = findFirstAvailableLobby(lobbies);
                         if(lobbyIndex != -1) {
-                            std::string lobbyName;
-                            lobby.getRecievedPacket() >> lobbyName;
+                            std::string lobbyName, beatmap, mode;
+                            lobby.getRecievedPacket() >> lobbyName >> beatmap >> mode;
                             lobbies[lobbyIndex].status = LobbyStatus::LOBBY_FILLING;
                             lobbies[lobbyIndex].players[0] = &connectedPlayers[index];
                             lobbies[lobbyIndex].name = lobbyName;
-                            lobbies[lobbyIndex].limit = NB_MAX_JOUEURS;
+                            lobbies[lobbyIndex].beatmap = beatmap;
+                            lobbies[lobbyIndex].mode = mode;
+                            lobbies[lobbyIndex].limit = mode=="2P"? 2:NB_MAX_JOUEURS;
                             lobbies[lobbyIndex].nbIn = 1;
 
                             connectedPlayers[index].status = PlayerStatus::PLAYER_WAITING;
@@ -396,7 +410,7 @@ void Server::monitorLobby() {
                                       lobbies[lobbyIndex].id << std::endl;
 
                             state = 32;
-                            packet << state;
+                            packet << state << playerIndex;
                             lobby.send(packet, lobby.getSender(), lobby.getSenderPort());
 
                             sendRoomLobbyNotif(lobbyIndex, state, 0);
@@ -459,24 +473,37 @@ void Server::monitorLobby() {
 
                     int lobbyIndex = findLobbyById(lobbies, lobbyID);
 
-                    if(lobbyIndex < SERVER_NB_MAX_LOBBY && lobbyIndex >= 0 /*&&
+                    if(lobbyIndex < SERVER_NB_MAX_LOBBY && lobbyIndex >= 0 /* &&
                        lobbies[lobbyIndex].nbIn == lobbies[lobbyIndex].limit*/) {
 
-                        lobbies[lobbyIndex].status = LobbyStatus::LOBBY_PLAYING;
-                        for(int i = 0; i < NB_MAX_JOUEURS; i++) {
-                            if(lobbies[lobbyIndex].players[i] != nullptr)
-                                lobbies[lobbyIndex].players[i]->status = PlayerStatus::PLAYER_PLAYING;
+                        bool good = true;
+                        for (int i = 0; i < lobbies[lobbyIndex].nbIn; i++) {
+                            good = good && lobbies[lobbyIndex].players[i]->status == PlayerStatus::PLAYER_READY;
                         }
+                        good = true;
+                        if (good) {
+                            lobbies[lobbyIndex].status = LobbyStatus::LOBBY_PLAYING;
+                            for (int i = 0; i < NB_MAX_JOUEURS; i++) {
+                                if (lobbies[lobbyIndex].players[i] != nullptr)
+                                    lobbies[lobbyIndex].players[i]->status = PlayerStatus::PLAYER_PLAYING;
+                            }
 
-                        lobbies[lobbyIndex].load("Beatmaps/1772712 DECO 27 - Ai Kotoba IV feat. Hatsune Miku/[2P] DECO27 - Ai Kotoba IV feat. Hatsune Miku.mm");
-                        lobbies[lobbyIndex].startGame();
+                            songs.setSelectedById(lobbies[lobbyIndex].beatmap);
+                            songs.setMode(lobbies[lobbyIndex].mode);
 
-                        std::cout << "LOBBY : Game launched in lobby " << lobbies[lobbyIndex].id << std::endl<< std::endl;
+                            lobbies[lobbyIndex].load(songs.getSelectedPath());
+                            lobbies[lobbyIndex].resetTimer();
+                            lobbies[lobbyIndex].startGame();
 
-                        state = 30;
-                        packet << state;
-                        lobby.send(packet, lobby.getSender(), lobby.getSenderPort());
-                        sendRoomLobbyNotif(lobbyIndex, state, 1);
+                            std::cout << "LOBBY : Game launched in lobby " << lobbies[lobbyIndex].id << std::endl;
+
+                            state = 30;
+                            packet << state;
+                            lobby.send(packet, lobby.getSender(), lobby.getSenderPort());
+                            sendRoomLobbyNotif(lobbyIndex, state, 1);
+                        }
+                        else
+                            state = 100;                       
                     }
                     else
                         state = 100;
@@ -496,7 +523,7 @@ void Server::monitorLobby() {
                                 lobbies[lobbyIndex].players[i]->status = PlayerStatus::PLAYER_WAITING;
                         }
 
-                        std::cout << "LOBBY : Game stopped in lobby " << lobbies[lobbyIndex].id << std::endl<< std::endl;
+                        std::cout << "LOBBY : Game stopped in lobby " << lobbies[lobbyIndex].id << std::endl;
 
                         state = 33;
                         packet << state;
@@ -515,7 +542,7 @@ void Server::monitorLobby() {
                     if(lobbyIndex < SERVER_NB_MAX_LOBBY && lobbyIndex >= 0 &&
                        lobbies[lobbyIndex].status == LobbyStatus::LOBBY_PLAYING) {
 
-                        std::cout << "LOBBY : Game paused in lobby " << lobbies[lobbyIndex].id << std::endl<< std::endl;
+                        std::cout << "LOBBY : Game paused in lobby " << lobbies[lobbyIndex].id << std::endl;
 
                         state = 34;
                         packet << state;
@@ -534,11 +561,85 @@ void Server::monitorLobby() {
                     if(lobbyIndex < SERVER_NB_MAX_LOBBY && lobbyIndex >= 0 &&
                        lobbies[lobbyIndex].status == LobbyStatus::LOBBY_PLAYING) {
 
-                        std::cout << "LOBBY : Game resume in lobby " << lobbies[lobbyIndex].id << std::endl<< std::endl;
+                        std::cout << "LOBBY : Game resume in lobby " << lobbies[lobbyIndex].id << std::endl;
 
                         lobbies[lobbyIndex].startGame();
 
                         state = 35;
+                        packet << state;
+                        lobby.send(packet, lobby.getSender(), lobby.getSenderPort());
+                        sendRoomLobbyNotif(lobbyIndex, state, 1);
+                    }
+                    else
+                        state = 100;
+                }
+                else if (state == 24) { //Player Ready
+                    std::string lobbyID;
+                    lobby.getRecievedPacket() >> lobbyID;
+
+                    int lobbyIndex = findLobbyById(lobbies, lobbyID);
+
+                    if (lobbyIndex < SERVER_NB_MAX_LOBBY && lobbyIndex >= 0 &&
+                        lobbies[lobbyIndex].status == LobbyStatus::LOBBY_FILLING) {
+
+                        int sender = findPlayerInLobby(lobbies, lobbyIndex, lobby.getSender(), lobby.getSenderPort());
+
+                        if (sender != -1) {
+                            lobby.getRecievedPacket() >> lobbies[lobbyIndex].players[sender]->color;
+                            if (lobbies[lobbyIndex].players[sender]->status == PlayerStatus::PLAYER_READY) {
+                                lobbies[lobbyIndex].players[sender]->status = PlayerStatus::PLAYER_WAITING;
+                                std::cout << "LOBBY : " << lobbies[lobbyIndex].players[sender]->name << " is no longer ready in " << lobbies[lobbyIndex].id << std::endl ;
+                            }
+                            else {
+                                lobbies[lobbyIndex].players[sender]->status = PlayerStatus::PLAYER_READY;
+                                std::cout << "LOBBY : " << lobbies[lobbyIndex].players[sender]->name << " is ready in " << lobbies[lobbyIndex].id << std::endl;
+                            }
+
+                            state = 32;
+                            packet << state;
+                            lobby.send(packet, lobby.getSender(), lobby.getSenderPort());
+                            sendRoomLobbyNotif(lobbyIndex, state, 1);
+                        }
+                        else
+                            state = 100;
+                    }
+                    else
+                        state = 100;
+                }
+                else if (state == 25) { // Change beatmap
+                    std::string lobbyID;
+                    lobby.getRecievedPacket() >> lobbyID;
+
+                    int lobbyIndex = findLobbyById(lobbies, lobbyID);
+
+                    if (lobbyIndex < SERVER_NB_MAX_LOBBY && lobbyIndex >= 0 &&
+                        lobbies[lobbyIndex].status == LobbyStatus::LOBBY_FILLING) {
+                        lobby.getRecievedPacket() >> lobbies[lobbyIndex].beatmap >> lobbies[lobbyIndex].mode;
+
+                        std::cout << "LOBBY : Beatmap changed to [" << lobbies[lobbyIndex].beatmap << "] " << 
+                            lobbies[lobbyIndex].mode << " in lobby " << lobbies[lobbyIndex].id << std::endl;
+
+                        for (int i = 0; i < lobbies[lobbyIndex].limit; i++) {
+                            if(lobbies[lobbyIndex].players[i] != nullptr)
+                                lobbies[lobbyIndex].players[i]->status = PlayerStatus::PLAYER_WAITING;
+                        }
+
+                        if (lobbies[lobbyIndex].mode == "2P" && lobbies[lobbyIndex].limit > 2) {
+                            sf::Packet p;
+                            sf::Uint8 data = 31;
+                            p << data;
+                            for (int i = 2; i < lobbies[lobbyIndex].limit; i++) {
+                                if (lobbies[lobbyIndex].players[i] != nullptr) {
+                                    lobby.send(p, lobbies[lobbyIndex].players[i]->address, lobbies[lobbyIndex].players[i]->port);
+                                }
+                            }
+                            lobbies[lobbyIndex].limit = 2;
+                        }
+                        else if (lobbies[lobbyIndex].mode == "4P" && lobbies[lobbyIndex].limit < 4) {
+                            lobbies[lobbyIndex].limit = 4;
+                        }
+
+                        state = 32;
                         packet << state;
                         lobby.send(packet, lobby.getSender(), lobby.getSenderPort());
                         sendRoomLobbyNotif(lobbyIndex, state, 1);
@@ -572,12 +673,19 @@ void Server::monitorLobby() {
                     int lobbyIndex = findLobbyById(lobbies, lobbyID);
                     if(lobbyIndex < SERVER_NB_MAX_LOBBY && lobbyIndex >= 0 &&
                     lobbies[lobbyIndex].status != LobbyStatus::LOBBY_AVAILABLE) {
-                        packet << state << lobbies[lobbyIndex].name << lobbies[lobbyIndex].nbIn << lobbies[lobbyIndex].limit;
+                        packet << state << 
+                            lobbies[lobbyIndex].name << 
+                            lobbies[lobbyIndex].nbIn << 
+                            lobbies[lobbyIndex].limit << 
+                            lobbies[lobbyIndex].beatmap << 
+                            lobbies[lobbyIndex].mode;
+
                         for(int i = 0; i < NB_MAX_JOUEURS; i++) {
                             if(lobbies[lobbyIndex].players[i] == nullptr)
-                                packet << "Vide";
+                                packet << PlayerStatus::PLAYER_DISCONNECTED << "" << 0;
                             else
-                                packet << lobbies[lobbyIndex].players[i]->name;
+                                packet << (sf::Uint8)lobbies[lobbyIndex].players[i]->status << lobbies[lobbyIndex].players[i]->name 
+                                << lobbies[lobbyIndex].players[i]->color;
                         }
                         lobby.send(packet, lobby.getSender(), lobby.getSenderPort());
                     }

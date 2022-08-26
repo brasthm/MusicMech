@@ -9,14 +9,16 @@
 #include <SFML/Network.hpp>
 #include "Entity.h"
 
+
+
 class Joueur : public Entity {
 private:
     bool controlledByPlayer_;
     std::string name_;
 public:
     Joueur();
-    void update(sf::Time elapsed, float beat, bool hasFocus) override;
-    void draw(sf::RenderWindow &window) override;
+    void update(sf::Time elapsed, Arena* arena, float beat, bool hasFocus) override;
+    void draw(sf::RenderTarget &window) override;
     void setControlledByPlayer(bool b) {controlledByPlayer_=b;};
     void setDataFromServer(sf::Packet &packet);
     void reset();

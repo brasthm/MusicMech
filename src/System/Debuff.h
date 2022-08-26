@@ -24,7 +24,7 @@ private:
 public:
     Debuff();
     void update(sf::Time elapsed, float beat);
-    void draw(sf::RenderWindow &window, sf::Vector2f position);
+    void draw(sf::RenderTarget &window, sf::Vector2f position);
     void apply(DebuffType, float end);
     void clense();
     DebuffType type();

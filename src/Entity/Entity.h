@@ -7,6 +7,7 @@
 
 #include <SFML/Graphics.hpp>
 #include "../System/Debuff.h"
+#include "../System/Arena.h"
 
 
 class Entity {
@@ -17,6 +18,7 @@ protected:
     float speed_=0, radius_=0, baseSpeed_=0;
     bool active_=false;
     Debuff debuff_;
+    sf::Uint32 color_;
 
 public:
     Entity() = default;
@@ -31,10 +33,11 @@ public:
     void setTarget(const sf::Vector2f &, float speed, bool isInstant);
     void setPosition(float x, float y);
 
-    virtual void update(sf::Time elapsed, float beat, bool hasFocus) = 0;
-    virtual void draw(sf::RenderWindow &window) = 0;
+    virtual void update(sf::Time elapsed, Arena* arena, float beat, bool hasFocus) = 0;
+    virtual void draw(sf::RenderTarget &window) = 0;
 
     void applyDebuff(DebuffType type, float end);
+    void setColor(sf::Uint32 color);
 };
 
 

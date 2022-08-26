@@ -45,6 +45,11 @@ RingShape::RingShape(sf::Vector2f center, float distance, float thickness, float
     init(center, distance, thickness, proportion, 0xFFFFFFFF);
 }
 
+RingShape::RingShape(sf::Vector2f center, float distance, float thickness, float proportion, sf::Uint32 color)
+{
+    init(center, distance, thickness, proportion, color);
+}
+
 void RingShape::init(sf::Vector2f center, float distance, float thickness, float proportion, sf::Uint32 color)
 {
     color_ = sf::Color(color);
@@ -75,7 +80,7 @@ void RingShape::setThickness(float thick)
     thickness_ = thick;
 }
 
-void RingShape::draw(sf::RenderWindow & window)
+void RingShape::draw(sf::RenderTarget & window)
 {
     for (int i = 0; i < triangles_.size(); i++)
         window.draw(triangles_[i]);
@@ -101,4 +106,75 @@ void RingShape::setCenter(sf::Vector2f center) {
 void RingShape::setFillColor(sf::Uint32 fillColor) {
     color_ = sf::Color(fillColor);
     update();
+}
+
+
+RingShapeOutline::RingShapeOutline(sf::Vector2f center, float distance, float thickness, float proportion, float outline) : 
+    center_(center, distance, thickness, proportion),
+    borderUp_(center, distance + thickness, outline, proportion), 
+    borderDown_(center, distance - outline, outline, proportion)
+
+{
+    proportion_ = proportion;
+    outlineThickness_ = outline;
+    distance_ = distance;
+}
+
+void RingShapeOutline::setDistance(float distance)
+{
+    center_.setDistance(distance);
+    borderUp_.setDistance(distance + proportion_);
+    borderDown_.setDistance(distance - outlineThickness_);
+}
+
+void RingShapeOutline::addDistance(float delta)
+{
+    center_.addDistance(delta);
+    borderUp_.addDistance(delta);
+    borderDown_.addDistance(delta);
+}
+
+void RingShapeOutline::setThickness(float thick)
+{
+    center_.setThickness(thick);
+    borderUp_.setDistance(distance_ + thick);
+}
+
+void RingShapeOutline::setAlpha(float alpha)
+{
+    center_.setAlpha(alpha);
+    borderUp_.setAlpha(alpha);
+    borderDown_.setAlpha(alpha);
+}
+
+void RingShapeOutline::setProportion(float proportion)
+{
+    center_.setProportion(proportion);
+    borderUp_.setProportion(proportion);
+    borderDown_.setProportion(proportion);
+}
+
+void RingShapeOutline::setCenter(sf::Vector2f center)
+{
+    center_.setCenter(center);
+    borderUp_.setCenter(center);
+    borderDown_.setCenter(center);
+}
+
+void RingShapeOutline::draw(sf::RenderTarget& window)
+{
+    center_.draw(window);
+    borderUp_.draw(window);
+    borderDown_.draw(window);
+}
+
+void RingShapeOutline::setFillColor(sf::Uint32 fillColor)
+{
+    center_.setFillColor(fillColor);
+}
+
+void RingShapeOutline::setOutlineColor(sf::Uint32 outlineColor)
+{
+    borderDown_.setFillColor(outlineColor);
+    borderUp_.setFillColor(outlineColor);
 }

@@ -1,0 +1,104 @@
+
+    // Intro
+    song_.addCheckpoint(0, 0);
+    mechanicList_.emplace_back(new MoveEntity(0, Target(TARGET_ENTITY, TARGET_PLAYERS, 0), Target(TARGET_POS, { 200, 200 }), 700, true));
+    mechanicList_.emplace_back(new MoveEntity(0, Target(TARGET_ENTITY, TARGET_PLAYERS, 1), Target(TARGET_POS, { 200, 800 }), 700, true));
+    mechanicList_.emplace_back(new MoveEntity(0, Target(TARGET_ENTITY, TARGET_PLAYERS, 2), Target(TARGET_POS, { 800, 200 }), 700, true));
+    mechanicList_.emplace_back(new MoveEntity(0, Target(TARGET_ENTITY, TARGET_PLAYERS, 3), Target(TARGET_POS, { 800, 800 }), 700, true));
+    mechanicList_.emplace_back(new ApplyDebuff(0, Target(TARGET_ENTITY, TARGET_PLAYERS, 0), DebuffType::DEBUFF_ROOT, 52));
+    mechanicList_.emplace_back(new ApplyDebuff(0, Target(TARGET_ENTITY, TARGET_PLAYERS, 1), DebuffType::DEBUFF_ROOT, 52));
+    mechanicList_.emplace_back(new ApplyDebuff(0, Target(TARGET_ENTITY, TARGET_PLAYERS, 2), DebuffType::DEBUFF_ROOT, 52));
+    mechanicList_.emplace_back(new ApplyDebuff(0, Target(TARGET_ENTITY, TARGET_PLAYERS, 3), DebuffType::DEBUFF_ROOT, 52));
+
+    mechanicList_.emplace_back(new DisplayImage(8, "Beatmaps/0/0.png", 8, Target(TARGET_POS, {160, 400})));
+    mechanicList_.emplace_back(new DisplayImage(20, "Beatmaps/0/1.png", 12, Target(TARGET_POS, { 30, 250 })));
+    mechanicList_.emplace_back(new DisplayImage(20, "Beatmaps/0/2.png", 8, Target(TARGET_POS, { 315, 450 })));
+    mechanicList_.emplace_back(new DisplayImage(32, "Beatmaps/0/3.png", 12, Target(TARGET_POS, { 50, 250 })));
+    mechanicList_.emplace_back(new DisplayImage(32, "Beatmaps/0/4.png", 8, Target(TARGET_POS, { 200, 540 })));
+
+
+    // Note
+    song_.addCheckpoint(17, 33);
+    mechanicList_.emplace_back(new Spread(64, 250, 4, 32, Target(TARGET_POS, {500, 500})));
+
+    mechanicList_.emplace_back(new DisplayImage(64, "Beatmaps/0/5.png", 32, Target(TARGET_POS, { 270, 15 })));
+    mechanicList_.emplace_back(new DisplayImage(64, "Beatmaps/0/6.png", 24, Target(TARGET_POS, { 480, 380 })));
+    mechanicList_.emplace_back(new DisplayImage(64, "Beatmaps/0/7.png", 16, Target(TARGET_POS, { 250, 810 })));
+    mechanicList_.emplace_back(new DisplayImage(64, "Beatmaps/0/8.png", 12, Target(TARGET_POS, { 15, 540 })));
+
+    // Lien
+    
+    song_.addCheckpoint(32, 64.1);
+
+    mechanicList_.emplace_back(new ActivateTotem(64.2, Target(TARGET_ENTITY, TARGET_TOTEMS, 0), true));
+    mechanicList_.emplace_back(new ActivateTotem(64.2, Target(TARGET_ENTITY, TARGET_TOTEMS, 1), true));
+
+    mechanicList_.emplace_back(new MoveEntity(64.2, Target(TARGET_ENTITY, TARGET_TOTEMS, 0), Target(TARGET_POS, { 100, 500 }), 1000, true));
+    mechanicList_.emplace_back(new MoveEntity(64.2, Target(TARGET_ENTITY, TARGET_TOTEMS, 1), Target(TARGET_POS, { 900, 500 }), 1000, true));
+
+    mechanicList_.emplace_back(new MoveEntity(74, Target(TARGET_ENTITY, TARGET_TOTEMS, 0), Target(TARGET_POS, { 400, 500 }), 200, false));
+    mechanicList_.emplace_back(new MoveEntity(74, Target(TARGET_ENTITY, TARGET_TOTEMS, 1), Target(TARGET_POS, { 600, 500 }), 200, false));
+
+    mechanicList_.emplace_back(new Tether(80, Target(TARGET_ENTITY, TARGET_TOTEMS, 0), Target(TARGET_ENTITY, TARGET_TOTEMS, 1), 300, 16, true, false));
+
+    mechanicList_.emplace_back(new DisplayImage(80, "Beatmaps/0/9.png", 16, Target(TARGET_POS, { 115, 200 })));
+    mechanicList_.emplace_back(new DisplayImage(80, "Beatmaps/0/10.png", 8, Target(TARGET_POS, { 140, 600 })));
+
+    mechanicList_.emplace_back(new MoveEntity(80, Target(TARGET_ENTITY, TARGET_TOTEMS, 0), Target(TARGET_POS, { 100, 100 }), 1000, true));
+    mechanicList_.emplace_back(new MoveEntity(80, Target(TARGET_ENTITY, TARGET_TOTEMS, 1), Target(TARGET_POS, { 900, 900 }), 1000, true));
+
+    mechanicList_.emplace_back(new MoveEntity(82, Target(TARGET_ENTITY, TARGET_TOTEMS, 0), Target(TARGET_POS, { 400, 400 }), 200, false));
+    mechanicList_.emplace_back(new MoveEntity(82, Target(TARGET_ENTITY, TARGET_TOTEMS, 1), Target(TARGET_POS, { 600, 600 }), 200, false));
+
+
+    mechanicList_.emplace_back(new DisplayImage(96, "Beatmaps/0/12.png", 16, Target(TARGET_POS, { 115, 200 })));
+    mechanicList_.emplace_back(new DisplayImage(96, "Beatmaps/0/13.png", 14, Target(TARGET_POS, { 615, 400 })));
+    mechanicList_.emplace_back(new DisplayImage(96, "Beatmaps/0/11.png", 8, Target(TARGET_POS, { 300, 750 })));
+
+
+    mechanicList_.emplace_back(new Tether(96, Target(TARGET_ENTITY, TARGET_TOTEMS, 0), Target(TARGET_ENTITY, TARGET_TOTEMS, 1), 400, 16, true, true));
+
+    mechanicList_.emplace_back(new ActivateTotem(96, Target(TARGET_ENTITY, TARGET_TOTEMS, 0), false));
+    mechanicList_.emplace_back(new ActivateTotem(96, Target(TARGET_ENTITY, TARGET_TOTEMS, 1), false));
+
+
+
+    // Note
+    song_.addCheckpoint(48, 97);
+
+    mechanicList_.emplace_back(new DisplayImage(112, "Beatmaps/0/14.png", 16, Target(TARGET_POS, { 145, 35 })));
+    mechanicList_.emplace_back(new DisplayImage(112, "Beatmaps/0/15.png", 12, Target(TARGET_POS, { 175, 840 })));
+
+    mechanicList_.emplace_back(new NopeZone(112, 500, 500, 0, 16, Target(TARGET_POS, { 250, 250 })));
+
+    mechanicList_.emplace_back(new DisplayImage(124, "Beatmaps/0/16.png", 12, Target(TARGET_POS, { 50, 290 })));
+    mechanicList_.emplace_back(new DisplayImage(124, "Beatmaps/0/17.png", 8, Target(TARGET_POS, { 220, 600 })));
+
+    // Mini situation
+
+    song_.addCheckpoint(57, 128);
+
+    for (int i = 0; i < 8; i++) {
+        if (i == 3) {
+            mechanicList_.emplace_back(new Tether(136 + 8 * i, Target(TARGET_ENTITY, TARGET_PLAYERS, 0), Target(TARGET_POS, { 500, 500 }), 400, 8, false, false));
+            mechanicList_.emplace_back(new Tether(136 + 8 * i, Target(TARGET_ENTITY, TARGET_PLAYERS, 1), Target(TARGET_POS, { 500, 500 }), 400, 8, false, false));
+            mechanicList_.emplace_back(new Tether(136 + 8 * i, Target(TARGET_ENTITY, TARGET_PLAYERS, 2), Target(TARGET_POS, { 500, 500 }), 400, 8, false, false));
+            mechanicList_.emplace_back(new Tether(136 + 8 * i, Target(TARGET_ENTITY, TARGET_PLAYERS, 3), Target(TARGET_POS, { 500, 500 }), 400, 8, false, false));
+
+        }
+        else if (i == 7) {
+            mechanicList_.emplace_back(new Spread(132.5 + 8 * i, 150, 4, 4, Target(TARGET_POS, { 500, 500 })));
+        }
+        else {
+            mechanicList_.emplace_back(new Spread(132 + 8 * i, 150, 1, 4, Target(TARGET_POS, { 200, 200 })));
+            mechanicList_.emplace_back(new Spread(132 + 8 * i, 150, 1, 4, Target(TARGET_POS, { 200, 800 })));
+            mechanicList_.emplace_back(new Spread(132 + 8 * i, 150, 1, 4, Target(TARGET_POS, { 800, 200 })));
+            mechanicList_.emplace_back(new Spread(132 + 8 * i, 150, 1, 4, Target(TARGET_POS, { 800, 800 })));
+
+            mechanicList_.emplace_back(new Spread(136 + 8 * i, 150, 2, 4, Target(TARGET_POS, { 300, 500 })));
+            mechanicList_.emplace_back(new Spread(136 + 8 * i, 150, 2, 4, Target(TARGET_POS, { 700, 500 })));
+        }
+        
+    }
+
+

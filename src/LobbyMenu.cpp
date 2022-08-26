@@ -36,10 +36,10 @@ int LobbyMenu::run(sf::RenderWindow &window, Game &game, Client &client) {
     ok = false;
 
     for(int i = 0; i < 10; i++) {
-        if(client.requestLobbyList(lobbyList_)) {
+        /*if (client.requestLobbyList(lobbyList_)) {
             ok = true;
             break;
-        }
+        }*/
     }
 
     if(!ok) {
@@ -73,50 +73,50 @@ int LobbyMenu::run(sf::RenderWindow &window, Game &game, Client &client) {
                     std::string inp;
                     std::getline(std::cin, inp);
                     std::getline(std::cin, inp);
-                    ok = client.requestLobbyCreation(index_, inp);
+                    /*ok = client.requestLobbyCreation(index_, inp);
                     ind_ = findFirstAvailableLobby(lobbyList_);
                     lobbyList_[ind_].id = index_;
                     ok = ok && client.requestLobbyInfo(lobbyList_[ind_], index_);
                     if(ok) state = 1;
-                    else std::cout << "Error on lobby room creation" << std::endl;
+                    else std::cout << "Error on lobby room creation" << std::endl;*/
                 }
                 else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num2)){
                     std::cout << "Room index : ";
                     int i;
                     std::cin >> i;
-                    ok = client.requestLobbyJoin(lobbyList_, lobbyList_[i].id);
+                   /* ok = client.requestLobbyJoin(lobbyList_, lobbyList_[i].id);
                     if(ok) {
                         index_ = lobbyList_[i].id;
                         ind_ = findLobbyById(lobbyList_, index_);
                         state = 1;
                     }
-                    else std::cout << "Error on lobby room conncection" << std::endl;
+                    else std::cout << "Error on lobby room conncection" << std::endl;*/
 
                 }
                 else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num3)){
-                    client.requestLobbyList(lobbyList_);
+                    //client.requestLobbyList(lobbyList_);
                 }
                 else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Num4))
                     quit = true;
             }
             else if(state == 1) {
                 if(sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
-                    ok = client.requestLobbyDisconnect(lobbyList_, index_);
+                    /*ok = client.requestLobbyDisconnect(lobbyList_, index_);
                     ok = ok && client.requestLobbyList(lobbyList_);
                     if(ok) state = 0;
-                    else std::cout << "Error on deconnection" << std::endl;
+                    else std::cout << "Error on deconnection" << std::endl;*/
                 }
                 if(sf::Keyboard::isKeyPressed(sf::Keyboard::Return)) {
-                    ok = client.requestLaunchGame(index_);
+                    /*ok = client.requestLaunchGame(index_);
                     if(ok) state = 3;
-                    else std::cout << "Error on deconnection" << std::endl;
+                    else std::cout << "Error on deconnection" << std::endl;*/
                 }
             }
         }
 
 
-        if(!client.monitorLobby(lobbyList_, index_, state))
-            std::cout << "MONITOR ERROR" << std::endl;
+        //if(!client.monitorLobby(lobbyList_, index_, state))
+            //std::cout << "MONITOR ERROR" << std::endl;
         if(state == 3) { // Launch game
             std::string seedString = index_ + std::to_string(retries_);
             for(int i = 0; i < lobbyList_[ind_].players.size(); i++) {
@@ -126,7 +126,7 @@ int LobbyMenu::run(sf::RenderWindow &window, Game &game, Client &client) {
             auto *seed = new std::seed_seq(seedString.begin(), seedString.end());
             Random::setSeed(seed);
             delete seed;
-            game.run(window, index_);
+           // game.run(window, index_);
             state = 1;
             retries_++;
 
@@ -202,7 +202,7 @@ int LobbyMenu::run(sf::RenderWindow &window, Game &game, Client &client) {
     }
 
     if(state == 1) {
-        client.requestLobbyDisconnect(lobbyList_, index_);
+        //client.requestLobbyDisconnect(lobbyList_, index_);
     }
 
     client.disconectToServer();

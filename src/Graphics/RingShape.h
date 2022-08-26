@@ -9,7 +9,6 @@
 #include "../main.h"
 
 
-
 class RingShape {
 private:
     const int NOTE_NB_POINTS = 100;
@@ -28,6 +27,7 @@ private:
 public :
     RingShape();
     RingShape(sf::Vector2f center, float distance, float thickness, float proportion);
+    RingShape(sf::Vector2f center, float distance, float thickness, float proportion, sf::Uint32 color);
     void init(sf::Vector2f center, float distance, float thickness, float proportion, sf::Uint32 color);
     void setDistance(float distance);
     void addDistance(float delta);
@@ -35,8 +35,26 @@ public :
     void setAlpha(float alpha);
     void setProportion(float proportion);
     void setCenter(sf::Vector2f center);
-    void draw(sf::RenderWindow &window);
+    void draw(sf::RenderTarget &window);
     void setFillColor(sf::Uint32 fillColor);
+};
+
+class RingShapeOutline {
+    float outlineThickness_, proportion_, distance_;
+
+    RingShape borderUp_, borderDown_, center_;
+
+public:
+    RingShapeOutline(sf::Vector2f center, float distance, float thickness, float proportion, float outline);
+    void setDistance(float distance);
+    void addDistance(float delta);
+    void setThickness(float thick);
+    void setAlpha(float alpha);
+    void setProportion(float proportion);
+    void setCenter(sf::Vector2f center);
+    void draw(sf::RenderTarget& window);
+    void setFillColor(sf::Uint32 fillColor);
+    void setOutlineColor(sf::Uint32 outlineColor);
 };
 
 

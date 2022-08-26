@@ -28,7 +28,7 @@ class Spread : public Mechanic {
 
 public:
     Spread(float beat, float radius, int nbShare, float active, const Target &target);
-    void onDraw(const sf::Time &elapsed, sf::RenderWindow &window) override;
+    void onDraw(const sf::Time &elapsed, sf::RenderTarget &window) override;
     void onCheck(const sf::Time &elapsed, float currentBeat, float cuurentPart, EntityManager &entities) override;
     void onApproach(const sf::Time &elapsed, float currentBeat, float cuurentPart, EntityManager &entities) override;
     void onPassed(const sf::Time &elapsed, float currentBeat, float currentPart, EntityManager &entities) override;

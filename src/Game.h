@@ -14,25 +14,28 @@
 #include "Entity/Totem.h"
 #include "Mechanics/Mechanic.h"
 #include "System/Song.h"
+#include "System/Arena.h"
 
 class Game {
 private:
     sf::Music music_;
-    Client *client_;
     bool online_;
     EntityManager em_;
     std::vector<Joueur> joueurs_;
     std::vector<Totem> totems_;
     std::vector<Mechanic*> mechanicList_;
     Song song_;
+    Arena arena_;
 public:
     explicit Game();
     ~Game();
-    Game(Client *client);
-    void run(sf::RenderWindow &window, const std::string& roomID);
+    void run(sf::RenderWindow &window, Client* client, bool creator);
     void load();
+    void load(const std::string &path);
     void save(const std::string &filename);
     void reset(float beat);
+    void clearPlayer();
+    void addPlayer(sf::Uint32 color);
 };
 
 

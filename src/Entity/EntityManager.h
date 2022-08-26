@@ -9,6 +9,8 @@
 #include <SFML/Graphics.hpp>
 #include "Entity.h"
 
+#include "../System/Arena.h"
+
 enum TargetType {
     TARGET_POS, TARGET_ENTITY,
     TARGET_RANDOM, TARGET_RANDOM8, TARGET_RANDOM4, TARGET_RANDOM3, TARGET_RANDOM2, TARGET_RANDOM_END,
@@ -53,11 +55,15 @@ private:
     std::vector<Entity*> players_;
     std::vector<Entity*> totems_;
 
+    Arena* arena_ = nullptr;
+
     std::vector<int> perm_;
     int current_ = 0;
 
     int getRandomSequence(int n);
     int getBySorted(const Target&target, bool descending=false);
+
+    bool cleared_ = false;
 
     Entity *getEntity(Target &target);
 
@@ -65,16 +71,29 @@ public:
     EntityManager() = default;
     void addPlayer(Entity* player);
     void addTotem(Entity* totem);
+    void addArena(Arena* arena);
     void clear();
     void clearPlayers();
     void clearTotems();
+    void clearArena();
+    void resetArena();
     sf::Vector2f getPosition(Target &target);
-    void setActive(Target &target, bool val);
+    Arena* getArena();
+    void setActive(Target &target, bool val, sf::Uint32 color);
     void setTargetPosition(Target &entity, Target &target, float speed, bool isInstant);
     int getSizePlayers();
     int getSizeTotems();
     bool getActive(Target &target);
     void applyDebuff(Target &target, DebuffType type, float end);
+    void zoomArena(float val, float speed);
+    void rotateArena(float val, float speed);
+    void moveArena(float x, float y, float speed);
+    void snapArena(float x, float y);
+    void addArenaPortion(float x, float y, float w, float h);
+    void removeArenaPortion(int index);
+   
+    void startEndAnim();
+    bool getCleared();
 
 };
 

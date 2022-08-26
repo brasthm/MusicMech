@@ -15,6 +15,11 @@ void Entity::applyDebuff(DebuffType type, float end) {
     debuff_.apply(type, end);
 }
 
+void Entity::setColor(sf::Uint32 color)
+{
+    color_ = color;
+}
+
 void Entity::setPosition(float x, float y) {
     pos_.x = x;
     pos_.y = y;

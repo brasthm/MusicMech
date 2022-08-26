@@ -26,6 +26,7 @@ public:
 
         status = PlayerStatus::PLAYER_DISCONNECTED;
         state = 0;
+        color = 0;
 
     }
     inline PlayerInfo(sf::IpAddress a, unsigned short p, sf::Int32 s, std::string n) {
@@ -40,6 +41,7 @@ public:
 
         status = PlayerStatus::PLAYER_DISCONNECTED;
         state = 0;
+        color = 0;
     };
     inline void clear() {
         address = sf::IpAddress::None;
@@ -50,6 +52,7 @@ public:
 
         status = PlayerStatus::PLAYER_DISCONNECTED;
         state = 0;
+        color = 0;
     };
 
     sf::IpAddress address;
@@ -59,6 +62,7 @@ public:
     sf::Uint8 state;
     std::string name;
     PlayerStatus status;
+    sf::Uint32 color;
 
 };
 

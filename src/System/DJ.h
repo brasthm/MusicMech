@@ -31,6 +31,10 @@ private:
         currentMusic_ = 0;
         clock_.restart();
         elapsed_ = sf::seconds(1);
+
+        for (int i = 0; i < NB_MAX_SOUND; i++) {
+            sounds_[i].setVolume(10);
+        }
     };
 
     inline ~DJ() {

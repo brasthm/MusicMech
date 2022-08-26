@@ -71,7 +71,7 @@ void PlayerIndicator::updateAlpha(float alpha) {
     }
 }
 
-void PlayerIndicator::draw(sf::RenderWindow &window) {
+void PlayerIndicator::draw(sf::RenderTarget &window) {
     for(int i = 0; i < lights_.size(); i++) {
         window.draw(lights_[i]);
     }

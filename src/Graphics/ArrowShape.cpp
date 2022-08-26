@@ -26,7 +26,7 @@ ArrowShape::ArrowShape() {
 
 }
 
-void ArrowShape::draw(sf::RenderWindow &window) {
+void ArrowShape::draw(sf::RenderTarget &window) {
     up_.setFillColor(color_.getCurrentColor());
     down_.setFillColor(color_.getCurrentColor());
 

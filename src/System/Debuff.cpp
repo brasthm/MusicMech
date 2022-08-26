@@ -36,7 +36,7 @@ void Debuff::update(sf::Time elapsed, float beat) {
     color_.updateColor(elapsed);
 }
 
-void Debuff::draw(sf::RenderWindow &window, sf::Vector2f position) {
+void Debuff::draw(sf::RenderTarget &window, sf::Vector2f position) {
     shape_.setFillColor(color_.getCurrentColor());
     shape_.setPosition(position);
     window.draw(shape_);

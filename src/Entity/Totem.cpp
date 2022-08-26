@@ -21,7 +21,7 @@ Totem::Totem() {
     baseSpeed_ = speed_;
 }
 
-void Totem::update(sf::Time elapsed, float beat, bool hasFocus) {
+void Totem::update(sf::Time elapsed, Arena* arena, float beat, bool hasFocus) {
     sf::Vector2f vecDep;
     if(active_) {
         vecDep = targetPos_ - pos_;
@@ -50,9 +50,10 @@ void Totem::update(sf::Time elapsed, float beat, bool hasFocus) {
     }
 }
 
-void Totem::draw(sf::RenderWindow &window) {
+void Totem::draw(sf::RenderTarget &window) {
     if(active_ && draw_) {
         shape_.setPosition(pos_);
+        shape_.setFillColor(sf::Color(color_));
         window.draw(shape_);
     }
 }

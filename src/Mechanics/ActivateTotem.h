@@ -10,8 +10,9 @@
 class ActivateTotem : public Mechanic {
     Target target_;
     bool val_;
+    sf::Uint32 color_;
 public:
-    ActivateTotem(float beat, const Target& target, bool val);
+    ActivateTotem(float beat, const Target& target, bool val, sf::Uint32 color = 0xFFFFFFFF);
 
     void onPassed(const sf::Time &elapsed, float currentBeat, float currentPart, EntityManager &entities) override;
 

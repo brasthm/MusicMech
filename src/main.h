@@ -11,6 +11,10 @@
 
 // Général
 
+
+inline bool IS_SERVER = false;
+inline bool GOD_MODE = false;
+
 static constexpr float PI = 3.14159265f;
 static constexpr float SQRT2 = 1.41421356237f;
 
@@ -27,13 +31,22 @@ static constexpr int NB_MAX_MUSIC = 5;
 static constexpr int ARENA_WIDTH = 1000;
 static constexpr int ARENA_HEIGHT = 1000;
 
+static constexpr int WIDOW_WIDTH = 1920;
+static constexpr int WIDOW_HEIGHT = 1080;
+
+
+static constexpr float JOYSTICK_DEADZONE = 15;
+static constexpr float JOYSTICK_MAXZONE = 85;
+
 // Server Info
 
 static const std::string SERVER_NAME = "MATCHMECHSERV";
 static const std::string SERVER_VERSION = "1.0";
 static constexpr int SERVER_NB_MAX_PLAYERS = 100;
-static constexpr int SERVER_NB_MAX_LOBBY = 100;
-static const sf::IpAddress SERVER_IP = "127.0.0.1";
+static constexpr int SERVER_NB_MAX_LOBBY = 50;
+//static const sf::IpAddress SERVER_IP = "77.140.124.65";
+inline sf::IpAddress SERVER_IP = "78.241.228.179";
+//static const sf::IpAddress SERVER_IP = "127.0.0.1";
 static constexpr unsigned short SERVER_ADMIN_PORT = 5000;
 static constexpr unsigned short SERVER_CONNECT_PORT = 5001;
 static constexpr unsigned short SERVER_GAME_PORT = 5002;

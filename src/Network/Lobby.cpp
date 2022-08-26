@@ -58,6 +58,7 @@ void Lobby::startGame() {
     auto check = getCheckpoint();
     position_ = sf::seconds(check.first);
     currentBeat_ = check.second;
+    std::cout << "Position : " << position_.asSeconds() << " Current Beat" << currentBeat_ << std::endl;
 
     for(auto & i : mechanics_) {
         i->reset(currentBeat_);
@@ -88,13 +89,13 @@ void Lobby::updateGame(sf::Time elapsed) {
         }
 
         for(auto & totem : totems_) {
-            totem.update(elapsed, currentBeat_, true);
+            totem.update(elapsed, nullptr, currentBeat_, true);
         }
 
         for(auto & mech : mechanics_) {
             mech->update(elapsed, currentBeat_, manager_);
 
-            if(mech->isFailed()) {
+            if(!GOD_MODE && mech->isFailed()) {
                 std::cout << mech->toString() << std::endl;
                 Target t = Target(TARGET_ENTITY, TARGET_PLAYERS, 0, TARGET_FOLLOW);
                 std::cout << manager_.getPosition(t).x << " " << manager_.getPosition(t).y << std::endl;
@@ -109,8 +110,13 @@ std::pair<float, float> Lobby::getCheckpoint() {
     return song_.getCurrentCheckpoint(currentBeat_);
 }
 
+void Lobby::resetTimer()
+{
+    position_ = sf::seconds(0);
+}
+
 void Lobby::load(const std::string &filename) {
     song_.load(filename,
                nullptr,
-               mechanics_);
+               mechanics_, nullptr);
 }
