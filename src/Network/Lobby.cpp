@@ -57,8 +57,9 @@ void Lobby::startGame() {
     timer_.restart();
     auto check = getCheckpoint();
     position_ = sf::seconds(check.first);
+    std::cout << "PrevPos : " << position_.asSeconds() << std::endl;
     currentBeat_ = check.second;
-    std::cout << "Position : " << position_.asSeconds() << " Current Beat" << currentBeat_ << std::endl;
+    std::cout << "Position : " << position_.asSeconds() << " Current Beat : " << currentBeat_ << std::endl;
 
     for(auto & i : mechanics_) {
         i->reset(currentBeat_);

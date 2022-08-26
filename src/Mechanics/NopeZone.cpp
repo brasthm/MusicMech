@@ -106,7 +106,7 @@ void NopeZone::onCheck(const sf::Time& elapsed, float currentBeat, float cuurent
         float mercy = 0;//active_ > 16 ? 4 : 2;
         if (currentBeat > beat_ - active_ + mercy)
             timer_ += elapsed;
-        if (timer_ >= sf::seconds(2))
+        if (timer_ >= sf::seconds(2.5))
             checked_ = true;
         if (timer_ >= sf::seconds(1)) {
             vibrate_ += elapsed;

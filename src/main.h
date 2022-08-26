@@ -13,7 +13,7 @@
 
 
 inline bool IS_SERVER = false;
-inline bool GOD_MODE = false;
+inline bool GOD_MODE = true;
 
 static constexpr float PI = 3.14159265f;
 static constexpr float SQRT2 = 1.41421356237f;
