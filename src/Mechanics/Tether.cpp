@@ -45,9 +45,6 @@ Tether::Tether(float beat, const Target& t1, const Target& t2, float minDist, fl
     arr1.setScale(1.5);
     arr2.setScale(1.5);
 
-    arr1.setColorSpeed({1,1,1, 1});
-    arr2.setColorSpeed({1,1,1, 1});
-
     min_ = inward_ ? 120 : 200;
 
     Mechanic::setSoundName("Sound/normal-hitnormal.wav");
@@ -231,6 +228,8 @@ void Tether::onFade(const sf::Time &elapsed, float currentBeat, float currentPar
     backColor_.setCurrentColor(3, 255*(1-currentPart));
     borderColor_.setCurrentColor(3, 255*(1-currentPart));
     indicatorColor_.setCurrentColor(3, 255*(1-currentPart));
+    arr1.setAlpha(255 * (1 - currentPart));
+    arr2.setAlpha(255 * (1 - currentPart));
     drawArrow_ = false;
 }
 

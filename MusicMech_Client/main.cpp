@@ -101,6 +101,7 @@ int console() {
             sf::ContextSettings settings;
             settings.antialiasingLevel = 16;
             sf::RenderWindow mainWindow(sf::VideoMode(WIDOW_WIDTH, WIDOW_HEIGHT), "Sychrobeat", sf::Style::Fullscreen, settings);
+            mainWindow.setFramerateLimit(60);
             int val;
             std::string roomName;
             title.play();
@@ -182,6 +183,7 @@ int game()
     sf::ContextSettings settings;
     settings.antialiasingLevel = 16;
     sf::RenderWindow mainWindow(sf::VideoMode(WIDOW_WIDTH, WIDOW_HEIGHT), "Sychrobeat", sf::Style::Fullscreen, settings);
+    mainWindow.setFramerateLimit(60);
     int val;
     std::string roomName;
     title.play();

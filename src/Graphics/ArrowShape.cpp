@@ -33,14 +33,16 @@ ArrowShape::ArrowShape() {
     outlineUp_.setFillColor(sf::Color::Black);
     outlineDown_.setFillColor(sf::Color::Black);
 
-    color_.addTarget("default", 0xFFFFFFFF);
-    color_.initCurrent("default");
-
+    outline_ = sf::Color::Black;
+    color_ = sf::Color::White;
 }
 
 void ArrowShape::draw(sf::RenderTarget &window) {
-    up_.setFillColor(color_.getCurrentColor());
-    down_.setFillColor(color_.getCurrentColor());
+    up_.setFillColor(color_);
+    down_.setFillColor(color_);
+
+    outlineUp_.setFillColor(outline_);
+    outlineDown_.setFillColor(outline_);
 
     window.draw(outlineUp_);
     window.draw(outlineDown_);
@@ -71,8 +73,6 @@ void ArrowShape::update(const sf::Time &elapsed) {
     outlineUp_.setPosition(position_.x + std::sqrt(5 * 5 * 2) * scale_ * std::cos(rotation_ * PI / 180), position_.y + std::sqrt(5 * 5 * 2) * scale_ * std::sin(rotation_ * PI / 180));
     outlineDown_.setPosition(position_.x + std::sqrt(5 * 5 * 2) * scale_ * std::cos(rotation_ * PI / 180), position_.y + std::sqrt(5 * 5 * 2) * scale_ * std::sin(rotation_ * PI / 180));
 
-
-    color_.updateColor(elapsed);
 }
 
 void ArrowShape::setPosition(sf::Vector2f pos) {
@@ -87,17 +87,17 @@ void ArrowShape::setRotation(float rotation) {
     rotation_ = rotation;
 }
 
-void ArrowShape::addColor(const std::string &key, sf::Uint32 color) {
-    color_.addTarget(key, color);
+void ArrowShape::setColor(sf::Uint32 color)
+{
+    color_ = sf::Color(color);
 }
 
-void ArrowShape::setCurrent(const std::string &key) {
-    color_.setCurrentTarget(key);
+void ArrowShape::setAlpha(float alpha)
+{
+    color_.a = alpha;
+    outline_.a = alpha;
 }
 
-void ArrowShape::setColorSpeed(const std::array<float, 4> &speed) {
-    color_.setSpeed(speed);
-}
 
 
 float ArrowShape::getWidth() const {

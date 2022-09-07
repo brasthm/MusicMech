@@ -10,7 +10,7 @@
 
 class ArrowShape {
 private:
-    ShiftColor color_;
+    sf::Color color_, outline_;
     sf::RectangleShape up_, down_;
     sf::RectangleShape outlineUp_, outlineDown_;
     sf::Vector2f position_;
@@ -24,9 +24,8 @@ public:
     void setPosition(sf::Vector2f pos);
     void setScale(float scale);
     void setRotation(float rotation);
-    void addColor(const std::string &key, sf::Uint32 color);
-    void setCurrent(const std::string &key);
-    void setColorSpeed(const std::array<float, 4> &speed);
+    void setColor(sf::Uint32 color);
+    void setAlpha(float alpha);
     float getWidth() const;
 
 };
