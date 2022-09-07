@@ -65,7 +65,7 @@ void Spread::onCheck(const sf::Time &elapsed, float currentBeat, float cuurentPa
 
     passed_ = nbIn_ == nbShare_;
 
-    if(isShare_) {
+    //if(isShare_) {
         if(passed_ || earlypassed_) {
             backColor_.setCurrentTarget("good");
         }
@@ -73,7 +73,7 @@ void Spread::onCheck(const sf::Time &elapsed, float currentBeat, float cuurentPa
             backColor_.setCurrentTarget("failed");
         }
         backColor_.updateColor(elapsed);
-    }
+    //}
 
     playerIndicator_.updateLight(nbIn_);
 }
@@ -100,8 +100,6 @@ void Spread::onApproach(const sf::Time &elapsed, float currentBeat, float curren
 }
 
 void Spread::onPassed(const sf::Time &elapsed, float currentBeat, float currentPart, EntityManager &entities) {
-    if(isShare_ && active_ != 0) newRadius_ = radius_ * (1.f + 0.5f * (1.f - currentPart));
-
     if(target_.timing == TARGET_ONBEAT) {
         updatePosition(entities);
     }
@@ -117,11 +115,7 @@ void Spread::onFade(const sf::Time &elapsed, float currentBeat, float currentPar
 
     approachCircle_.setAlpha(255*(1-currentPart));
 
-    backColor_.setCurrentColor(3, 255*(1-currentPart));
-
-    base_.setRadius(newRadius_);
-    base_.setPosition(position_.x - newRadius_, position_.y - newRadius_);
-    approachCircle_.setDistance(newRadius_ + 10);
+    backColor_.setCurrentColor(3, 255 * (1 - currentPart));
 
     playerIndicator_.updateAlpha(currentPart);
 }
@@ -158,26 +152,33 @@ void Spread::setColor() {
 
     if(isShare_) {
         if(target_.timing == TARGET_FOLLOW && nbShare_ == 1 && target_.team == TARGET_PLAYERS) {
-            outlineColor = 0xFFD5CB88;
-            fillColor = 0xB64F3888;
-            fillColorFailed = 0x781F0B88;
+            outlineColor = 0xFFD5CBFF;
+            fillColor = 0xB64F3860;
+            fillColorFailed = 0x781F0B60;
             fillColorPlayerIndicator = 0xFFD5CB00;
-            approachColor = 0xD3522788;
+            approachColor = 0xD35227FF;
+        }
+        else if (target_.type == TARGET_POS) {
+            outlineColor = 0xDAFB93FF;
+            fillColor = 0x89C17EBB;
+            fillColorFailed = 0x427538BB;
+            fillColorPlayerIndicator = 0xDAFB9300;
+            approachColor = 0x79CE1BFF;
         }
         else {
-            outlineColor = 0xDAFB9388;
-            fillColor = 0x89C17E88;
-            fillColorFailed = 0x42753888;
+            outlineColor = 0xDAFB93FF;
+            fillColor = 0x89C17E60;
+            fillColorFailed = 0x42753860;
             fillColorPlayerIndicator = 0xDAFB9300;
-            approachColor = 0x79CE1B88;
+            approachColor = 0x79CE1BFF;
         }
     }
     else {
-        outlineColor = 0xFFD5CB88;
-        fillColor = 0xB64F38FF;
-        fillColorFailed = 0x781F0B88;
+        outlineColor = 0xFFD5CBFF;
+        fillColor = 0xB64F38BB;
+        fillColorFailed = 0x781F0BBB;
         fillColorPlayerIndicator = 0xFFD5CB00;
-        approachColor = 0xD3522788;
+        approachColor = 0xD35227FF;
     }
 
     backColor_.setSpeed({0.1, 0.1, 0.1, 0.5});

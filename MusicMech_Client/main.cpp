@@ -49,17 +49,18 @@ int console() {
             else
                 std::cout << "Lobby creation failled" << std::endl;
         }
-        else if (cmd == "lj") {
-            std::string lobbyid;
-            std::cin >> lobbyid;
+        else if (cmd == "ip") {
+            std::string ip;
+            std::cin >> ip;
 
-            //c.requestLobbyJoin(lobbyid);
+            SERVER_IP = ip;
         }
-        else if (cmd == "ld") {
-            std::string lobbyid;
-            std::cin >> lobbyid;
+        else if (cmd == "name") {
+            std::string n;
+            std::cin >> n;
 
-            //c.requestLobbyDisconnect(lobbyid);
+            c.changeName(n);
+
         }
         else if (cmd == "ctrlr") {
             sf::RenderWindow mainWindow(sf::VideoMode(WIDOW_WIDTH / 10.f, WIDOW_HEIGHT / 10.f), "Sychrobeat");
@@ -219,16 +220,12 @@ int game()
         }
 
     }
-
-    //Game g(&c);
-    //g.load();
-    //lm.run(mainWindow, g, c);
     c.disconectToServer();
 }
 
 int main() {
     
-    //console();
-    game();
+    console();
+    //game();
     return 0;
 }

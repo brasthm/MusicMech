@@ -56,6 +56,7 @@ public:
 
         failed = false;
         paused = true;
+        currentBeat_ = 0;
     };
 
     std::string name, beatmap, mode;

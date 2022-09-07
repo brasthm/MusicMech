@@ -33,26 +33,33 @@ void Cone::setColor()
 
     if (isShare_) {
         if (anchor_.timing == TARGET_FOLLOW && nbShare_ == 1 && anchor_.team == TARGET_PLAYERS) {
-            outlineColor = 0xFFD5CB88;
-            fillColor = 0xB64F3888;
-            fillColorFailed = 0x781F0B88;
+            outlineColor = 0xFFD5CBFF;
+            fillColor = 0xB64F3860;
+            fillColorFailed = 0x781F0B60;
             fillColorPlayerIndicator = 0xFFD5CB00;
-            approachColor = 0xD3522788;
+            approachColor = 0xD35227FF;
+        }
+        else if(anchor_.type == TARGET_POS){
+            outlineColor = 0xDAFB93FF;
+            fillColor = 0x89C17EBB;
+            fillColorFailed = 0x427538BB;
+            fillColorPlayerIndicator = 0xDAFB9300;
+            approachColor = 0x79CE1BFF;
         }
         else {
-            outlineColor = 0xDAFB9388;
-            fillColor = 0x89C17E88;
-            fillColorFailed = 0x42753888;
+            outlineColor = 0xDAFB93FF;
+            fillColor = 0x89C17E60;
+            fillColorFailed = 0x42753860;
             fillColorPlayerIndicator = 0xDAFB9300;
-            approachColor = 0x79CE1B88;
+            approachColor = 0x79CE1BFF;
         }
     }
     else {
-        outlineColor = 0xFFD5CB88;
-        fillColor = 0xB64F38FF;
-        fillColorFailed = 0x781F0B88;
+        outlineColor = 0xFFD5CBFF;
+        fillColor = 0xB64F38BB;
+        fillColorFailed = 0x781F0BBB;
         fillColorPlayerIndicator = 0xFFD5CB00;
-        approachColor = 0xD3522788;
+        approachColor = 0xD35227BB;
     }
 
     backColor_.setSpeed({ 0.1, 0.1, 0.1, 0.5 });
