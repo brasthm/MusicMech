@@ -19,6 +19,7 @@ class Tether : public Mechanic {
     sf::Time timer_, vibrate_;
 
     bool inward_, continu_;
+    float min_;
 
     ArrowShape arr1, arr2;
 

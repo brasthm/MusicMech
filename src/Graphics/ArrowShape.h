@@ -12,6 +12,7 @@ class ArrowShape {
 private:
     ShiftColor color_;
     sf::RectangleShape up_, down_;
+    sf::RectangleShape outlineUp_, outlineDown_;
     sf::Vector2f position_;
     float rotation_;
     float scale_;

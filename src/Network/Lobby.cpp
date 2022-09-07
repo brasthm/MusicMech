@@ -57,7 +57,6 @@ void Lobby::startGame() {
     timer_.restart();
     auto check = getCheckpoint();
     position_ = sf::seconds(check.first);
-    std::cout << "PrevPos : " << position_.asSeconds() << std::endl;
     currentBeat_ = check.second;
     std::cout << "Position : " << position_.asSeconds() << " Current Beat : " << currentBeat_ << std::endl;
 
@@ -114,6 +113,7 @@ std::pair<float, float> Lobby::getCheckpoint() {
 void Lobby::resetTimer()
 {
     position_ = sf::seconds(0);
+    currentBeat_ = 0;
 }
 
 void Lobby::load(const std::string &filename) {

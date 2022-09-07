@@ -17,18 +17,18 @@ void NopeZone::setColor()
     sf::Uint32 outlineColor = 0, fillColorPlayerIndicator = 0, fillColor = 0, fillColorFailed = 0, approachColor = 0;
 
     if (isShare_) {
-        outlineColor = 0xDAFB9388;
-        fillColor = 0x89C17E88;
-        fillColorFailed = 0x42753888;
+        outlineColor = 0xDAFB93FF;
+        fillColor = 0x89C17EFF;
+        fillColorFailed = 0x427538FF;
         fillColorPlayerIndicator = 0xDAFB9300;
-        approachColor = 0x79CE1B88;
+        approachColor = 0x79CE1BFF;
     }
     else {
-        outlineColor = 0xFFD5CB88;
-        fillColor = 0xB64F3888;
-        fillColorFailed = 0x781F0B88;
+        outlineColor = 0xFFD5CBFF;
+        fillColor = 0xB64F38FF;
+        fillColorFailed = 0x781F0BFF;
         fillColorPlayerIndicator = 0xFFD5CB00;
-        approachColor = 0xD3522788;
+        approachColor = 0xD35227FF;
     }
 
     backColor_.setSpeed({ 0.1, 0.1, 0.1, 0.5 });

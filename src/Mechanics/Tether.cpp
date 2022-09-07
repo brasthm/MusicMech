@@ -48,6 +48,8 @@ Tether::Tether(float beat, const Target& t1, const Target& t2, float minDist, fl
     arr1.setColorSpeed({1,1,1, 1});
     arr2.setColorSpeed({1,1,1, 1});
 
+    min_ = inward_ ? 120 : 200;
+
     Mechanic::setSoundName("Sound/normal-hitnormal.wav");
 }
 
@@ -58,10 +60,9 @@ void Tether::onDraw(const sf::Time &elapsed, sf::RenderTarget &window) {
         indicator_.setFillColor(indicatorColor_.getCurrentColor());
         window.draw(indicator_);
         window.draw(tether_);
-        if(drawArrow_){
-            arr1.draw(window);
-            arr2.draw(window);
-        }
+        arr1.draw(window);
+        arr2.draw(window);
+        
     }
 }
 
@@ -103,14 +104,24 @@ void Tether::onApproach(const sf::Time &elapsed, float currentBeat, float curren
     
     pos1_ = em.getPosition(anchor1_);
     pos2_ = em.getPosition(anchor2_);
+    auto d = (float)Utils::distance(pos1_, pos2_);
 
     if (timer_.asSeconds() > 1) {
         if (vibrate_.asMilliseconds() > 50) {
             vibrate_ = sf::seconds(0);
-            shift1_.x = Random::randint(-10, 10);
-            shift1_.y = Random::randint(-10, 10);
-            shift2_.x = Random::randint(-10, 10);
-            shift2_.y = Random::randint(-10, 10);
+            if (d < min_) {
+                shift1_.x = Random::randint(-2, 2);
+                shift1_.y = Random::randint(-2, 2);
+                shift2_.x = Random::randint(-2, 2);
+                shift2_.y = Random::randint(-2, 2);
+            }
+            else{
+                shift1_.x = Random::randint(-10, 10);
+                shift1_.y = Random::randint(-10, 10);
+                shift2_.x = Random::randint(-10, 10);
+                shift2_.y = Random::randint(-10, 10);
+            }
+            
         }
         pos1_ += shift1_;
         pos2_ += shift2_;
@@ -119,7 +130,7 @@ void Tether::onApproach(const sf::Time &elapsed, float currentBeat, float curren
     
     
     
-    auto d = (float)Utils::distance(pos1_, pos2_);
+    
     tether_.setSize({d, 10});
     sf::Vector2f dir = (pos2_ - pos1_)/d;
     float signX = pos2_.x - pos1_.x > 0 ? 1:-1;
@@ -142,6 +153,8 @@ void Tether::onApproach(const sf::Time &elapsed, float currentBeat, float curren
     angle = 180 * angle / PI;
     tether_.setRotation(angle);
 
+    float prop = arr1.getWidth();
+
     if(continu_) {
         float position = 2*d*currentPart - d;
 
@@ -157,6 +170,17 @@ void Tether::onApproach(const sf::Time &elapsed, float currentBeat, float curren
             if(signX == 1) indicator_.setPosition(pos1_ + position*dir);
             else indicator_.setPosition(pos2_ - position*dir);
         }
+        if (inward_) {
+            arr1.setPosition((pos1_ + pos2_) * 0.5f - signX * 0.25f * (d - prop) * dir);
+            arr2.setPosition((pos1_ + pos2_) * 0.5f + signX * 0.25f * (d - prop) * dir);
+        }
+        else {
+            arr1.setPosition((pos1_ + pos2_) * 0.5f - signX * -0.25f * (d - prop) * dir);
+            arr2.setPosition((pos1_ + pos2_) * 0.5f + signX * -0.25f * (d - prop) * dir);
+        }
+
+        
+
     }
     else {
         float proportion = 1.f/active_ * (active_ - std::floor(beat_ - currentBeat + 1));
@@ -167,25 +191,33 @@ void Tether::onApproach(const sf::Time &elapsed, float currentBeat, float curren
         indicator_.setSize({proportion*d, 40});
         indicator_.setOrigin(proportion*d/2, 20);
         indicator_.setPosition((pos1_ + pos2_)/2.f);
+
+        if (inward_) {
+            arr1.setPosition((pos1_ + pos2_) * 0.5f - signX * (1 - proportion) * (d - prop) * 0.5f * dir);
+            arr2.setPosition((pos1_ + pos2_) * 0.5f + signX * (1 - proportion) * (d - prop) * 0.5f * dir);
+        }
+        else {
+            arr1.setPosition((pos1_ + pos2_) * 0.5f + signX * dir * prop + signX * proportion * (d - prop) * 0.5f * dir);
+            arr2.setPosition((pos1_ + pos2_) * 0.5f - signX * dir * prop - signX * proportion * (d - prop) * 0.5f * dir);
+        }
     }
 
     indicator_.setRotation(angle);
 
-    float prop = arr1.getWidth();
 
-    drawArrow_ = prop < d;
-
+    if (d < min_) {
+        if (inward_) {
+            arr1.setPosition((pos1_ + pos2_) * 0.5f - signX * min_ / 2.f * dir);
+            arr2.setPosition((pos1_ + pos2_) * 0.5f + signX * min_ / 2.f * dir);
+        }
+        else {
+            arr1.setPosition((pos1_ + pos2_) * 0.5f + signX * min_ / 2.f * dir);
+            arr2.setPosition((pos1_ + pos2_) * 0.5f - signX * min_ / 2.f * dir);
+        }
+    }
+    
     arr1.setRotation(angle);
     arr2.setRotation(angle+180);
-
-    if(inward_) {
-        arr1.setPosition((pos1_+pos2_)*0.5f - signX*(1-currentPart)*(d-prop)*0.5f*dir);
-        arr2.setPosition((pos1_+pos2_)*0.5f + signX*(1-currentPart)*(d-prop)*0.5f*dir);
-    }
-    else {
-        arr1.setPosition((pos1_+pos2_)*0.5f + signX*dir*prop + signX*currentPart*(d-prop)*0.5f*dir);
-        arr2.setPosition((pos1_+pos2_)*0.5f - signX*dir*prop - signX*currentPart*(d-prop)*0.5f*dir);
-    }
 
 
     arr1.update(elapsed);
