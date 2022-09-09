@@ -1,5 +1,6 @@
 #include "BackgoundAnimation.h"
 #include "../main.h"
+#include <cmath>
 
 BackgroundAnimation::BackgroundAnimation() : big_({2000, 400}, 200, 100), small_({ 2000,  250}, 125, 100)
 {
