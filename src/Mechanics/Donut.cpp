@@ -1,6 +1,7 @@
 #include "Donut.h"
 
 #include "../System/Utils.h"
+#include <cmath>
 
 void Donut::updatePosition(EntityManager& entityManager)
 {

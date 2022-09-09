@@ -1,6 +1,7 @@
 #include "Cone.h"
 
 #include "../System/Utils.h"
+#include <cmath>
 
 void Cone::updatePosition(EntityManager& entityManager)
 {
