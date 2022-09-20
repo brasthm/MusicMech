@@ -203,6 +203,9 @@ void Cone::reset(float beat)
 {
     setColor();
 
+    anchor_.reset();
+    center_.reset();
+
 
     Mechanic::reset(beat);
 }

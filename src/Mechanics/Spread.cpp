@@ -138,6 +138,7 @@ void Spread::reset(float beat) {
 
     setColor();
 
+    target_.reset();
 
     base_.setRadius(radius_);
     base_.setPosition(position_.x - radius_, position_.y - radius_);

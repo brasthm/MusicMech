@@ -83,6 +83,10 @@ int Target::parse(int offset, const std::vector<std::string> &words) {
     return offset + 7;
 }
 
+void Target::reset() {
+    save = -1;
+}
+
 
 void EntityManager::addPlayer(Entity *player) {
     players_.push_back(player);
@@ -173,7 +177,9 @@ Entity *EntityManager::getEntity(Target &target) {
             }
             return target.team == TARGET_TOTEMS ? totems_[target.save]:players_[target.save];
         case TARGET_CLOSEST:
-            if(target.timing != TARGET_FOLLOW) {
+            if(target.target == nullptr)
+                return nullptr;
+            if(target.target->timing != TARGET_FOLLOW) {
                 if(target.save == -1) {
                     target.save = getBySorted(target);
                 }
@@ -181,7 +187,9 @@ Entity *EntityManager::getEntity(Target &target) {
             }
             return target.team == TARGET_TOTEMS ? totems_[getBySorted(target)]:players_[getBySorted(target)];
         case TARGET_FURTHEST:
-            if(target.timing != TARGET_FOLLOW) {
+            if(target.target == nullptr)
+                return nullptr;
+            if(target.target->timing != TARGET_FOLLOW) {
                 if(target.save == -1) {
                     target.save = getBySorted(target, true);
                 }

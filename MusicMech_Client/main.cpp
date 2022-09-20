@@ -148,7 +148,7 @@ int console() {
         }
         else if (cmd == "save") {
             Game g;
-            g.load("");
+            g.load("a");
             g.save("output.txt");
 
         }
