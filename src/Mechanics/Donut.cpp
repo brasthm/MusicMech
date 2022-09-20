@@ -185,6 +185,8 @@ void Donut::reset(float beat)
 {
     setColor();
 
+    target_.reset();
+
     Mechanic::reset(beat);
 }
 

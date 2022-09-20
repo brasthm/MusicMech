@@ -240,6 +240,9 @@ void Tether::reset(float beat) {
 
     timer_ = sf::seconds(0);
 
+    anchor1_.reset();
+    anchor2_.reset();
+
     Mechanic::reset(beat);
 }
 
