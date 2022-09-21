@@ -72,19 +72,19 @@ void Game::run(sf::RenderWindow &window, Client* client, bool creator) {
     beat_text.setFont(RessourceLoader::getFont("Font/Roboto-Regular.ttf"));
     beat_text.setCharacterSize(30);
 
-    beat_serv_text.setFont(RessourceLoader::getFont("font/Roboto-Regular.ttf"));
+    beat_serv_text.setFont(RessourceLoader::getFont("Font/Roboto-Regular.ttf"));
     beat_serv_text.setCharacterSize(18);
     beat_serv_text.setPosition(0,20*2);
 
     beat_serv_text.setString("Server position: 0 (+0)");
 
-    ping_text.setFont(RessourceLoader::getFont("font/Roboto-Regular.ttf"));
+    ping_text.setFont(RessourceLoader::getFont("Font/Roboto-Regular.ttf"));
     ping_text.setCharacterSize(18);
     ping_text.setPosition(0, 20 * 3);
 
     ping_text.setString("Ping: 0");
 
-    godmode_text.setFont(RessourceLoader::getFont("font/Roboto-Regular.ttf"));
+    godmode_text.setFont(RessourceLoader::getFont("Font/Roboto-Regular.ttf"));
     godmode_text.setCharacterSize(18);
     godmode_text.setPosition(0, 20 * 4);
 
