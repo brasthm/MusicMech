@@ -112,7 +112,7 @@ void Joueur::draw(sf::RenderTarget &window) {
         debuff_.draw(window, pos_);
         shape_.setFillColor(sf::Color(color_ - 0x88));
 
-        //window.draw(shape_);
+        window.draw(shape_);
 
         shape_.setPosition(pos_);
 
@@ -124,7 +124,15 @@ void Joueur::draw(sf::RenderTarget &window) {
 
 void Joueur::setDataFromServer(sf::Packet &packet)  {
     sf::Int32 x, y;
-    packet >> active_ >> x >> y;
+    bool active;
+    packet >> active >> x >> y;
+
+    if (!packet) {
+        std::cout << "TCP_SOCKET : Invalid packet (setDataFromServer)." << std::endl;
+        return;
+    }
+
+    active_ = active;
     serv_pos_.x = x;
     serv_pos_.y = y;
 }

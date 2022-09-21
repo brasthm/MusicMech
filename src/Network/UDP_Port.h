@@ -68,8 +68,13 @@ public:
         return {recievedIP_, recievedPort_};
     }
 
+    unsigned short getPort();
+
     bool recieve();
     void send(sf::Packet &packet, sf::IpAddress address, unsigned short port);
+    bool valid();
+
+    sf::UdpSocket& getSocket();
 };
 
 

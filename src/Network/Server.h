@@ -6,10 +6,11 @@
 #define MUSICMECH_SERVER_SERVER_H
 
 #include "UDP_Port.h"
-#include "../main.h"
+#include "TCP_Socket.h"
 #include "PlayerInfo.h"
 #include "Lobby.h"
 #include "../System/SongData.h"
+#include "../main.h"
 
 #include <vector>
 #include <map>
@@ -18,26 +19,36 @@
 
 class Server {
 private:
-    UDP_Port admin, connect, game, lobby;
-    std::vector<PlayerInfo> connectedPlayers;
-    std::map<std::pair<sf::IpAddress, unsigned short>, PlayerInfo> connectionState;
-    std::vector<Lobby> lobbies;
-    sf::Int32 serverSeed;
-    sf::Clock serverTick;
+    UDP_Port admin_, game_;
+    std::vector<PlayerInfo> players_;
+    std::vector<Lobby> lobbies_;
+    sf::Int32 serverSeed_;
+    sf::Clock serverTick_;
 
-    SongDatabase songs;
+    SongDatabase songs_;
+
+    std::vector<TCP_Socket*> clients_;
+    sf::TcpListener connector_;
+    bool accepting_ = false, creating_ = false, closing_ = false;
+
+    sf::SocketSelector selector_;
 protected:
-    void monitorAdminCommand(bool &loop);
-    void monitorConnectRequest();
+    void monitorAdminCommand();
     void monitorPlayerData();
-    void sendPlayerData();
-    void monitorLobby();
+    void monitorClient(int i);
     void updateLobbies(sf::Time elapsed);
+    void sendPlayerData();
+
+
+    void accept(TCP_Socket* newEntry);
+    void cleanup();
 
 
     bool checkConnected(sf::IpAddress address, unsigned short port);
     int findConnected(sf::IpAddress address, unsigned short port);
+    int findUDPConnected(sf::IpAddress address, unsigned short port);
     int findFistAvailableConnected();
+    int findLobbyContainingPlayer(sf::IpAddress address, unsigned short port);
 
     void sendRoomLobbyNotif(int index, sf::Uint8 state, sf::Uint8 param);
 

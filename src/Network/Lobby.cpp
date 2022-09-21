@@ -116,6 +116,11 @@ void Lobby::resetTimer()
     currentBeat_ = 0;
 }
 
+float Lobby::getCurrentBeat()
+{
+    return currentBeat_;
+}
+
 void Lobby::load(const std::string &filename) {
     song_.load(filename,
                nullptr,

@@ -56,24 +56,34 @@ void Game::run(sf::RenderWindow &window, Client* client, bool creator) {
     bool godmode = false;
 
 
-    sf::Clock fps, send;
+    sf::Clock fps, send, ping;
 
     int current = client->getPlayerIndex();
 
-    sf::Text fps_text, beat_text, godmode_text;
+    sf::Text fps_text, beat_text, beat_serv_text, ping_text ,godmode_text;
 
     fps_text.setFont(RessourceLoader::getFont("font/Roboto-Regular.ttf"));
-    fps_text.setCharacterSize(30);
+    fps_text.setCharacterSize(18);
 
     beat_text.setFont(RessourceLoader::getFont("font/Roboto-Regular.ttf"));
-    beat_text.setCharacterSize(30);
+    beat_text.setCharacterSize(18);
+    beat_text.setPosition(0,20);
 
-    beat_text.setPosition(0,32);
+    beat_serv_text.setFont(RessourceLoader::getFont("font/Roboto-Regular.ttf"));
+    beat_serv_text.setCharacterSize(18);
+    beat_serv_text.setPosition(0,20*2);
+
+    beat_serv_text.setString("Server position: 0 (+0)");
+
+    ping_text.setFont(RessourceLoader::getFont("font/Roboto-Regular.ttf"));
+    ping_text.setCharacterSize(18);
+    ping_text.setPosition(0, 20 * 3);
+
+    ping_text.setString("Ping: 0");
 
     godmode_text.setFont(RessourceLoader::getFont("font/Roboto-Regular.ttf"));
-    godmode_text.setCharacterSize(30);
-
-    godmode_text.setPosition(0,32*2);
+    godmode_text.setCharacterSize(18);
+    godmode_text.setPosition(0, 20 * 4);
 
 
     joueurs_[current].setActive(true);
@@ -95,7 +105,7 @@ void Game::run(sf::RenderWindow &window, Client* client, bool creator) {
 
     music_.play();
 
-    bool exit = false, interupted = false, sent = false, failed = false, resume = false, paused = false;
+    bool exit = false, interupted = false, sent = false, failed = false, resume = false, paused = false, refreshPing = false;
 
     std::pair<float, float> checkpoint;
 
@@ -116,6 +126,8 @@ void Game::run(sf::RenderWindow &window, Client* client, bool creator) {
    pauseText.setCharacterSize(108);
    pauseText.setPosition(WIDOW_WIDTH/2.f - pauseText.getGlobalBounds().width/2.f, 250);
    pauseText.setFillColor(sf::Color::White);
+
+   //client->requestPing();
 
     window.setKeyRepeatEnabled(false);
     while (!exit)
@@ -196,10 +208,10 @@ void Game::run(sf::RenderWindow &window, Client* client, bool creator) {
         }
 
 
-        godmode_text.setString(GOD_MODE ? "Godmode : true":"Godmode : false");
+        godmode_text.setString(GOD_MODE ? "Godmode: true":"Godmode : false");
 
-        fps_text.setString(std::to_string(1.f/elapsedTime.asSeconds()));
-        beat_text.setString(std::to_string(currentBeat_float));
+        fps_text.setString("FPS: " + std::to_string(1.f / elapsedTime.asSeconds()));
+        beat_text.setString("Position:" + std::to_string(currentBeat_float));
 
         bool newfailed = false;
 
@@ -228,21 +240,37 @@ void Game::run(sf::RenderWindow &window, Client* client, bool creator) {
             arena_.update(elapsedTime);
         }
 
+        if (ping.getElapsedTime().asSeconds() > 0.1) {
+            ping.restart();
+
+            client->requestPing();
+        }
+
         if(!exit) {
             int res = client->updateFromServerPlayerPosition(joueurs_, checkpoint);
             exit = res == 1;
             newfailed = newfailed || res == 2;
             if(failed) resume = res == 3;
+            refreshPing = res == 4;
         }
 
         if (paused) {
             pauseButtons.update(elapsedTime);
         }
 
+        if (refreshPing) {
+            refreshPing = false;
+
+            float serverbeat = client->getServerBeat();
+            float off = currentBeat_float - serverbeat;
+
+            ping_text.setString("Ping: " + std::to_string(client->getPing()));
+            beat_serv_text.setString("Server position: " + std::to_string(serverbeat) + " (" + std::to_string(off) +")");
+        }
+
         window.clear(sf::Color(0x2A2431FF));
 
         if(!failed) {
-
             for(int i = 0; i < mechanicList_.size(); i++) {
                 mechanicList_[i]->draw(elapsedTime, arena_.getRenderTexture());
             }
@@ -308,6 +336,8 @@ void Game::run(sf::RenderWindow &window, Client* client, bool creator) {
         window.draw(fps_text);
         window.draw(beat_text);
         window.draw(godmode_text);
+        window.draw(beat_serv_text);
+        window.draw(ping_text);
         window.display();
     }
 

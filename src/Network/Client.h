@@ -13,12 +13,16 @@
 class Client {
 private:
     std::string name_;
-    UDP_Port clientSocket_;
+    UDP_Port udpSocket_;
+    sf::TcpSocket tcpSocket_;
     sf::Int32 clientSeed_, challengeResponse_, index_;
     sf::Uint16 packetID_;
     std::vector<Lobby> lobbyList_;
     std::string lobbyIndex_;
-    int lobbyInd_, playerIndex_;
+    int lobbyInd_, playerIndex_, pingIndex_;
+    sf::Int64 offset_;
+    std::vector<sf::Int64> ping_;
+    float serverBeat_;
 public:
     Client(std::string name = "");
     ~Client();
@@ -42,6 +46,7 @@ public:
     bool sendResumeGame();
     bool sendReady(sf::Uint32 color);
     bool requestBeatmapChange(const std::string& beatmap, const std::string& mode);
+    bool requestPing();
 
     bool monitorLobby(int &state);
 
@@ -52,8 +57,12 @@ public:
     Lobby& getLobby(int i);
 
     int getPlayerIndex();
+    float getServerBeat();
+    sf::Int64 getPing();
 
 };
+
+sf::Socket::Status receiveWithTimeout(sf::TcpSocket& socket, sf::Packet& packet, sf::Time timeout = sf::seconds(5.f));
 
 
 #endif //MUSICMECH_CLIENT_CLIENT_H
