@@ -46,6 +46,8 @@ public:
     std::string to_string() const;
     int parse(int offset, const std::vector<std::string> &words);
 
+    void reset();
+
     ~Target();
 };
 
