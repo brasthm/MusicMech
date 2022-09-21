@@ -71,6 +71,7 @@ public:
     void load(const std::string &filename);
     std::pair<float, float> getCheckpoint();
     void resetTimer();
+    float getCurrentBeat();
 
 };
 

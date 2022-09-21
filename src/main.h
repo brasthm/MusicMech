@@ -40,17 +40,16 @@ static constexpr float JOYSTICK_MAXZONE = 85;
 
 // Server Info
 
-static const std::string SERVER_NAME = "MATCHMECHSERV";
-static const std::string SERVER_VERSION = "1.0";
+static const std::string SERVER_NAME = "SYNCHROBEATSERV";
+static const std::string SERVER_VERSION = "2.0";
 static constexpr int SERVER_NB_MAX_PLAYERS = 100;
 static constexpr int SERVER_NB_MAX_LOBBY = 50;
-//inline sf::IpAddress SERVER_IP = "77.140.124.65";
-//inline sf::IpAddress SERVER_IP = "78.241.228.179";
-inline sf::IpAddress SERVER_IP = "127.0.0.1";
-static constexpr unsigned short SERVER_ADMIN_PORT = 5000;
-static constexpr unsigned short SERVER_CONNECT_PORT = 5001;
-static constexpr unsigned short SERVER_GAME_PORT = 5002;
-static constexpr unsigned short SERVER_LOBBY_PORT = 5003;
+inline sf::IpAddress SERVER_IP = "77.140.124.65"; // Saint-Etienne
+//inline sf::IpAddress SERVER_IP = "78.241.228.179"; // Montluçon
+//inline sf::IpAddress SERVER_IP = "127.0.0.1"; // Localhost
+static constexpr unsigned short SERVER_ADMIN_PORT = 41110;
+static constexpr unsigned short SERVER_CONNECT_PORT = 41101;
+static constexpr unsigned short SERVER_GAME_PORT = 41102;
 static constexpr int SERVER_TICK_MS = 50;
 static constexpr int CLIENT_TICK_MS = 50;
 static constexpr int SERVER_SLEEP = 10;

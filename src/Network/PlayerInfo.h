@@ -8,6 +8,8 @@
 #include <SFML/Network.hpp>
 #include <utility>
 
+#include "TCP_Socket.h"
+
 enum PlayerStatus {
     PLAYER_DISCONNECTED, PLAYER_IDLE, PLAYER_WAITING, PLAYER_READY, PLAYER_PLAYING
 };
@@ -27,6 +29,7 @@ public:
         status = PlayerStatus::PLAYER_DISCONNECTED;
         state = 0;
         color = 0;
+        socket = nullptr;
 
     }
     inline PlayerInfo(sf::IpAddress a, unsigned short p, sf::Int32 s, std::string n) {
@@ -42,6 +45,7 @@ public:
         status = PlayerStatus::PLAYER_DISCONNECTED;
         state = 0;
         color = 0;
+        socket = nullptr;
     };
     inline void clear() {
         address = sf::IpAddress::None;
@@ -53,16 +57,18 @@ public:
         status = PlayerStatus::PLAYER_DISCONNECTED;
         state = 0;
         color = 0;
+        socket = nullptr;
     };
 
     sf::IpAddress address;
-    unsigned short port;
+    unsigned short port, udpPort;
     sf::Int32 seed, x, y;
     sf::Uint16 packetID;
     sf::Uint8 state;
     std::string name;
     PlayerStatus status;
     sf::Uint32 color;
+    TCP_Socket* socket;
 
 };
 

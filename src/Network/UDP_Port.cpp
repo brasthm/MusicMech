@@ -66,6 +66,11 @@ void UDP_Port::setVerbose(bool b) {
     }
 }
 
+unsigned short UDP_Port::getPort()
+{
+    return socket_.getLocalPort();
+}
+
 bool UDP_Port::recieve() {
     recievedPacket_.clear();
     if(socket_.isBlocking()){
@@ -73,7 +78,8 @@ bool UDP_Port::recieve() {
         selector.add(socket_);
         if (selector.wait(sf::seconds(TIMOUT_TIME)))
         {
-            if (socket_.receive(recievedPacket_, recievedIP_, recievedPort_) == sf::Socket::Done) {
+            sf::Socket::Status status = socket_.receive(recievedPacket_, recievedIP_, recievedPort_);
+            if (status == sf::Socket::Done) {
                 sf::Int32 hash;
                 if(recievedPacket_ >> hash) {
                     if(hash == PacketHeader::getPacketHeader().getHash()) {
@@ -81,6 +87,24 @@ bool UDP_Port::recieve() {
                             std::cout << "Port " << name_ << "  : Packet recieved from " << recievedIP_ << "(" << recievedPort_ << ")" << std::endl;
                         return true;
                     }
+                    else
+                        std::cout << "Port " << name_ << "  : Wrong hash" << std::endl;
+                }
+                else
+                    std::cout << "Port " << name_ << "  : No hash" << std::endl;
+            }
+            else {
+                if (status == sf::Socket::Partial) {
+                    std::cout << "Port " << name_ << "  : Partial Data" << std::endl;
+                }
+                if (status == sf::Socket::Disconnected) {
+                    std::cout << "Port " << name_ << "  : Disconnected" << std::endl;
+                }
+                if (status == sf::Socket::NotReady) {
+                    std::cout << "Port " << name_ << "  : Not Ready" << std::endl;
+                }
+                if (status == sf::Socket::Error) {
+                    std::cout << "Port " << name_ << "  : Unexpected Error" << std::endl;
                 }
             }
         }
@@ -113,6 +137,10 @@ unsigned short UDP_Port::getSenderPort() const {
 }
 
 sf::Packet &UDP_Port::getRecievedPacket() {
+    if (!recievedPacket_)
+        std::cout << "ERROR Port " << name_ << "  : Packet corrupted" << std::endl;
+    if(recievedPacket_.endOfPacket())
+        std::cout << "ERROR Port " << name_ << "  : End of packet reached" << std::endl;
     return recievedPacket_;
 }
 
@@ -135,4 +163,14 @@ void UDP_Port::send(sf::Packet &packet, sf::IpAddress address, unsigned short po
             std::cout << "Port " << name_ << "  : Packet of size " <<
                       len << " count not be sent to " << address << "(" << port << ")" << std::endl;
     }
+}
+
+bool UDP_Port::valid()
+{
+    return recievedPacket_;
+}
+
+sf::UdpSocket& UDP_Port::getSocket()
+{
+    return socket_;
 }
