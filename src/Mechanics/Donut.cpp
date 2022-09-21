@@ -1,6 +1,7 @@
 #include "Donut.h"
 
 #include "../System/Utils.h"
+#include <cmath>
 
 void Donut::updatePosition(EntityManager& entityManager)
 {
@@ -183,6 +184,8 @@ void Donut::onInit(const sf::Time& elapsed, float currentBeat, float currentPart
 void Donut::reset(float beat)
 {
     setColor();
+
+    target_.reset();
 
     Mechanic::reset(beat);
 }

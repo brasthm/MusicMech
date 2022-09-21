@@ -1,6 +1,7 @@
 #include "Cone.h"
 
 #include "../System/Utils.h"
+#include <cmath>
 
 void Cone::updatePosition(EntityManager& entityManager)
 {
@@ -201,6 +202,9 @@ void Cone::onInit(const sf::Time& elapsed, float currentBeat, float currentPart,
 void Cone::reset(float beat)
 {
     setColor();
+
+    anchor_.reset();
+    center_.reset();
 
 
     Mechanic::reset(beat);

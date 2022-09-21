@@ -27,9 +27,13 @@
 #include "Mechanics/ApplyDebuff.h"
 #include "Mechanics/DisplayImage.h"
 #include "Mechanics/ClearArenaa.h"
+#include "Mechanics/EndMap.h"
 
 
 #include "System/Song.h"
+
+
+#include <cmath>
 
 Game::Game() {
     online_ = false;
@@ -62,12 +66,11 @@ void Game::run(sf::RenderWindow &window, Client* client, bool creator) {
 
     sf::Text fps_text, beat_text, beat_serv_text, ping_text ,godmode_text;
 
-    fps_text.setFont(RessourceLoader::getFont("font/Roboto-Regular.ttf"));
-    fps_text.setCharacterSize(18);
+    fps_text.setFont(RessourceLoader::getFont("Font/Roboto-Regular.ttf"));
+    fps_text.setCharacterSize(30);
 
-    beat_text.setFont(RessourceLoader::getFont("font/Roboto-Regular.ttf"));
-    beat_text.setCharacterSize(18);
-    beat_text.setPosition(0,20);
+    beat_text.setFont(RessourceLoader::getFont("Font/Roboto-Regular.ttf"));
+    beat_text.setCharacterSize(30);
 
     beat_serv_text.setFont(RessourceLoader::getFont("font/Roboto-Regular.ttf"));
     beat_serv_text.setCharacterSize(18);
@@ -369,9 +372,11 @@ void Game::load(const std::string& path)
     song_.load(path, &music_, mechanicList_, &arena_);
     music_.setVolume(10);
 
+
+
     std::cout << "Mechanics number : " << mechanicList_.size() << std::endl;
 
-    //music_.setPlayingOffset(sf::seconds(70));
+   //music_.setPlayingOffset(sf::seconds(167));
 
     std::sort(mechanicList_.begin(), mechanicList_.end(),
         [](Mechanic* m1, Mechanic* m2) {return *m1 < *m2; });
