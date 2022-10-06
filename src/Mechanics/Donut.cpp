@@ -201,3 +201,8 @@ std::string Donut::toString()
 
     return res;
 }
+
+Mechanic* Donut::clone()
+{
+    return new Donut(*this);
+}

@@ -11,6 +11,11 @@ void ClearArena::onPassed(const sf::Time& elapsed, float currentBeat, float curr
 	entities.resetArena();
 }
 
+Mechanic* ClearArena::clone()
+{
+	return new ClearArena(*this);
+}
+
 std::string ClearArena::toString()
 {
 	std::string res = "CLEARARENA," + std::to_string(beat_);

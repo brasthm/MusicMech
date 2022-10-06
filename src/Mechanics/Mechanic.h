@@ -38,6 +38,7 @@ public:
     void negateFailed();
 
     virtual void reset(float beat);
+    virtual Mechanic* clone() ;
 
 
     virtual std::string toString() { return ""; };

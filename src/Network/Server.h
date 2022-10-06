@@ -19,7 +19,7 @@
 
 class Server {
 private:
-    UDP_Port admin_, game_;
+    UDP_Port admin_, game_, login_;
     std::vector<PlayerInfo> players_;
     std::vector<Lobby> lobbies_;
     sf::Int32 serverSeed_;
@@ -35,9 +35,11 @@ private:
 protected:
     void monitorAdminCommand();
     void monitorPlayerData();
+    void monitorLoginUDP();
     void monitorClient(int i);
     void updateLobbies(sf::Time elapsed);
     void sendPlayerData();
+    void startGames();
 
 
     void accept(TCP_Socket* newEntry);
@@ -46,11 +48,11 @@ protected:
 
     bool checkConnected(sf::IpAddress address, unsigned short port);
     int findConnected(sf::IpAddress address, unsigned short port);
-    int findUDPConnected(sf::IpAddress address, unsigned short port);
+    int findUDPConnected(sf::IpAddress address, sf::Uint32 port);
     int findFistAvailableConnected();
     int findLobbyContainingPlayer(sf::IpAddress address, unsigned short port);
 
-    void sendRoomLobbyNotif(int index, sf::Uint8 state, sf::Uint8 param);
+    void sendRoomLobbyNotif(int index, sf::Uint8 state, sf::Uint8 param, sf::Uint64 timestamp = 0);
 
 public:
     Server();

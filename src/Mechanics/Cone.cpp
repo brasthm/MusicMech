@@ -222,3 +222,8 @@ std::string Cone::toString()
 
     return res;
 }
+
+Mechanic* Cone::clone()
+{
+    return new Cone(*this);
+}

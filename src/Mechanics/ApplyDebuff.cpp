@@ -15,6 +15,11 @@ void ApplyDebuff::onPassed(const sf::Time &elapsed, float currentBeat, float cur
     entities.applyDebuff(target_, type_, end_);
 }
 
+Mechanic* ApplyDebuff::clone()
+{
+    return new ApplyDebuff(*this);
+}
+
 std::string ApplyDebuff::toString() {
     std::string res =  "DEBUFF," + std::to_string(beat_) + "," + std::to_string(type_) + ","
     + std::to_string(end_-beat_) + ",";

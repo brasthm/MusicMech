@@ -35,7 +35,7 @@ public:
     void save(const std::string &filename);
     void reset(float beat);
     void clearPlayer();
-    void addPlayer(sf::Uint32 color);
+    void addPlayer(std::string name, sf::Uint32 color);
 };
 
 

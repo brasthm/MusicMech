@@ -20,6 +20,11 @@ void Entity::setColor(sf::Uint32 color)
     color_ = color;
 }
 
+sf::Uint32 Entity::getColor()
+{
+    return color_;
+}
+
 void Entity::setPosition(float x, float y) {
     pos_.x = x;
     pos_.y = y;

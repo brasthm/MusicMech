@@ -205,7 +205,7 @@ int RoomMenu::run(sf::RenderWindow& window, BackgroundAnimation& bg, Client* cli
 
 	sf::Sprite check(RessourceLoader::getTexture("Images/check.png"));
 
-	std::future<bool> disconnect, refresh, beatmap, setReady, launchGame;
+	std::future<bool> disconnect, refresh, beatmap, setReady, launchGame, waiting;
 
 	int state = 0;
 
@@ -442,11 +442,27 @@ int RoomMenu::run(sf::RenderWindow& window, BackgroundAnimation& bg, Client* cli
 		if (launchGame.valid() && launchGame.wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
 
 			launchGame = std::future<bool>();
+		}
+
+		if (waiting.valid() && waiting.wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
+			std::cout << "bleep" << std::endl;
+			if (waiting.get()) {
+				std::cout << "blop" << std::endl;
+				loading.stop();
+				songs->stop();
+				return 2;
+			}
+
+			std::cout << "bloop" << std::endl;
+
+			waiting = std::future<bool>();
 			loading.stop();
 		}
 
+		
+
 		state = 0;
-		if(!disconnect.valid() && !refresh.valid() && !beatmap.valid() && !setReady.valid() && !launchGame.valid())
+		if(!disconnect.valid() && !refresh.valid() && !beatmap.valid() && !setReady.valid() && !launchGame.valid() && !waiting.valid())
 			client->monitorLobby(state);
 
 		if (state == -1) {
@@ -454,12 +470,13 @@ int RoomMenu::run(sf::RenderWindow& window, BackgroundAnimation& bg, Client* cli
 			loading.start("Disconnecting");
 		}
 		if (state == 1) {
+			loading.start("Loading");
+			waiting = std::async(std::launch::async, &Client::waitToStart, client);
+
 			game->clearPlayer();
 			for (int i = 0; i < NB_MAX_JOUEURS; i++) {
-				game->addPlayer(client->getCurrentLobby().players[i]->color);
+				game->addPlayer(client->getCurrentLobby().players[i]->name, client->getCurrentLobby().players[i]->color);
 			}
-			songs->stop();
-			return 2;
 		}
 			
 		if (state == 2) {

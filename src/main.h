@@ -50,6 +50,7 @@ inline sf::IpAddress SERVER_IP = "77.140.124.65"; // Saint-Etienne
 static constexpr unsigned short SERVER_ADMIN_PORT = 41110;
 static constexpr unsigned short SERVER_CONNECT_PORT = 41101;
 static constexpr unsigned short SERVER_GAME_PORT = 41102;
+static constexpr unsigned short SERVER_LOGIN_PORT = 41103;
 static constexpr int SERVER_TICK_MS = 50;
 static constexpr int CLIENT_TICK_MS = 50;
 static constexpr int SERVER_SLEEP = 10;

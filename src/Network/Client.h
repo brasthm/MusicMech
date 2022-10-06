@@ -10,6 +10,18 @@
 #include "Lobby.h"
 #include <vector>
 
+class RoomStatusData {
+public:
+    float beat;
+    std::vector<int> failed;
+    float zoom, rotation, top, left, width, height;
+    std::vector<float> rt, rl, rw, rh;
+    std::vector<int> totemX, totemY, playerX, playerY;
+    std::vector<bool> totemActive, playerActive;
+    std::vector<std::string> names;
+    std::vector < sf::Uint32> totemColors, playerColors;
+};
+
 class Client {
 private:
     std::string name_;
@@ -21,8 +33,9 @@ private:
     std::string lobbyIndex_;
     int lobbyInd_, playerIndex_, pingIndex_;
     sf::Int64 offset_;
+    sf::Uint64 startTime_;
     std::vector<sf::Int64> ping_;
-    float serverBeat_;
+    float serverBeat_, position_;
 public:
     Client(std::string name = "");
     ~Client();
@@ -47,8 +60,11 @@ public:
     bool sendReady(sf::Uint32 color);
     bool requestBeatmapChange(const std::string& beatmap, const std::string& mode);
     bool requestPing();
+    bool requestRoomStatus(RoomStatusData &status, const std::string& lobbyIndex = "");
 
     bool monitorLobby(int &state);
+
+    bool waitToStart();
 
 
     std::string getLobbyIndex();
@@ -59,6 +75,8 @@ public:
     int getPlayerIndex();
     float getServerBeat();
     sf::Int64 getPing();
+    float getPosition();
+    unsigned short getUdpPort();
 
 };
 

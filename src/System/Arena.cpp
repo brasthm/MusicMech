@@ -8,6 +8,11 @@ Arena::Arena() : zoom_(100.f), rotation_(0.f), top_(ARENA_WIDTH / 2.f), left_(AR
 	view_.setSize(sf::Vector2f(WIDOW_WIDTH, WIDOW_HEIGHT));
 }
 
+Arena::~Arena()
+{
+
+}
+
 void Arena::addRect(float x, float y, float w, float h)
 {
 	rects_.emplace_back(x, y, w, h);
@@ -103,29 +108,22 @@ void Arena::update(sf::Time elapsed)
 	left_.update(elapsed); 
 	width_.update(elapsed); 
 	height_.update(elapsed); 
-
-	renderText_.create(WIDOW_WIDTH, WIDOW_HEIGHT);
-	renderText_.clear(sf::Color::Transparent);
+	
 	view_.setSize(WIDOW_WIDTH * zoom_.get()/100.f, WIDOW_HEIGHT * zoom_.get()/100.f);
 	view_.setRotation(rotation_.get());
 	view_.setCenter(left_.get(), top_.get());
-	renderText_.setView(view_);
 
+}
+
+void Arena::draw(sf::RenderTarget& window)
+{
 	for (auto& rect : borderRects_) {
-		renderText_.draw(rect);
+		window.draw(rect);
 	}
 
 	for (auto& rect : insideRects_) {
-		renderText_.draw(rect);
+		window.draw(rect);
 	}
-}
-
-void Arena::draw(sf::RenderWindow& window)
-{
-	renderText_.display();
-	sf::Sprite sp(renderText_.getTexture());
-	//sp.setPosition(WIDOW_WIDTH / 2 - ARENA_WIDTH / 2, WIDOW_HEIGHT / 2 - ARENA_HEIGHT / 2);
-	window.draw(sp);
 }
 
 void Arena::erase(int i)
@@ -157,6 +155,66 @@ void Arena::snap(float x, float y)
 	top_.init(y);
 }
 
+float Arena::getZoom()
+{
+	return zoom_.get();
+}
+
+float Arena::getRotation()
+{
+	return rotation_.get();
+}
+
+float Arena::getTop()
+{
+	return top_.get();
+}
+
+float Arena::getLeft()
+{
+	return left_.get();
+}
+
+float Arena::getWidth()
+{
+	return width_.get();
+}
+
+float Arena::getHeight()
+{
+	return height_.get();
+}
+
+void Arena::setZoom(float factor)
+{
+	zoom_.init(factor);
+}
+
+void Arena::setRotation(float value)
+{
+	rotation_.init(value);
+}
+
+void Arena::setTop(float value)
+{
+	top_.init(value);
+}
+
+void Arena::setLeft(float value)
+{
+	left_.init(value);
+}
+
+void Arena::setWidth(float value)
+{
+	width_.init(value);
+}
+
+void Arena::setHeight(float value)
+{
+	height_.init(value);
+}
+
 int Arena::getNbRects()
 {
 	return rects_.size();
@@ -182,7 +240,8 @@ void Arena::clear()
 	borderRects_.clear();
 }
 
-sf::RenderTexture& Arena::getRenderTexture()
+sf::View Arena::getView()
 {
-	return renderText_;
+	return view_;
 }
+

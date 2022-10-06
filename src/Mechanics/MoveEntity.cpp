@@ -22,3 +22,8 @@ std::string MoveEntity::toString() {
 
     return res;
 }
+
+Mechanic* MoveEntity::clone()
+{
+    return new MoveEntity(*this);
+}

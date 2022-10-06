@@ -15,6 +15,15 @@ class Joueur : public Entity {
 private:
     bool controlledByPlayer_;
     std::string name_;
+    sf::RectangleShape namePlate_;
+    sf::Text nameText_;
+    sf::Clock plateTimer_;
+    sf::Time plateLimit_;
+
+    bool drawPlate_;
+    float plateOpacity_;
+
+    
 public:
     Joueur();
     void update(sf::Time elapsed, Arena* arena, float beat, bool hasFocus) override;
@@ -22,6 +31,12 @@ public:
     void setControlledByPlayer(bool b) {controlledByPlayer_=b;};
     void setDataFromServer(sf::Packet &packet);
     void reset();
+    void setName(std::string name);
+    void showPlate(bool permanant = false);
+    void hidePlate();
+    void computePlate();
+
+    std::string getName();
 };
 
 

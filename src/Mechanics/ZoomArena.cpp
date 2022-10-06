@@ -19,3 +19,8 @@ std::string ZoomArena::toString()
 
     return res;
 }
+
+Mechanic* ZoomArena::clone()
+{
+    return new ZoomArena(*this);
+}

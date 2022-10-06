@@ -4,6 +4,7 @@
 #include <thread>
 #include <SFML/Graphics.hpp>
 #include <iomanip>
+#include <climits>
 
 #include "../src/Game.h"
 #include "../src/LobbySelection.h"
@@ -99,7 +100,7 @@ int console() {
             title.setLoop(true);
 
             sf::ContextSettings settings;
-            settings.antialiasingLevel = 16;
+            settings.antialiasingLevel = 8;
             sf::RenderWindow mainWindow(sf::VideoMode(WIDOW_WIDTH, WIDOW_HEIGHT), "Sychrobeat", sf::Style::Fullscreen, settings);
             mainWindow.setFramerateLimit(60);
             int val;
@@ -151,6 +152,26 @@ int console() {
             g.load("a");
             g.save("output.txt");
 
+        }
+        else if (cmd == "limit") {
+            std::cout << "CHAR_BIT    :  " << CHAR_BIT << std::endl;
+            std::cout << "CHAR_MAX    :  " << CHAR_MAX << std::endl;
+            std::cout << "CHAR_MIN    :  " << CHAR_MIN << std::endl;
+            std::cout << "INT_MAX     :  " << INT_MAX << std::endl;
+            std::cout << "INT_MIN     :  " << INT_MIN << std::endl;
+            std::cout << "LONG_MAX    :  " <<  (long)LONG_MAX << std::endl;
+            std::cout << "LONG_MIN    :  " <<  (long)LONG_MIN << std::endl;
+            std::cout << "SCHAR_MAX   :  " << SCHAR_MAX << std::endl;
+            std::cout << "SCHAR_MIN   :  " << SCHAR_MIN << std::endl;
+            std::cout << "SHRT_MAX    :  " << SHRT_MAX << std::endl;
+            std::cout << "SHRT_MIN    :  " << SHRT_MIN << std::endl;
+            std::cout << "UCHAR_MAX   :  " << UCHAR_MAX << std::endl;
+            std::cout << "UINT_MAX    :  " << (unsigned int)UINT_MAX << std::endl;
+            std::cout << "ULONG_MAX   :  " <<  (unsigned long)ULONG_MAX << std::endl;
+            std::cout << "USHRT_MAX   :  " << (unsigned short)USHRT_MAX << std::endl;
+        }
+        else if (cmd == "port") {
+            std::cout << c.getUdpPort() << std::endl;
         }
         else if (cmd != "exit") {
             c.sendCommand(cmd);

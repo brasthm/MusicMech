@@ -5,6 +5,7 @@
 #include "Joueur.h"
 #include "../main.h"
 #include "../System/Utils.h"
+#include "../System/RessourceLoader.h"
 
 #include <array>
 #include <cmath>
@@ -24,12 +25,33 @@ Joueur::Joueur() {
     active_ = false;
     name_ = "";
     baseSpeed_ = speed_;
+
+    plateOpacity_ = 255;
+    nameText_.setFont(RessourceLoader::getFont("Font/Roboto-Bold.ttf"));
+    nameText_.setCharacterSize(28);
+    drawPlate_ = false;
+    
 }
 
 void Joueur::update(sf::Time elapsed, Arena* arena, float beat, bool hasFocus) {
 
     if(active_) {
         debuff_.update(elapsed, beat);
+
+        if (drawPlate_) {
+            if (plateLimit_.asSeconds() != 0) {
+                if (plateTimer_.getElapsedTime() > plateLimit_) {
+                    plateOpacity_ -= 255 * elapsed.asSeconds();
+                    if (plateOpacity_ < 0) {
+                        plateOpacity_ = 0;
+                        drawPlate_ = false;
+                    }
+                }
+            }
+        }
+
+
+
         sf::Vector2f vecDep(0,0);
 
         if(controlledByPlayer_ && hasFocus && debuff_.type() != DEBUFF_ROOT) {
@@ -118,6 +140,23 @@ void Joueur::draw(sf::RenderTarget &window) {
 
         shape_.setFillColor(sf::Color(color_));
         window.draw(shape_);
+
+        if (drawPlate_) {
+            auto size = namePlate_.getGlobalBounds();
+            namePlate_.setPosition(pos_.x - size.width / 2, pos_.y - size.height - 30);
+            nameText_.setPosition(pos_.x - size.width / 2 + 5, pos_.y - size.height - 30);
+
+            sf::Color c(color_), w(sf::Color::Black);
+
+            c.a = plateOpacity_;
+            w.a = plateOpacity_;
+
+            namePlate_.setFillColor(c);
+            nameText_.setFillColor(w);
+
+            window.draw(namePlate_);
+            window.draw(nameText_);
+        }
     }
 }
 
@@ -139,4 +178,35 @@ void Joueur::setDataFromServer(sf::Packet &packet)  {
 
 void Joueur::reset() {
     debuff_.clense();
+}
+
+void Joueur::setName(std::string name)
+{
+    name_ = name;
+}
+
+void Joueur::showPlate(bool permanant)
+{
+    drawPlate_ = true;
+    plateOpacity_ = 255;
+    plateLimit_ = sf::seconds(permanant ? 0:3);
+    plateTimer_.restart();
+}
+
+void Joueur::hidePlate()
+{
+    drawPlate_ = false;
+}
+
+void Joueur::computePlate()
+{
+    namePlate_.setFillColor(sf::Color(color_));
+    nameText_.setString(name_);
+    auto size = nameText_.getGlobalBounds();
+    namePlate_.setSize(sf::Vector2f(size.width + 15, size.height + 15));
+}
+
+std::string Joueur::getName()
+{
+    return name_;
 }

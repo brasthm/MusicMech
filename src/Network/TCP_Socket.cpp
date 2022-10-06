@@ -120,7 +120,7 @@ sf::IpAddress TCP_Socket::getRemoteAddress()
 	return socket_.getRemoteAddress();
 }
 
-sf::Uint32 TCP_Socket::getRemotePort()
+sf::Uint16 TCP_Socket::getRemotePort()
 {
 	return socket_.getRemotePort();
 }
