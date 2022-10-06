@@ -23,7 +23,7 @@ public:
 	bool isReady();
 	sf::TcpSocket& getSocket();
 	sf::IpAddress getRemoteAddress();
-	sf::Uint32 getRemotePort();
+	sf::Uint16 getRemotePort();
 	bool isObsolete();
 	void accept();
 };

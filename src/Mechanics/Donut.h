@@ -33,6 +33,7 @@ public:
     void onInit(const sf::Time& elapsed, float currentBeat, float currentPart, EntityManager& entities) override;
     void reset(float beat) override;
     std::string toString() override;
+    Mechanic* clone() override;
 };
 
 #endif

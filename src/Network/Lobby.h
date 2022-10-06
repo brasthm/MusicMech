@@ -21,7 +21,8 @@
 enum LobbyStatus {
     LOBBY_AVAILABLE,
     LOBBY_FILLING,
-    LOBBY_PLAYING
+    LOBBY_PLAYING,
+    LOBBY_STARTING
 
 };
 
@@ -38,31 +39,22 @@ private:
     std::vector<Mechanic*> mechanics_;
 
     float currentBeat_;
+    int currentSection_ = 0;
+
+    Arena arena_;
 
 public:
-    inline Lobby() {
-        status = LobbyStatus::LOBBY_AVAILABLE;
-        limit = nbIn = 0;
-        for(int i = 0; i < NB_MAX_JOUEURS; i++) {
-            players.emplace_back(nullptr);
-            joueurs_.emplace_back();
-        }
-        for(int i = 0; i < NB_MAX_TOTEM; i++) {
-            totems_.emplace_back();
-        }
+    Lobby();
+    ~Lobby();
 
-        name = "";
-        id = "";
-
-        failed = false;
-        paused = true;
-        currentBeat_ = 0;
-    };
+    Lobby(const Lobby&) = default;
+    Lobby& operator=(const Lobby&) = default;
 
     std::string name, beatmap, mode;
     LobbyStatus status;
     std::vector<PlayerInfo*> players;
     sf::Uint8 nbIn, limit;
+    sf::Uint64 startingTime;
     std::string id;
     bool failed, paused;
 
@@ -72,7 +64,9 @@ public:
     std::pair<float, float> getCheckpoint();
     void resetTimer();
     float getCurrentBeat();
-
+    float getPosition();
+    void setStatusPacket(sf::Packet & packet);
+    void setPlayer(int i, std::string name, sf::Uint32 color);
 };
 
 

@@ -56,7 +56,7 @@ private:
     std::string name_;
 public:
     UDP_Port(std::string name);
-    explicit UDP_Port(std::string name, int port);
+    UDP_Port(std::string name, int port);
     UDP_Port(std::string name, int port, bool blocking);
     void bind(int port);
     void setBlocking(bool b);

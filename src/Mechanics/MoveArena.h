@@ -12,6 +12,8 @@ public:
     MoveArena(float beat, const Target& target, float speed);
     void onPassed(const sf::Time& elapsed, float currentBeat, float currentPart, EntityManager& entities) override;
     std::string toString() override;
+
+    Mechanic* clone() override;
 };
 
 

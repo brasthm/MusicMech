@@ -9,6 +9,7 @@ public:
     AddArena(float beat, float x, float y, float w, float h);
 
     void onPassed(const sf::Time& elapsed, float currentBeat, float currentPart, EntityManager& entities) override;
+    Mechanic* clone() override;
 
     std::string toString() override;
 };

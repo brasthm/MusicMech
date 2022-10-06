@@ -61,8 +61,9 @@ public:
     };
 
     sf::IpAddress address;
-    unsigned short port, udpPort;
+    unsigned short port;
     sf::Int32 seed, x, y;
+    unsigned short udpPort;
     sf::Uint16 packetID;
     sf::Uint8 state;
     std::string name;

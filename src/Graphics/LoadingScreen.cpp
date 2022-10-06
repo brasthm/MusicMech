@@ -31,12 +31,14 @@ LoadingScreen::LoadingScreen() : angle_(45)
 
 void LoadingScreen::start(std::string text)
 {
-	clock_.restart();
-	activate_ = true;
-	finished_ = false;
-	connectionText_.setString(text);
-	animRect_.setPosition(connectionText_.getGlobalBounds().width + 80, WIDOW_HEIGHT - 45);
-	angle_.set(angle_.get() + 90, 0.4);
+	if (!activate_) {
+		clock_.restart();
+		activate_ = true;
+		finished_ = false;
+		connectionText_.setString(text);
+		animRect_.setPosition(connectionText_.getGlobalBounds().width + 80, WIDOW_HEIGHT - 45);
+		angle_.set(angle_.get() + 90, 0.4);
+	}
 }
 
 void LoadingScreen::update(sf::Time elapsedTime)

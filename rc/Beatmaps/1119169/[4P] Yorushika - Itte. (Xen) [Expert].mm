@@ -4,7 +4,7 @@ VignetteImage:vignette.png
 PreviewTime:60853
 Title:Itte.
 Artist:Yorushika
-Difficulty:4
+Difficulty:16
 [Arena]
 0,0,1000,1000
 [TimingPoints]

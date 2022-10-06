@@ -204,3 +204,8 @@ std::string Spread::toString() {
 
     return res;
 }
+
+Mechanic* Spread::clone()
+{
+    return new Spread(*this);
+}

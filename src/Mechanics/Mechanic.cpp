@@ -61,6 +61,7 @@ void Mechanic::update(const sf::Time &elapsed, float currentBeat, EntityManager 
     else if(currentBeat > beat_ && currentBeat - beat_ < 1) {
         if(!init_) {
             onInit(elapsed, currentBeat, currentPart, entities);
+            onApproach(elapsed, currentBeat, currentPart, entities);
             init_ = true;
         }
 
@@ -131,6 +132,11 @@ void Mechanic::reset(float beat) {
     earlypassed_ = false;
 
     activate_ = beat_ >= beat;
+}
+
+Mechanic* Mechanic::clone()
+{
+    return nullptr;
 }
 
 

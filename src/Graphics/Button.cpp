@@ -20,7 +20,7 @@ Button::Button(std::string name, std::string text, sf::Uint32 color,float x, flo
 
 	text_.setString(text);
 	text_.setFont(RessourceLoader::getFont("Font/Roboto-Bold.ttf"));
-	text_.setCharacterSize(50);
+	text_.setCharacterSize(h - 20);
 	text_.setFillColor(sf::Color::White);
 	text_.setPosition(x + w_ / 2 - text_.getGlobalBounds().width / 2, y + 5);
 }

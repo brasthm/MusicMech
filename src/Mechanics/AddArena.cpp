@@ -15,6 +15,11 @@ void AddArena::onPassed(const sf::Time& elapsed, float currentBeat, float curren
 	entities.addArenaPortion(x_, y_, w_, h_);
 }
 
+Mechanic* AddArena::clone()
+{
+	return new AddArena(*this);
+}
+
 std::string AddArena::toString()
 {
 	std::string res = "ADDARENA," + std::to_string(beat_) + "," + std::to_string(x_) + "," + std::to_string(y_) 

@@ -21,3 +21,8 @@ std::string MoveArena::toString()
 
     return res;
 }
+
+Mechanic* MoveArena::clone()
+{
+    return new MoveArena(*this);
+}

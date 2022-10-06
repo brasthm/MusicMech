@@ -38,6 +38,7 @@ public:
 
     void applyDebuff(DebuffType type, float end);
     void setColor(sf::Uint32 color);
+    sf::Uint32 getColor();
 };
 
 

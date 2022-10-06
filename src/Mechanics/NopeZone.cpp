@@ -198,3 +198,8 @@ std::string NopeZone::toString()
 
     return res;
 }
+
+Mechanic* NopeZone::clone()
+{
+    return new NopeZone(*this);
+}

@@ -19,3 +19,8 @@ std::string RotateArena::toString()
 
     return res;
 }
+
+Mechanic* RotateArena::clone()
+{
+    return new RotateArena(*this);
+}

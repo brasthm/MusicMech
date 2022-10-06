@@ -20,3 +20,8 @@ std::string SnapArena::toString()
 
 	return res;
 }
+
+Mechanic* SnapArena::clone()
+{
+	return new SnapArena(*this);
+}

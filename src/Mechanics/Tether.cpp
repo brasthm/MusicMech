@@ -238,6 +238,9 @@ void Tether::reset(float beat) {
     borderColor_.setCurrentColor(3, 255);
     indicatorColor_.setCurrentColor(3, 255);
 
+    arr1.setAlpha(255);
+    arr2.setAlpha(255);
+
     timer_ = sf::seconds(0);
 
     anchor1_.reset();
@@ -255,5 +258,10 @@ std::string Tether::toString() {
     res += anchor1_.to_string() + "," + anchor2_.to_string();
 
     return res;
+}
+
+Mechanic* Tether::clone()
+{
+    return new Tether(*this);
 }
 

@@ -6,6 +6,7 @@
 #include "../System/Random.h"
 #include "Lobby.h"
 #include <chrono>
+#include <thread>
 
 Client::Client(std::string name) : udpSocket_(name), lobbyList_(SERVER_NB_MAX_LOBBY), ping_(50) {
     name_ = name;
@@ -76,6 +77,16 @@ sf::Int64 Client::getPing()
     return res/(float)nb;
 }
 
+float Client::getPosition()
+{
+    return position_;
+}
+
+unsigned short Client::getUdpPort()
+{
+    return udpSocket_.getPort();
+}
+
 void Client::changeName(const std::string& name)
 {
     name_ = name;
@@ -105,10 +116,9 @@ bool Client::connectToServer() {
     sf::Packet p;
     sf::Uint8 state = 100, rep = 1;
     sf::Int32 serverSeed;
-    sf::Uint16 port = udpSocket_.getPort();
 
 
-    p << state << sf::String(name_) << clientSeed_ << port;
+    p << state << sf::String(name_) << clientSeed_;
     status = tcpSocket_.send(p);
     if (status != sf::Socket::Done) {
         std::cout << "connectToServer : Unable to reach the server (send 100)" << std::endl;
@@ -188,6 +198,11 @@ bool Client::connectToServer() {
 
     p >> rep;
 
+    p.clear();
+    //std::cout << clientSeed_ << std::endl;
+    p << clientSeed_;
+    udpSocket_.send(p, SERVER_IP, SERVER_LOGIN_PORT);
+
     std::cout << "Connected !" << std::endl;
 
     return true;
@@ -241,10 +256,12 @@ int Client::updateFromServerPlayerPosition(std::vector<Joueur> &joueurs, std::pa
     sf::Socket::Status status = receiveWithTimeout(tcpSocket_, packet, sf::milliseconds(SERVER_SLEEP));
 
     if (status == sf::Socket::Done) {
-        std::cout << "TCP_SOCKET : Packet recieved." << std::endl;
+        
 
         sf::Uint8 state;
         packet >> state;
+
+        std::cout << "updateFromServerPlayerPosition : Packet recieved (" << (int)state << ")" << std::endl;
 
         if (!packet) {
             std::cout << "updateFromServerPlayerPosition : Can't read state." << std::endl;
@@ -268,6 +285,18 @@ int Client::updateFromServerPlayerPosition(std::vector<Joueur> &joueurs, std::pa
             return 2;
         }
         if (state == 35) { // RESUME
+
+            sf::Uint64 startTime;
+            sf::Uint8 dummy;
+            packet >> dummy >> startTime;
+
+            if (!packet) {
+                std::cout << "updateFromServerPlayerPosition : Can't read time." << std::endl;
+                return 0;
+            }
+
+            startTime_ = startTime;
+
             return 3;
         }
     }
@@ -289,8 +318,9 @@ int Client::updateFromServerPlayerPosition(std::vector<Joueur> &joueurs, std::pa
         }
         if (state == 1) {
             float beat;
-            sf::Int64 serverTime, clientTime, clientSentTime;
-            udpSocket_.getRecievedPacket() >> clientSentTime >> serverTime >> beat;
+            sf::Uint64 serverTime, clientTime, clientSentTime;
+            float position;
+            udpSocket_.getRecievedPacket() >> clientSentTime >> serverTime >> beat >> position;
 
             if (!udpSocket_.valid()) {
                 std::cout << "GAME PORT : Data corrupted (updateFromServerPlayerPosition - 1)." << std::endl;
@@ -299,8 +329,8 @@ int Client::updateFromServerPlayerPosition(std::vector<Joueur> &joueurs, std::pa
 
             serverBeat_ = beat;
 
-            clientTime = std::chrono::steady_clock::now().time_since_epoch() / std::chrono::milliseconds(1);
-            offset_ = (clientTime - serverTime)/2;
+            clientTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
+            position_ = position +(clientTime - clientSentTime) / 2000.f;
             ping_[pingIndex_] = clientTime - clientSentTime;
             pingIndex_++;
             pingIndex_ = pingIndex_ % ping_.size();
@@ -323,20 +353,32 @@ bool Client::monitorLobby(int& roomState) {
     sf::Socket::Status status = receiveWithTimeout(tcpSocket_, packet, sf::milliseconds(SERVER_SLEEP));
 
     if (status == sf::Socket::Done) {
-        std::cout << "TCP_SOCKET : Packet recieved." << std::endl;
 
         sf::Uint8 state;
         packet >> state;
 
         if (!packet) {
-            std::cout << "TCP_SOCKET : Can't read state." << std::endl;
+            std::cout << "monitorLobby : Can't read state." << std::endl;
             return false;
         }
 
+        std::cout << "monitorLobby : Packet recieved (" << (int)state << ")" << std::endl;
+
         if (state == 30) { //Start Game
             sf::Uint8 ind;
-            packet >> ind;
+            sf::Uint64 startTime;
+            packet >> ind >> startTime;
+
+            if (!packet) {
+                std::cout << "monitorLobby : Data Corupted (30)." << std::endl;
+                return false;
+            }
+
+
             index_ = ind;
+            startTime_ = startTime;
+            
+
             roomState = 1;
         }
         if (state == 31) { // Lobby Disband
@@ -347,6 +389,95 @@ bool Client::monitorLobby(int& roomState) {
         }
     }
 
+    return true;
+}
+
+bool Client::waitToStart()
+{
+    sf::Packet p;
+    sf::Uint8 state, rep;
+    sf::Socket::Status status;
+
+    std::vector<sf::Int64> offset;
+    for (int i = 0; i < 5; i++) {
+        p.clear();
+        state = 120;
+
+        sf::Uint64 send = std::chrono::steady_clock::now().time_since_epoch() / std::chrono::milliseconds(1);
+
+        p << state << send;
+        status = tcpSocket_.send(p);
+        if (status != sf::Socket::Done) {
+
+            std::cout << "waitToStart : Unable to reach the server (send)" << std::endl;
+            return false;
+        }
+
+        p.clear();
+        status = receiveWithTimeout(tcpSocket_, p);
+
+        p >> state;
+        if (!p) {
+            std::cout << "waitToStart : Data corrupted (state2)" << std::endl;
+            return false;
+        }
+
+        if (state != 120) {
+            std::cout << "waitToStart : Unexpected packet recieved (" << (int)state << ")" << std::endl;
+            return false;
+        }
+
+        p >> rep;
+
+        if (!p) {
+            std::cout << "waitToStart : Data corrupted (rep2)" << std::endl;
+            return false;
+        }
+
+        if (rep == 1) {
+            std::cout << "waitToStart : Data corrupted." << std::endl;
+            return false;
+        }
+
+        sf::Uint64 clientSentTime, serverTime;
+
+        p >> clientSentTime >> serverTime;
+
+        if (!p) {
+            std::cout << "waitToStart : Data corrupted (time)" << std::endl;
+            return false;
+        }
+
+        sf::Uint64 currentTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
+
+        sf::Int64 travel = (currentTime - clientSentTime) / 2;
+
+        offset.push_back(serverTime - currentTime + travel);
+
+        std::cout << "   Offset : " << offset.back() << std::endl;
+
+    }
+
+    std::sort(offset.begin(), offset.end());
+    offset_ = offset[2];
+
+
+    std::cout << "Server Start : " << startTime_ << std::endl;
+
+
+    sf::Uint64 currentTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();;
+
+    std::cout << "CurentTime : " << currentTime << std::endl;
+    std::cout << "CurentTime + offset : " << currentTime + offset_ << std::endl;
+
+    while (currentTime + offset_ < startTime_) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(SERVER_SLEEP));
+        currentTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
+        //std::cout << currentTime << " " << currentTime + offset_ << " " << startTime_ << std::endl;
+    }
+
+
+    std::cout << "GAME STARTED " << std::endl;
     return true;
 }
 
@@ -934,7 +1065,7 @@ bool Client::requestBeatmapChange(const std::string& beatmap, const std::string&
     p << state << sf::String(lobbyIndex_) << sf::String(beatmap) << sf::String(mode);
     status = tcpSocket_.send(p);
     if (status != sf::Socket::Done) {
-        std::cout << "sendResumeGame : Unable to reach the server (send)" << std::endl;
+        std::cout << "requestBeatmapChange : Unable to reach the server (send)" << std::endl;
         return false;
     }
 
@@ -943,29 +1074,29 @@ bool Client::requestBeatmapChange(const std::string& beatmap, const std::string&
 
     p >> state;
     if (!p) {
-        std::cout << "sendResumeGame : Data corrupted (state)" << std::endl;
+        std::cout << "requestBeatmapChange : Data corrupted (state)" << std::endl;
         return false;
     }
 
     if (state != 23) {
-        std::cout << "sendResumeGame : Unexpected packet recieved (" << (int)state << ")" << std::endl;
+        std::cout << "requestBeatmapChange : Unexpected packet recieved (" << (int)state << ")" << std::endl;
         return false;
     }
 
     p >> rep;
 
     if (!p) {
-        std::cout << "sendResumeGame : Data corrupted (rep)" << std::endl;
+        std::cout << "requestBeatmapChange : Data corrupted (rep)" << std::endl;
         return false;
     }
 
     if (rep == 1) {
-        std::cout << "sendResumeGame : Lobby not found." << std::endl;
+        std::cout << "requestBeatmapChange : Lobby not found." << std::endl;
         return false;
     }
 
     if (rep == 2) {
-        std::cout << "sendResumeGame : Lobby not ready." << std::endl;
+        std::cout << "requestBeatmapChange : Lobby not ready." << std::endl;
         return false;
     }
 
@@ -974,15 +1105,184 @@ bool Client::requestBeatmapChange(const std::string& beatmap, const std::string&
 
 bool Client::requestPing()
 {
-    auto current_time = std::chrono::steady_clock::now();
     sf::Packet packet;
 
-    sf::Int64 send = std::chrono::steady_clock::now().time_since_epoch() / std::chrono::milliseconds(1);
+    sf::Uint64 send = std::chrono::steady_clock::now().time_since_epoch() / std::chrono::milliseconds(1);
     sf::Uint8 state = 1;
 
     packet << challengeResponse_ << state << send;
 
     udpSocket_.send(packet, SERVER_IP, SERVER_GAME_PORT);
+
+    return false;
+}
+
+bool Client::requestRoomStatus(RoomStatusData &roomStatus, const std::string& lobbyIndex)
+{
+    sf::Socket::Status status;
+
+    sf::Packet p;
+    sf::Uint8 state = 26, rep;
+
+    if(lobbyIndex == "") 
+        p << state << sf::String(lobbyIndex_);
+    else
+        p << state << sf::String(lobbyIndex);
+
+    status = tcpSocket_.send(p);
+    if (status != sf::Socket::Done) {
+        std::cout << "requestRoomStatus : Unable to reach the server (send)" << std::endl;
+        return false;
+    }
+
+    p.clear();
+    status = receiveWithTimeout(tcpSocket_, p);
+
+    p >> state;
+    if (!p) {
+        std::cout << "requestRoomStatus : Data corrupted (state)" << std::endl;
+        return false;
+    }
+
+    if (state != 26) {
+        std::cout << "requestRoomStatus : Unexpected packet recieved (" << (int)state << ")" << std::endl;
+        return false;
+    }
+
+    p >> rep;
+
+    if (!p) {
+        std::cout << "requestRoomStatus : Data corrupted (rep)" << std::endl;
+        return false;
+    }
+
+    if (rep == 1) {
+        std::cout << "requestRoomStatus : Lobby not found." << std::endl;
+        return false;
+    }
+
+    if (rep == 2) {
+        std::cout << "requestRoomStatus : Lobby not ready." << std::endl;
+        return false;
+    }
+
+    sf::Int32 size;
+    float beat;
+    p >> beat >> size;
+
+    if (!p) {
+        std::cout << "requestRoomStatus : Data corrupted (size1)" << std::endl;
+        return false;
+    }
+
+    roomStatus.beat = beat;
+
+    std::cout << "Current beat : " << beat << std::endl;
+    std::cout << "Failed mechs : " << size << std::endl;
+
+    for (int i = 0; i < size; i++) {
+        sf::Int32 failed;
+        p >> failed;
+
+        if (!p) {
+            std::cout << "requestRoomStatus : Data corrupted (failed << " << i << ")" << std::endl;
+            return false;
+        }
+
+        roomStatus.failed.emplace_back(failed);
+
+        std::cout << "      " << failed << " " << std::endl;
+    }
+
+    float zoom, rotation, top, left, width, height;
+
+    p >> size >> zoom >> rotation >> top >> left >> width >> height;
+
+    std::cout << "Zoom : " << zoom << std::endl;
+    std::cout << "Rotation : " << rotation << std::endl;
+    std::cout << "Top : " << top << std::endl;
+    std::cout << "Left : " << left << std::endl;
+    std::cout << "width : " << width << std::endl;
+    std::cout << "Height : " << height << std::endl;
+
+
+
+    if (!p) {
+        std::cout << "requestRoomStatus : Data corrupted (arena)" << std::endl;
+        return false;
+    }
+
+    roomStatus.zoom = zoom; 
+    roomStatus.rotation = rotation;
+    roomStatus.top = top;
+    roomStatus.left = left;
+    roomStatus.width = width;
+    roomStatus.height = height;
+
+    std::cout << "Arena : " << size << std::endl;
+
+    for (int i = 0; i < size; i++) {
+        float rt, rl, rw, rh;
+        p >> rt >> rl >> rw >> rh;
+
+        if (!p) {
+            std::cout << "requestRoomStatus : Data corrupted (arena < " << i << ")" << std::endl;
+            return false;
+        }
+
+        roomStatus.rt.emplace_back(rt);
+        roomStatus.rl.emplace_back(rl);
+        roomStatus.rw.emplace_back(rw);
+        roomStatus.rh.emplace_back(rh);
+
+        std::cout << "      " << rt << " " << rl << " " <<
+            rw << " " << rh << " " << std::endl;
+    }
+
+    std::cout << "Totems : " << std::endl;
+    for (int i = 0; i < NB_MAX_TOTEM; i++) {
+        sf::Uint32 color;
+        sf::Int32 active;
+        sf::Int32 x, y;
+
+        p >> color >> active >> x >> y;
+
+        if (!p) {
+            std::cout << "requestRoomStatus : Data corrupted (totems < " << i << ")" << std::endl;
+            return false;
+        }
+
+        roomStatus.totemColors.emplace_back(color);
+        roomStatus.totemActive.emplace_back(active == 1);
+        roomStatus.totemX.emplace_back(x);
+        roomStatus.totemY.emplace_back(y);
+
+        std::cout << "      " << color << " " << active << " " <<
+            x << " " << y << " " << std::endl;
+    }
+
+    std::cout << "Joueurs : " << std::endl;
+    for (int i = 0; i < NB_MAX_JOUEURS; i++) {
+        sf::String name;
+        sf::Uint32 color;
+        sf::Int32 active;
+        sf::Int32 x, y;
+
+        p >> name >> color >> active >> x >> y;
+
+        if (!p) {
+            std::cout << "requestRoomStatus : Data corrupted (players < " << i << ")" << std::endl;
+            return false;
+        }
+        roomStatus.names.emplace_back(name);
+        roomStatus.playerColors.emplace_back(color);
+        roomStatus.playerActive.emplace_back(active == 1);
+        roomStatus.playerX.emplace_back(x);
+        roomStatus.playerY.emplace_back(y);
+
+        std::cout << "      " << std::string(name) << " " << color << " " << active << " " <<
+            x << " " << y << " " << std::endl;
+    }
 
     return false;
 }

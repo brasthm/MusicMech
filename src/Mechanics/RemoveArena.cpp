@@ -18,3 +18,8 @@ std::string RemoveArena::toString()
 	std::string res = "REMOVEARENA," + std::to_string(beat_) + "," + std::to_string(index_);
 	return res;
 }
+
+Mechanic* RemoveArena::clone()
+{
+	return new RemoveArena(*this);
+}

@@ -20,3 +20,8 @@ std::string EndMap::toString()
 
 	return res;
 }
+
+Mechanic* EndMap::clone()
+{
+	return new EndMap(*this);
+}

@@ -36,6 +36,8 @@ public:
     void reset(float beat) override;
     std::string toString() override;
 
+    Mechanic* clone() override;
+
 };
 
 

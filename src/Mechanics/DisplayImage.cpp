@@ -80,3 +80,8 @@ std::string DisplayImage::toString()
 
 	return res;
 }
+
+Mechanic* DisplayImage::clone()
+{
+	return new DisplayImage(*this);
+}

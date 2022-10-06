@@ -19,8 +19,9 @@ private:
 	std::vector<std::pair<float, float>> checkpoints_;
     std::string audioFile_;
 
+	float endBeat_;
 
-	int getCheckpoint(float time);
+	
 public:
     Song();
 	~Song();
@@ -41,9 +42,19 @@ public:
 
 	void addCheckpoint(float time, float beat);
 	void resetCheckpoints();
-	std::pair<float, float> getCurrentCheckpoint(float time);
-    std::pair<float, float> getPreviousCheckpoint(float time);
-    std::pair<float, float> getNextCheckpoint(float time);
+	std::pair<float, float> getCurrentCheckpoint(float beat);
+    std::pair<float, float> getPreviousCheckpoint(float beat);
+    std::pair<float, float> getNextCheckpoint(float beat);
+	int getCheckpoint(float beat);
+	std::pair<float, float> getIndexCheckpoint(int section);
+	int getMaxCheckpoint();
+	float getEndBeat();
+	int getSectionPourcentage(float beat, int section);
+
+	void setEndBeat(float beat);
+
+	void drawProgress(sf::RenderWindow &window, float beat, int section);
+	void drawSection(sf::RenderWindow& window, float beat, int section);
 };
 
 #endif //MUSICMECH_CLIENT_SONG_H

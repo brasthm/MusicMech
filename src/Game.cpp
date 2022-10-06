@@ -7,6 +7,8 @@
 
 #include "Game.h"
 #include "main.h"
+#include "RoomStatus.h"
+#include "Graphics/LoadingScreen.h"
 #include "Graphics/RingShape.h"
 #include "Graphics/ButtonGroup.h"
 #include "System/RessourceLoader.h"
@@ -34,6 +36,7 @@
 
 
 #include <cmath>
+#include <future>
 
 Game::Game() {
     online_ = false;
@@ -59,34 +62,73 @@ void Game::run(sf::RenderWindow &window, Client* client, bool creator) {
 
     bool godmode = false;
 
+    std::vector<sf::RectangleShape> namesInfo;
+    std::vector<sf::Text> namesText;
+
+    RoomStatus roomStatus(&song_, &mechanicList_);
+
+    for (int i = 0; i < joueurs_.size(); i++) {
+        namesText.emplace_back();
+        namesInfo.emplace_back();
+
+        namesText.back().setFont(RessourceLoader::getFont("Font/Roboto-Bold.ttf"));
+        namesText.back().setCharacterSize(35);
+        namesText.back().setString(joueurs_[i].getName());
+        namesText.back().setFillColor(sf::Color::Black);
+
+        namesInfo.back().setFillColor(sf::Color(joueurs_[i].getColor()));
+        auto size = namesText.back().getGlobalBounds();
+        namesInfo.back().setSize(sf::Vector2f(size.width + 20, size.height + 15));
+
+        namesText.back().setPosition(5, WIDOW_HEIGHT - 50 - (joueurs_.size() - i) * (60));
+        namesInfo.back().setPosition(0, WIDOW_HEIGHT - 50 - (joueurs_.size() - i) * (60));
+    }
+
 
     sf::Clock fps, send, ping;
 
     int current = client->getPlayerIndex();
 
-    sf::Text fps_text, beat_text, beat_serv_text, ping_text ,godmode_text;
+    sf::Text fps_text, beat_text, beat_serv_text, ping_text ,godmode_text, position_text, position_serv_text, section_text;
 
     fps_text.setFont(RessourceLoader::getFont("Font/Roboto-Regular.ttf"));
-    fps_text.setCharacterSize(30);
+    fps_text.setCharacterSize(18);
 
     beat_text.setFont(RessourceLoader::getFont("Font/Roboto-Regular.ttf"));
-    beat_text.setCharacterSize(30);
+    beat_text.setCharacterSize(18);
+    beat_text.setPosition(0, 20);
 
     beat_serv_text.setFont(RessourceLoader::getFont("Font/Roboto-Regular.ttf"));
     beat_serv_text.setCharacterSize(18);
     beat_serv_text.setPosition(0,20*2);
 
-    beat_serv_text.setString("Server position: 0 (+0)");
+    beat_serv_text.setString("Server beat: 0 (+0)");
+
+    position_text.setFont(RessourceLoader::getFont("Font/Roboto-Regular.ttf"));
+    position_text.setCharacterSize(18);
+    position_text.setPosition(0, 20 * 3);
+
+    position_text.setString("Position: 0");
+
+    position_serv_text.setFont(RessourceLoader::getFont("Font/Roboto-Regular.ttf"));
+    position_serv_text.setCharacterSize(18);
+    position_serv_text.setPosition(0, 20 * 4);
+
+    position_serv_text.setString("Server position: 0 (+0)");
 
     ping_text.setFont(RessourceLoader::getFont("Font/Roboto-Regular.ttf"));
     ping_text.setCharacterSize(18);
-    ping_text.setPosition(0, 20 * 3);
+    ping_text.setPosition(0, 20 * 5);
 
     ping_text.setString("Ping: 0");
 
     godmode_text.setFont(RessourceLoader::getFont("Font/Roboto-Regular.ttf"));
     godmode_text.setCharacterSize(18);
-    godmode_text.setPosition(0, 20 * 4);
+    godmode_text.setPosition(0, 20 * 6);
+
+   section_text.setFont(RessourceLoader::getFont("Font/Roboto-Regular.ttf"));
+   section_text.setCharacterSize(18);
+   section_text.setPosition(0, 20 * 7);
 
 
     joueurs_[current].setActive(true);
@@ -108,8 +150,8 @@ void Game::run(sf::RenderWindow &window, Client* client, bool creator) {
 
     music_.play();
 
-    bool exit = false, interupted = false, sent = false, failed = false, resume = false, paused = false, refreshPing = false;
-
+    bool exit = false, interupted = false, sent = false, failed = false, resume = false, paused = false, refreshPing = false, restartSent = false;
+    bool drawDebug = false, gameOver = false;
     std::pair<float, float> checkpoint;
 
 
@@ -117,12 +159,27 @@ void Game::run(sf::RenderWindow &window, Client* client, bool creator) {
     fond.setSize({ WIDOW_WIDTH, WIDOW_HEIGHT });
     fond.setFillColor(sf::Color(0x000000CC));
 
-    ButtonGroup pauseButtons;
+    ButtonGroup pauseButtons, gameOverButtons;
 
     pauseButtons.addButton(Button("RESUME", "Resume", 0xa5c882ff, WIDOW_WIDTH / 2.f - 125, 450, 250, 70));
     pauseButtons.addButton(Button("QUIT", "Quit", 0xff6392ff, WIDOW_WIDTH / 2.f - 75, 580, 150, 70));
 
-    sf::Text pauseText;
+    if (creator) {
+        gameOverButtons.addButton(Button("RETRY", "Retry", 0xa5c882ff, WIDOW_WIDTH / 2.f - 125, 580, 250, 70));
+        gameOverButtons.addButton(Button("RECAP", "Death recap", 0xf7dd72ff, WIDOW_WIDTH / 2.f - 150, 710, 300, 70));
+        gameOverButtons.addButton(Button("QUIT", "Quit", 0xff6392ff, WIDOW_WIDTH / 2.f - 75, 840, 150, 70));
+    }
+    else {
+        gameOverButtons.addButton(Button("RECAP", "Death recap", 0xf7dd72ff, WIDOW_WIDTH / 2.f - 150, 580, 300, 70));
+        gameOverButtons.addButton(Button("QUIT", "Quit", 0xff6392ff, WIDOW_WIDTH / 2.f - 75, 710, 150, 70));
+    }
+    
+
+    sf::Text pauseText, gameOverText, gameOverInfo;
+
+    LoadingScreen loading;
+
+    std::future<bool> waiting;
 
    pauseText.setFont(RessourceLoader::getFont("Font/Roboto-Bold.ttf"));
    pauseText.setString("PAUSE");
@@ -130,13 +187,37 @@ void Game::run(sf::RenderWindow &window, Client* client, bool creator) {
    pauseText.setPosition(WIDOW_WIDTH/2.f - pauseText.getGlobalBounds().width/2.f, 250);
    pauseText.setFillColor(sf::Color::White);
 
+   gameOverText.setFont(RessourceLoader::getFont("Font/Roboto-Bold.ttf"));
+   gameOverText.setString("FAIL");
+   gameOverText.setCharacterSize(108);
+   gameOverText.setPosition(WIDOW_WIDTH / 2.f - pauseText.getGlobalBounds().width / 2.f, 250);
+   gameOverText.setFillColor(sf::Color::White);
+
+
+   gameOverInfo.setFont(RessourceLoader::getFont("Font/Roboto-Bold.ttf"));
+   gameOverInfo.setCharacterSize(50);
+   gameOverInfo.setFillColor(sf::Color::White);
+
+
+   for (int i = 0; i < joueurs_.size(); i++) {
+       joueurs_[i].showPlate();
+   }
+
+   float gameOverBeat, gameOverSection;
+
    //client->requestPing();
+
+   sf::RenderTexture renderText;
+   renderText.create(WIDOW_WIDTH, WIDOW_HEIGHT);
 
     window.setKeyRepeatEnabled(false);
     while (!exit)
     {
+        int res = -1;
         sf::Time currentPos = music_.getPlayingOffset();
         float currentBeat_float = song_.getCumulativeNBeats(currentPos.asMilliseconds());
+        float currentSection = song_.getCheckpoint(currentBeat_float);
+        
 
         sf::Time elapsedTime = fps.getElapsedTime();
         fps.restart();
@@ -149,18 +230,24 @@ void Game::run(sf::RenderWindow &window, Client* client, bool creator) {
                 interupted = true;
             }
  
-            if (paused) {
-                if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape ||
-                    event.type == sf::Event::JoystickButtonPressed && event.joystickButton.button == 1 ||
-                    event.type == sf::Event::JoystickButtonPressed && event.joystickButton.button == 7) {
-                    paused = false;
-                }
+            if (failed) {
                 if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Return ||
                     event.type == sf::Event::JoystickButtonPressed && event.joystickButton.button == 0) {
-                    if (pauseButtons.getCurrent() == "RESUME") {
-                        paused = false;
+                    if (gameOverButtons.getCurrent() == "RETRY") {
+                        if (!restartSent) {
+                            client->sendResumeGame();
+                            restartSent = true;
+                        }
                     }
-                    else if (pauseButtons.getCurrent() == "QUIT") {
+                    else if (gameOverButtons.getCurrent() == "RECAP") {
+                        RoomStatusData data;
+                        client->requestRoomStatus(data);
+                        roomStatus.clear();
+                        roomStatus.setup(data);
+                        roomStatus.run(window, client);
+                        
+                    }
+                    else if (gameOverButtons.getCurrent() == "QUIT") {
                         client->sendEndGame();
                         interupted = true;
                     }
@@ -169,18 +256,48 @@ void Game::run(sf::RenderWindow &window, Client* client, bool creator) {
                 if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Up ||
                     event.type == sf::Event::JoystickMoved && event.joystickMove.axis == sf::Joystick::Y && event.joystickMove.position == -100 ||
                     event.type == sf::Event::JoystickMoved && event.joystickMove.axis == sf::Joystick::PovY && event.joystickMove.position == 100) {
-                    pauseButtons.prev();
+                    gameOverButtons.prev();
                 }
                 if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Down ||
                     event.type == sf::Event::JoystickMoved && event.joystickMove.axis == sf::Joystick::Y && event.joystickMove.position == 100 ||
                     event.type == sf::Event::JoystickMoved && event.joystickMove.axis == sf::Joystick::PovY && event.joystickMove.position == -100) {
-                    pauseButtons.next();
+                    gameOverButtons.next();
                 }
             }
             else {
-                if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape && !interupted ||
-                    event.type == sf::Event::JoystickButtonPressed && event.joystickButton.button == 7 && !interupted) {
-                    paused = !paused;
+                if (paused) {
+                    if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape ||
+                        event.type == sf::Event::JoystickButtonPressed && event.joystickButton.button == 1 ||
+                        event.type == sf::Event::JoystickButtonPressed && event.joystickButton.button == 7) {
+                        paused = false;
+                    }
+                    if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Return ||
+                        event.type == sf::Event::JoystickButtonPressed && event.joystickButton.button == 0) {
+                        if (pauseButtons.getCurrent() == "RESUME") {
+                            paused = false;
+                        }
+                        else if (pauseButtons.getCurrent() == "QUIT") {
+                            client->sendEndGame();
+                            interupted = true;
+                        }
+                    }
+
+                    if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Up ||
+                        event.type == sf::Event::JoystickMoved && event.joystickMove.axis == sf::Joystick::Y && event.joystickMove.position == -100 ||
+                        event.type == sf::Event::JoystickMoved && event.joystickMove.axis == sf::Joystick::PovY && event.joystickMove.position == 100) {
+                        pauseButtons.prev();
+                    }
+                    if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Down ||
+                        event.type == sf::Event::JoystickMoved && event.joystickMove.axis == sf::Joystick::Y && event.joystickMove.position == 100 ||
+                        event.type == sf::Event::JoystickMoved && event.joystickMove.axis == sf::Joystick::PovY && event.joystickMove.position == -100) {
+                        pauseButtons.next();
+                    }
+                }
+                else {
+                    if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape && !interupted ||
+                        event.type == sf::Event::JoystickButtonPressed && event.joystickButton.button == 7 && !interupted) {
+                        paused = !paused;
+                    }
                 }
             }
             
@@ -191,11 +308,14 @@ void Game::run(sf::RenderWindow &window, Client* client, bool creator) {
                 if(event.key.code == sf::Keyboard::H) {
                     GOD_MODE = false;
                 }
+                if (event.key.code == sf::Keyboard::F1) {
+                    drawDebug = !drawDebug;
+                }
             }
-
-
         }
 
+
+        // CLEARED
         if (!cleared) {
             cleared = em_.getCleared();
             if (cleared) {
@@ -203,104 +323,178 @@ void Game::run(sf::RenderWindow &window, Client* client, bool creator) {
                 xText.set(768, 0.3);
             }
         }
-        if (cleared && endTimer_.getElapsedTime() > sf::seconds(5)) {
-            if (creator) {
-                client->sendEndGame();
-                interupted = true;
-            }
-        }
 
 
         godmode_text.setString(GOD_MODE ? "Godmode: true":"Godmode : false");
 
         fps_text.setString("FPS: " + std::to_string(1.f / elapsedTime.asSeconds()));
-        beat_text.setString("Position:" + std::to_string(currentBeat_float));
+        beat_text.setString("Beat: " + std::to_string(currentBeat_float));
+        position_text.setString("Position: " + std::to_string(currentPos.asSeconds()));
+        section_text.setString("Section : " + std::to_string(currentSection));
+
+        loading.update(elapsedTime);
+
+        // RESTART
+        if (waiting.valid() && waiting.wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
+
+            if (waiting.get()) {
+                sent = false;
+                failed = false;
+                restartSent = false;
+                gameOver = false;
+                for (int i = 0; i < joueurs_.size(); i++) {
+                    joueurs_[i].showPlate();
+                }
+                music_.play();
+            }
+
+            waiting = std::future<bool>();
+            loading.stop();
+        }
 
         bool newfailed = false;
 
-        if(!failed) {
-            for(auto & joueur : joueurs_) {
-                joueur.update(elapsedTime, &arena_, currentBeat_float, window.hasFocus() && !paused);
+        
+        if (!waiting.valid()) {
+
+            // CLEARED
+            if (cleared && endTimer_.getElapsedTime() > sf::seconds(5)) {
+                if (creator) {
+                    client->sendEndGame();
+                    interupted = true;
+                }
             }
 
-            for(auto & totem : totems_) {
-                totem.update(elapsedTime, &arena_, currentBeat_float, window.hasFocus() && !paused);
+            // UPDATE
+            if (!failed) {
+                for (auto& joueur : joueurs_) {
+                    joueur.update(elapsedTime, &arena_, currentBeat_float, window.hasFocus() && !paused);
+                }
+
+                for (auto& totem : totems_) {
+                    totem.update(elapsedTime, &arena_, currentBeat_float, window.hasFocus() && !paused);
+                }
+
+                for (auto& mech : mechanicList_) {
+                    mech->update(elapsedTime, currentBeat_float, em_);
+                    if (!GOD_MODE)
+                        newfailed = newfailed || mech->isFailed();
+                    else
+                        mech->negateFailed();
+                }
+
+                if (send.getElapsedTime().asMilliseconds() > CLIENT_TICK_MS) {
+                    client->sendPlayerData((int)joueurs_[current].getPosX(), (int)joueurs_[current].getPosY());
+                    send.restart();
+                }
+
+                arena_.update(elapsedTime);
             }
 
-            for(auto & mech : mechanicList_) {
-                mech->update(elapsedTime, currentBeat_float, em_);
-                if (!GOD_MODE)
-                    newfailed = newfailed || mech->isFailed();
-                else
-                    mech->negateFailed();
+            // SEND PING
+            if (ping.getElapsedTime().asSeconds() > 0.1) {
+                ping.restart();
+
+                client->requestPing();
             }
 
-            if(send.getElapsedTime().asMilliseconds() > CLIENT_TICK_MS) {
-                client->sendPlayerData((int)joueurs_[current].getPosX(), (int)joueurs_[current].getPosY());
-                send.restart();
+            // MONITOR SERVER
+            if (!exit && res == -1) {
+                res = client->updateFromServerPlayerPosition(joueurs_, checkpoint);
+                exit = res == 1;
+                newfailed = newfailed || res == 2;
+                if (failed) resume = res == 3;
+                refreshPing = res == 4;
             }
 
-            arena_.update(elapsedTime);
+            // PAUSE UPDATE
+            if (paused) {
+                pauseButtons.update(elapsedTime);
+            }
+
+            if (failed) {
+                gameOverButtons.update(elapsedTime);
+            }
+
+            // PING RECIEVED
+            if (refreshPing) {
+                refreshPing = false;
+
+                float serverbeat = client->getServerBeat();
+                float off = currentBeat_float - serverbeat;
+                float serverpos = client->getPosition();
+                float offpos = (currentPos.asSeconds() - serverpos) * 1000;
+
+                ping_text.setString("Ping: " + std::to_string(client->getPing()));
+                beat_serv_text.setString("Server beat: " + std::to_string(serverbeat) + " (" + std::to_string(off) + ")");
+
+                position_serv_text.setString("Server position: " + std::to_string(serverpos) + "(" + std::to_string((int)offpos) + "ms)");
+            }
+
+            // RESTART RECIEVED
+            if (resume) {
+                loading.start("Starting");
+                waiting = std::async(std::launch::async, &Client::waitToStart, client);
+
+                resume = false;
+            }
         }
 
-        if (ping.getElapsedTime().asSeconds() > 0.1) {
-            ping.restart();
-
-            client->requestPing();
-        }
-
-        if(!exit) {
-            int res = client->updateFromServerPlayerPosition(joueurs_, checkpoint);
-            exit = res == 1;
-            newfailed = newfailed || res == 2;
-            if(failed) resume = res == 3;
-            refreshPing = res == 4;
-        }
-
-        if (paused) {
-            pauseButtons.update(elapsedTime);
-        }
-
-        if (refreshPing) {
-            refreshPing = false;
-
-            float serverbeat = client->getServerBeat();
-            float off = currentBeat_float - serverbeat;
-
-            ping_text.setString("Ping: " + std::to_string(client->getPing()));
-            beat_serv_text.setString("Server position: " + std::to_string(serverbeat) + " (" + std::to_string(off) +")");
-        }
 
         window.clear(sf::Color(0x2A2431FF));
+        renderText.clear(sf::Color::Transparent);
+        renderText.setView(arena_.getView());
 
+        // DRAW GAME
         if(!failed) {
+            arena_.draw(renderText);
+
             for(int i = 0; i < mechanicList_.size(); i++) {
-                mechanicList_[i]->draw(elapsedTime, arena_.getRenderTexture());
+                mechanicList_[i]->draw(elapsedTime, renderText);
             }
 
             for(int  i = 0; i < NB_MAX_TOTEM; i++) {
-                totems_[i].draw(arena_.getRenderTexture());
+                totems_[i].draw(renderText);
             }
 
             for(int i = 0; i < NB_MAX_JOUEURS; i++) {
-                joueurs_[i].draw(arena_.getRenderTexture());
+                joueurs_[i].draw(renderText);
             }
 
-            arena_.draw(window);
+            renderText.display();
+            sf::Sprite sp(renderText.getTexture());
+            window.draw(sp);
+
+            song_.drawProgress(window, currentBeat_float, currentSection);
+
+            for (int i = 0; i < namesInfo.size(); i++) {
+                window.draw(namesInfo[i]);
+                window.draw(namesText[i]);
+            }
         }
+        // DRAW GAMEOVER 
         else {
             sf::RectangleShape screen;
             screen.setTexture(&texture);
             screen.setSize({(float)texture.getSize().x, (float)texture.getSize().y});
             window.draw(screen);
+
+            window.draw(fond);
+            gameOverButtons.draw(window);
+            song_.drawSection(window, gameOverBeat, gameOverSection);
+            window.draw(gameOverText);
+            window.draw(gameOverInfo);
         }
 
+        // FAILED
         if(!failed) failed = !godmode && newfailed;
         if(failed) {
+            // FIRST FRAME
             if(!sent) {
                 music_.pause();
                 std::cout << "failed" << std::endl;
                 sent = true;
+                gameOver = true;
 
                 texture.create(window.getSize().x, window.getSize().y);
                 texture.update(window);
@@ -309,26 +503,38 @@ void Game::run(sf::RenderWindow &window, Client* client, bool creator) {
 
                 reset(checkpoint.second);
                 music_.setPlayingOffset(sf::seconds(checkpoint.first));
+
+                gameOverBeat = currentBeat_float - 0.5;
+                gameOverSection = song_.getCheckpoint(checkpoint.second + 1);
+
+                gameOverText.setString("FAIL - Phase " + std::to_string((int)gameOverSection +1) + "/" + std::to_string(song_.getMaxCheckpoint()));
+                gameOverText.setPosition(WIDOW_WIDTH / 2.f - gameOverText.getGlobalBounds().width / 2.f, 100);
+
+                int pourcentage = song_.getSectionPourcentage(gameOverBeat, gameOverSection);
+                gameOverInfo.setString("Current phase : " + std::to_string(pourcentage) + "%");
+                gameOverInfo.setPosition(WIDOW_WIDTH / 2.f - gameOverInfo.getGlobalBounds().width / 2.f, 400);
+
             }
 
-            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Return)) {
-                client->sendResumeGame();
-                resume = true;
-            }
+            /*if (!restartSent && !exit && !interupted) {
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Return)) {
+                    client->sendResumeGame();
+                    restartSent = true;
+                }
+            }*/
+            
         }
 
+
+        // DRAW CLEAR
         if (cleared) {
             xText.update(elapsedTime);
             clear.setPosition(xText.get(), 300);
             window.draw(clear);
         }
 
-        if(resume) {
-            sent = false;
-            failed = false;
-            music_.play();
-            resume = false;
-        }
+        
+        // DRAW PAUSE
 
         if (paused) {
             window.draw(fond);
@@ -336,11 +542,20 @@ void Game::run(sf::RenderWindow &window, Client* client, bool creator) {
             window.draw(pauseText);
         }
 
-        window.draw(fps_text);
-        window.draw(beat_text);
-        window.draw(godmode_text);
-        window.draw(beat_serv_text);
-        window.draw(ping_text);
+        loading.draw(window);
+
+        // DRAW LOADING
+        if (drawDebug) {
+            window.draw(fps_text);
+            window.draw(beat_text);
+            window.draw(godmode_text);
+            window.draw(beat_serv_text);
+            window.draw(ping_text);
+            window.draw(position_serv_text);
+            window.draw(position_text);
+            window.draw(section_text);
+        }
+
         window.display();
     }
 
@@ -348,16 +563,6 @@ void Game::run(sf::RenderWindow &window, Client* client, bool creator) {
 }
 
 void Game::load() {
-    song_.load(
-            "Beatmaps/1772712 DECO 27 - Ai Kotoba IV feat. Hatsune Miku/[2P] DECO27 - Ai Kotoba IV feat. Hatsune Miku.mm",
-            //"Beatmaps/1772712 DECO 27 - Ai Kotoba IV feat. Hatsune Miku/[TEST] DECO27 - Ai Kotoba IV feat. Hatsune Miku.mm",
-            &music_,
-            mechanicList_, &arena_);
-
-
-
-    std::sort(mechanicList_.begin(), mechanicList_.end(),
-              [] (Mechanic* m1, Mechanic* m2) {return *m1 < *m2;});
 }
 
 void Game::load(const std::string& path)
@@ -380,6 +585,24 @@ void Game::load(const std::string& path)
 
     std::sort(mechanicList_.begin(), mechanicList_.end(),
         [](Mechanic* m1, Mechanic* m2) {return *m1 < *m2; });
+
+    bool found = false;
+    float beat;
+    for (int i = 0; i < mechanicList_.size(); i++) {
+        if (EndMap* em = dynamic_cast<EndMap*>(mechanicList_[i])) {
+            beat = em->getBeat();
+            found = true;
+            break;
+        }
+    }
+
+    if (!found) {
+        std::cout << "Warning : no EndMap" << std::endl;
+        beat = song_.getCumulativeNBeats(music_.getDuration().asMilliseconds());
+    }
+
+    std::cout << "EndMap : " << beat << std::endl;
+    song_.setEndBeat(beat);
 }
 
 
@@ -409,10 +632,12 @@ void Game::clearPlayer()
     joueurs_.clear();
 }
 
-void Game::addPlayer(sf::Uint32 color)
+void Game::addPlayer(std::string name ,sf::Uint32 color)
 {
     joueurs_.emplace_back();
+    joueurs_.back().setName(name);
     joueurs_.back().setColor(color);
+    joueurs_.back().computePlate();
 }
 
 void Game::save(const std::string &filename) {

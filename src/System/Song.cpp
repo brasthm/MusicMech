@@ -394,9 +394,9 @@ void Song::addCheckpoint(float time, float beat) {
 }
 
 int Song::getCheckpoint(float time) {
-    std::cout << "Checkpoint - "  << checkpoints_.size();
-    if(checkpoints_.empty())
+    if (checkpoints_.empty()) {
         return -1;
+    }
 
     int i = 0;
 
@@ -407,8 +407,6 @@ int Song::getCheckpoint(float time) {
 
     if(i!=0)
         i--;
-
-    std::cout << " " << i << std::endl;
 
     return i;
 }
@@ -444,6 +442,158 @@ std::pair<float, float> Song::getNextCheckpoint(float time) {
         return checkpoints_[checkpoints_.size() - 1];
 
     return checkpoints_[res + 1];
+}
+
+std::pair<float, float> Song::getIndexCheckpoint(int section)
+{
+    return checkpoints_[section];
+}
+
+int Song::getMaxCheckpoint()
+{
+    return checkpoints_.size();
+}
+
+float Song::getEndBeat()
+{
+    return endBeat_;
+}
+
+int Song::getSectionPourcentage(float beat, int section)
+{
+    if (section == -1)
+        return 0;
+
+    float d1 = checkpoints_[section].second;
+    float d2;
+    if (section + 1 == checkpoints_.size()) {
+        d2 = endBeat_;
+    }
+    else {
+        d2 = checkpoints_[section + 1].second;
+    }
+
+    int res = (beat - d1) / (d2 - d1) * 100 + 0.5f;
+
+    if (res < 0)
+        res = 0;
+    if (res >= 100)
+        res = 99;
+
+    return res;
+}
+
+void Song::setEndBeat(float beat)
+{
+    endBeat_ = beat;
+}
+
+void Song::drawProgress(sf::RenderWindow& window, float beat, int section)
+{
+    if (section == -1)
+        return;
+
+    float y = 20;
+
+    sf::CircleShape shape;
+    sf::RectangleShape line, progress;
+
+    float d1 = WIDOW_WIDTH * 0.1f, d2 = WIDOW_WIDTH * 0.9f;
+
+    line.setFillColor(sf::Color(0xf7dd72ff));
+    line.setPosition(d1, y - 3);
+    line.setSize(sf::Vector2f(d2 - d1, 7));
+
+
+    float fraction = beat / endBeat_;
+
+    if (fraction > 1)
+        fraction = 1;
+    if (fraction < 0)
+        fraction = 0;
+
+    progress.setFillColor(sf::Color(0xf93943ff));
+    progress.setPosition(d1, y - 5);
+    progress.setSize(sf::Vector2f((d2 - d1) * fraction, 11));
+
+    window.draw(line);
+    window.draw(progress);
+
+    shape.setRadius(15);
+
+    for (int i = 0; i < checkpoints_.size(); i++) {
+        if (beat >= checkpoints_[i].second)
+            shape.setFillColor(sf::Color(0xf93943ff));
+        else
+            shape.setFillColor(sf::Color(0xf7dd72ff));
+
+        shape.setPosition((d2 - d1) * checkpoints_[i].second / endBeat_ + d1 - 15, y - 15);
+
+        window.draw(shape);
+    }
+    if (beat >= endBeat_)
+        shape.setFillColor(sf::Color(0xf93943ff));
+    else
+        shape.setFillColor(sf::Color(0xf7dd72ff));
+    shape.setPosition(d2 - 15, y - 15);
+    window.draw(shape);
+    
+}
+
+void Song::drawSection(sf::RenderWindow& window, float beat, int section)
+{
+    if (section == -1)
+        return;
+
+    float y = 330;
+
+    sf::CircleShape shape;
+    sf::RectangleShape line, progress;
+
+    float d1 = WIDOW_WIDTH * 0.3f, d2 = WIDOW_WIDTH * 0.7f;
+
+    line.setFillColor(sf::Color(0xf7dd72ff));
+    line.setPosition(d1, y - 6);
+    line.setSize(sf::Vector2f(d2 - d1, 13));
+
+
+    float s1 = checkpoints_[section].second;
+    float s2;
+    if (section + 1 == checkpoints_.size()) {
+        s2 = endBeat_;
+    }
+    else {
+        s2 = checkpoints_[section + 1].second;
+    }
+
+    float fraction = (beat - s1) / (s2 - s1);
+
+    if (fraction > 1)
+        fraction = 1;
+    if (fraction < 0)
+        fraction = 0;
+
+    progress.setFillColor(sf::Color(0xf93943ff));
+    progress.setPosition(d1, y - 10);
+    progress.setSize(sf::Vector2f((d2 - d1) * fraction, 21));
+
+    window.draw(line);
+    window.draw(progress);
+
+    shape.setRadius(30);
+
+
+    shape.setFillColor(sf::Color(0xf93943ff));
+    shape.setPosition(d1 - 30, y - 30);
+
+    window.draw(shape);
+    
+
+    shape.setFillColor(sf::Color(0xf7dd72ff));
+    shape.setPosition(d2 - 30, y - 30);
+
+    window.draw(shape);
+
 }
 
 void Song::resetCheckpoints() {
