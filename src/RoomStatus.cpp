@@ -32,6 +32,14 @@ RoomStatus::RoomStatus(Song* song, std::vector<Mechanic*> *mechanicList)
         mechanicList_.back() = mechanicList->at(i)->clone();
     }
 
+    for (int i = 0; i < mechanicList_.size(); i++) {
+        mechanicList_[i]->reset(0);
+        mechanicList_[i]->setPause(true);
+    }
+
+    failed_.clear();
+    arena_.clear();
+
     em_.addArena(&arena_);
 
     song_ = song;
@@ -84,13 +92,19 @@ int RoomStatus::run(sf::RenderWindow& window, Client* client)
     menuButtons.addButton(Button("SHOWFAILED", "Show failed notes", 0xa5c882ff, 0, 170, 263, 50));
     menuButtons.addButton(Button("HIDE",       "Hide future notes", 0xa5c882ff, 0, 240, 257, 50));
     menuButtons.addButton(Button("DEBUFF",     "Inspect debuffs",   0xf7dd72ff, 0, 310, 230, 50));
-    menuButtons.addButton(Button("RESET",      "Reset",             0x5ab1bbff, 0, 380, 90, 50));
-    menuButtons.addButton(Button("QUIT",       "Back",              0xff6392ff, 0, 450, 80, 50));
+    menuButtons.addButton(Button("QUIT",        "Back",             0xff6392ff, 0, 380, 90, 50));
 
     std::pair<float, float> checkpoint;
 
     sf::RenderTexture renderText;
     renderText.create(WIDOW_WIDTH, WIDOW_HEIGHT);
+    for (int i = 0; i < mechanicList_.size(); i++) {
+        mechanicList_[i]->setFailed(false);
+    }
+    for (int j = 0; j < failed_.size(); j++) {
+        mechanicList_[failed_[j]]->setFailed(true);
+    }
+    
 
     while (!exit) {
         sf::Time elapsedTime = fps.getElapsedTime();
@@ -114,10 +128,6 @@ int RoomStatus::run(sf::RenderWindow& window, Client* client)
                 else if (menuButtons.getCurrent() == "HIDE") {
                     mode = 2;
                 }
-                else if (menuButtons.getCurrent() == "RESET") {
-                    currentBeat = beat_;
-                    mode = 0;
-                }
                 else if (menuButtons.getCurrent() == "QUIT") {
                     return 0;
                 }
@@ -133,7 +143,7 @@ int RoomStatus::run(sf::RenderWindow& window, Client* client)
                 event.type == sf::Event::JoystickMoved && event.joystickMove.axis == sf::Joystick::PovY && event.joystickMove.position == -100) {
                 menuButtons.next();
             }
-            if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Left ||
+            /*if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Left ||
                 event.type == sf::Event::JoystickMoved && event.joystickMove.axis == sf::Joystick::X && event.joystickMove.position == -100 ||
                 event.type == sf::Event::JoystickMoved && event.joystickMove.axis == sf::Joystick::PovX && event.joystickMove.position == -100) {
                 currentBeat -= 0.01;
@@ -146,7 +156,7 @@ int RoomStatus::run(sf::RenderWindow& window, Client* client)
                 currentBeat += 0.01;
                 if (currentBeat > beat_)
                     currentBeat = beat_;
-            }
+            }*/
             if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape ||
                 event.type == sf::Event::JoystickButtonPressed && event.joystickButton.button == 7) {
                 return -1;
@@ -156,11 +166,11 @@ int RoomStatus::run(sf::RenderWindow& window, Client* client)
         menuButtons.update(elapsedTime);
         fps.restart();
         for (auto& joueur : joueurs_) {
-            joueur.update(elapsedTime, &arena_, currentBeat, false);
+            //joueur.update(elapsedTime, &arena_, currentBeat, false);
         }
 
         for (auto& totem : totems_) {
-            totem.update(elapsedTime, &arena_, currentBeat, false);
+            //totem.update(elapsedTime, &arena_, currentBeat, false);
         }
 
         for (auto& mech : mechanicList_) {
@@ -171,7 +181,7 @@ int RoomStatus::run(sf::RenderWindow& window, Client* client)
 
         
         int res = client->updateFromServerPlayerPosition(joueurs_, checkpoint);
-        if (res != 0)
+        if (res == 1 || res == 2 || res == 3)
             return res;
 
 
@@ -203,7 +213,7 @@ int RoomStatus::run(sf::RenderWindow& window, Client* client)
         }
 
         for (int i = 0; i < NB_MAX_JOUEURS; i++) {
-            joueurs_[i].draw(renderText);
+            joueurs_[i].draw(renderText , false);
         }
 
         renderText.display();
@@ -227,46 +237,52 @@ int RoomStatus::run(sf::RenderWindow& window, Client* client)
     return -1;
 }
 
-void RoomStatus::clear()
+
+void RoomStatus::addJoueur(int i, std::string& name, sf::Uint32 color, bool active, float x, float y)
 {
-    for (int i = 0; i < mechanicList_.size(); i++)
-        mechanicList_[i]->reset(0);
-
-    failed_.clear();
-
-    arena_.clear();
+    joueurs_[i].setName(name);
+    joueurs_[i].setColor(color);
+    joueurs_[i].setActive(active);
+    joueurs_[i].setPosition(x, y);
+    joueurs_[i].setServerPosition(x, y);
 }
 
-void RoomStatus::setup(RoomStatusData& data)
+void RoomStatus::addTotem(int i, sf::Uint32 color, bool active, float x, float y)
 {
-    for (int i = 0; i < data.playerActive.size(); i++) {
-        joueurs_[i].setName(data.names[i]);
-        joueurs_[i].setColor(data.playerColors[i]);
-        joueurs_[i].setActive(data.playerActive[i]);
-        joueurs_[i].setPosition(data.playerX[i], data.playerY[i]);
-    }
-
-    for (int i = 0; i < data.totemActive.size(); i++) {
-        totems_[i].setColor(data.totemColors[i]);
-        totems_[i].setActive(data.totemActive[i]);
-        totems_[i].setPosition(data.totemX[i], data.totemY[i]);
-        totems_[i].setTarget(sf::Vector2f(data.totemX[i], data.totemY[i]), 0, true);
-    }
-
-    for (int i = 0; i < data.failed.size(); i++) {
-        failed_.emplace_back(data.failed[i]);
-    }
-
-    for (int i = 0; i < data.rl.size(); i++) {
-        arena_.addRect(data.rl[i], data.rt[i], data.rw[i], data.rh[i]);
-    }
-    
-    beat_ = data.beat;
-
-    arena_.setZoom(data.zoom);
-    arena_.setRotation(data.rotation);
-    arena_.setTop(data.top);
-    arena_.setLeft(data.left);
-    arena_.setWidth(data.width);
-    arena_.setHeight(data.height);
+    totems_[i].setColor(color);
+    totems_[i].setActive(active);
+    totems_[i].setPosition(x, y);
+    totems_[i].setTarget(sf::Vector2f(x, y), 0, true);
 }
+
+void RoomStatus::addFailed(int i)
+{
+    failed_.emplace_back(i);
+}
+
+void RoomStatus::addArenaRect(float rl, float rt, float rw, float rh)
+{
+    arena_.addRect(rl, rt, rw, rh);
+}
+
+void RoomStatus::setBeat(float beat)
+{
+    beat_ = beat;
+}
+
+void RoomStatus::setArenaParameters(float zoom, float rotation, float left, float top, float width, float height)
+{
+    arena_.setZoom(zoom);
+    arena_.setRotation(rotation);
+    arena_.setTop(top);
+    arena_.setLeft(left);
+    arena_.setWidth(width);
+    arena_.setHeight(height);
+}
+
+void RoomStatus::setMechPosition(int i, std::vector<sf::Vector2f>& positions)
+{
+    mechanicList_[i]->setTargetPos(positions);
+}
+
+

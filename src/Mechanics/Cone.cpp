@@ -2,15 +2,16 @@
 
 #include "../System/Utils.h"
 #include <cmath>
+#include <iostream>
 
 void Cone::updatePosition(EntityManager& entityManager)
 {
-    sf::Vector2f anchor = entityManager.getPosition(anchor_);
-    sf::Vector2f center = entityManager.getPosition(center_);
+    anchorPos_ = entityManager.getPosition(anchor_);
+    centerPos_ = entityManager.getPosition(center_);
 
 
-    float delta_x = anchor.x - center.x;
-    float delta_y = anchor.y - center.y;
+    float delta_x = anchorPos_.x - centerPos_.x;
+    float delta_y = anchorPos_.y - centerPos_.y;
     float theta_radians = std::atan2(delta_y, delta_x);
     float prevAngle = theta_radians - width_ / 2 * 0.01745329251;
     float nextAngle = theta_radians + width_ / 2 * 0.01745329251;
@@ -20,12 +21,12 @@ void Cone::updatePosition(EntityManager& entityManager)
     sf::Vector2f next = { distance_ * std::cos(nextAngle) , distance_ * std::sin(nextAngle) };
 
 
-    base_.setPoint(0, center);
-    base_.setPoint(1, center + prev);
-    base_.setPoint(2, center + next);
+    base_.setPoint(0, centerPos_);
+    base_.setPoint(1, centerPos_ + prev);
+    base_.setPoint(2, centerPos_ + next);
 
-    approachCircle_.setCenter(anchor);
-    playerIndicator_.updatePosition(anchor);
+    approachCircle_.setCenter(anchorPos_);
+    playerIndicator_.updatePosition(centerPos_);
 }
 
 void Cone::setColor()
@@ -70,6 +71,7 @@ void Cone::setColor()
     playerIndicator_.setFillColor(fillColorPlayerIndicator);
     backColor_.addTarget("good", fillColor);
     backColor_.addTarget("failed", fillColorFailed);
+    backColor_.addTarget("hightlight", 0xe8bb00ff);
 
     backColor_.initCurrent("failed");
     base_.setOutlineColor(sf::Color(outlineColor));
@@ -105,11 +107,25 @@ Cone::Cone(float beat, float width, float distance, int nbShare, float active, c
     Mechanic::setSoundName("Sound/normal-hitnormal.wav");
 
     drawPriority_ = 20;
+
+    highlightTimer_ = sf::seconds(0);
+    highlight_ = false;
 }
 
 void Cone::onDraw(const sf::Time& elapsed, sf::RenderTarget& window)
 {
     if (draw_) {
+        if (isFailed()) {
+            backColor_.setSpeed({ 0.5, 0.5, 0.5, 0.5 });
+            highlightTimer_ += elapsed;
+            backColor_.updateColor(elapsed);
+            if (highlightTimer_.asSeconds() > 1) {
+                highlightTimer_ = sf::seconds(0);
+                backColor_.setCurrentTarget(highlight_ ? "failed" : "hightlight");
+                highlight_ = !highlight_;
+            }
+        }
+
         approachCircle_.draw(window);
         base_.setFillColor(backColor_.getCurrentColor());
         window.draw(base_);
@@ -205,6 +221,7 @@ void Cone::reset(float beat)
 
     anchor_.reset();
     center_.reset();
+    backColor_.setSpeed({ 0.1, 0.1, 0.1, 0.5 });
 
 
     Mechanic::reset(beat);
@@ -221,6 +238,26 @@ std::string Cone::toString()
     res += anchor_.to_string();
 
     return res;
+}
+
+void Cone::getTargetPos(std::vector<sf::Vector2f>& pos)
+{
+    pos.emplace_back(anchorPos_);
+    pos.emplace_back(centerPos_);
+}
+
+void Cone::setTargetPos(std::vector<sf::Vector2f>& pos)
+{
+    if (pos.size() != 2) {
+        std::cout << "Cone::setTargetPos : pos vector is wrong size." << std::endl;
+        return;
+    }
+
+    anchor_.type = TargetType::TARGET_POS;
+    anchor_.pos = pos[0];
+
+    center_.type = TargetType::TARGET_POS;
+    center_.pos = pos[1];
 }
 
 Mechanic* Cone::clone()

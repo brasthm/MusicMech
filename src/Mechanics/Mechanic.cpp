@@ -50,7 +50,10 @@ void Mechanic::update(const sf::Time &elapsed, float currentBeat, EntityManager 
             init_ = true;
         }
 
-        onCheck(elapsed, currentBeat, currentPart, entities);
+        if (!checked_) {
+            onCheck(elapsed, currentBeat, currentPart, entities);
+        }
+        
 
         if(beat_ - currentBeat <= 1 && currentPart > 0.75 && passed_) {
             earlypassed_ = passed_;
@@ -119,10 +122,26 @@ bool Mechanic::isFailed() const {
     return checked_ && !passed_;
 }
 
+void Mechanic::setFailed(bool val)
+{
+    checked_ = val;
+    passed_ = !val;
+}
+
 void Mechanic::negateFailed()
 {
     if (checked_)
         passed_ = true;
+}
+
+bool Mechanic::getDraw() const
+{
+    return draw_;
+}
+
+void Mechanic::setPause(bool val)
+{
+    pause_ = val;
 }
 
 void Mechanic::reset(float beat) {
@@ -137,6 +156,15 @@ void Mechanic::reset(float beat) {
 Mechanic* Mechanic::clone()
 {
     return nullptr;
+}
+
+void Mechanic::getTargetPos(std::vector<sf::Vector2f>& pos)
+{
+
+}
+
+void Mechanic::setTargetPos(std::vector<sf::Vector2f>& pos)
+{
 }
 
 

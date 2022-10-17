@@ -16,6 +16,9 @@ Tether::Tether(float beat, const Target& t1, const Target& t2, float minDist, fl
     active_ = active;
     drawArrow_ = true;
     drawPriority_ = 100;
+    earlypassed_ = false;
+    highlight_ = false;
+    highlightTimer_ = sf::seconds(0);
 
     inward_ = inward;
     continu_ = continu;
@@ -24,16 +27,19 @@ Tether::Tether(float beat, const Target& t1, const Target& t2, float minDist, fl
     backColor_.addTarget("failed", 0xB64F38FF);
     backColor_.setSpeed({0.5, 0.5, 0.5, 0.5});
     backColor_.initCurrent("failed");
+    backColor_.addTarget("hightlight", 0xe8bb00ff);
 
     borderColor_.addTarget("passed", 0xDAFB93FF);
     borderColor_.addTarget("failed", 0xFFD5CBFF);
     borderColor_.setSpeed({0.5, 0.5, 0.5, 0.5});
     borderColor_.initCurrent("failed");
+   // borderColor_.addTarget("hightlight", 0xe8bb00ff);
 
     indicatorColor_.addTarget("passed", 0x79CE1BFF);
     indicatorColor_.addTarget("failed", 0xD35227FF);
     indicatorColor_.setSpeed({0.5, 0.5, 0.5, 0.5});
     indicatorColor_.initCurrent("failed");
+    indicatorColor_.addTarget("hightlight", 0xe8bb00ff);
 
     tether_.setOutlineThickness(5);
     tether_.setSize({100, 10});
@@ -52,6 +58,19 @@ Tether::Tether(float beat, const Target& t1, const Target& t2, float minDist, fl
 
 void Tether::onDraw(const sf::Time &elapsed, sf::RenderTarget &window) {
     if(draw_) {
+        if (isFailed()) {
+            backColor_.setSpeed({ 0.5, 0.5, 0.5, 0.5 });
+            highlightTimer_ += elapsed;
+            backColor_.updateColor(elapsed);
+            indicatorColor_.updateColor(elapsed);
+            if (highlightTimer_.asSeconds() > 1) {
+                highlightTimer_ = sf::seconds(0);
+                backColor_.setCurrentTarget(highlight_ ? "failed" : "hightlight");
+                indicatorColor_.setCurrentTarget(highlight_ ? "failed" : "hightlight");
+                highlight_ = !highlight_;
+            }
+        }
+
         tether_.setFillColor(backColor_.getCurrentColor());
         tether_.setOutlineColor(borderColor_.getCurrentColor());
         indicator_.setFillColor(indicatorColor_.getCurrentColor());
@@ -76,7 +95,7 @@ void Tether::onCheck(const sf::Time &elapsed, float currentBeat, float currentPa
         backColor_.setCurrentTarget("passed");
         indicatorColor_.setCurrentTarget("passed");
     }
-    else {
+    else if(!pause_){
         if(continu_) {
             float mercy =  active_ > 4 ? 2 : 0;
             if(currentBeat > beat_ - active_ + mercy)
@@ -88,17 +107,20 @@ void Tether::onCheck(const sf::Time &elapsed, float currentBeat, float currentPa
             }
         }
         passed_ = false;
+        
         borderColor_.setCurrentTarget("failed");
         backColor_.setCurrentTarget("failed");
         indicatorColor_.setCurrentTarget("failed");
+        
     }
-    borderColor_.updateColor(elapsed);
-    backColor_.updateColor(elapsed);
-    indicatorColor_.updateColor(elapsed);
 }
 
 void Tether::onApproach(const sf::Time &elapsed, float currentBeat, float currentPart, EntityManager &em) {
-    
+    borderColor_.updateColor(elapsed);
+    backColor_.updateColor(elapsed);
+    indicatorColor_.updateColor(elapsed);
+
+
     pos1_ = em.getPosition(anchor1_);
     pos2_ = em.getPosition(anchor2_);
     auto d = (float)Utils::distance(pos1_, pos2_);
@@ -246,7 +268,29 @@ void Tether::reset(float beat) {
     anchor1_.reset();
     anchor2_.reset();
 
+    backColor_.setSpeed({ 0.1, 0.1, 0.1, 0.5 });
+
     Mechanic::reset(beat);
+}
+
+void Tether::getTargetPos(std::vector<sf::Vector2f>& pos)
+{
+    pos.emplace_back(pos1_ - shift1_);
+    pos.emplace_back(pos2_ - shift2_);
+}
+
+void Tether::setTargetPos(std::vector<sf::Vector2f>& pos)
+{
+    if (pos.size() != 2) {
+        std::cout << "Tether::setTargetPos : pos vector is wrong size." << std::endl;
+        return;
+    }
+
+    anchor1_.type = TargetType::TARGET_POS;
+    anchor1_.pos = pos[0];
+
+    anchor2_.type = TargetType::TARGET_POS;
+    anchor2_.pos = pos[1];
 }
 
 std::string Tether::toString() {

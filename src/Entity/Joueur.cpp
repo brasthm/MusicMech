@@ -128,16 +128,16 @@ void Joueur::update(sf::Time elapsed, Arena* arena, float beat, bool hasFocus) {
 
 }
 
-void Joueur::draw(sf::RenderTarget &window) {
+void Joueur::draw(sf::RenderTarget &window, bool serverPos) {
     if(active_) {
-        shape_.setPosition(serv_pos_);
+        if (serverPos) {
+            shape_.setPosition(serv_pos_);
+            shape_.setFillColor(sf::Color(color_ - 0x88));
+            window.draw(shape_);
+        }
+
         debuff_.draw(window, pos_);
-        shape_.setFillColor(sf::Color(color_ - 0x88));
-
-        window.draw(shape_);
-
         shape_.setPosition(pos_);
-
         shape_.setFillColor(sf::Color(color_));
         window.draw(shape_);
 

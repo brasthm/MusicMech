@@ -87,6 +87,11 @@ unsigned short Client::getUdpPort()
     return udpSocket_.getPort();
 }
 
+bool Client::getGodMode()
+{
+    return godMode_;
+}
+
 void Client::changeName(const std::string& name)
 {
     name_ = name;
@@ -319,8 +324,9 @@ int Client::updateFromServerPlayerPosition(std::vector<Joueur> &joueurs, std::pa
         if (state == 1) {
             float beat;
             sf::Uint64 serverTime, clientTime, clientSentTime;
+            sf::Int32 godmode;
             float position;
-            udpSocket_.getRecievedPacket() >> clientSentTime >> serverTime >> beat >> position;
+            udpSocket_.getRecievedPacket() >> clientSentTime >> serverTime >> beat >> position >> godmode;
 
             if (!udpSocket_.valid()) {
                 std::cout << "GAME PORT : Data corrupted (updateFromServerPlayerPosition - 1)." << std::endl;
@@ -334,6 +340,8 @@ int Client::updateFromServerPlayerPosition(std::vector<Joueur> &joueurs, std::pa
             ping_[pingIndex_] = clientTime - clientSentTime;
             pingIndex_++;
             pingIndex_ = pingIndex_ % ping_.size();
+            godMode_ = godmode == 1;
+
             return 4;
         }
     }
@@ -1117,7 +1125,7 @@ bool Client::requestPing()
     return false;
 }
 
-bool Client::requestRoomStatus(RoomStatusData &roomStatus, const std::string& lobbyIndex)
+bool Client::requestRoomStatus(RoomStatus *roomStatus, const std::string& lobbyIndex)
 {
     sf::Socket::Status status;
 
@@ -1175,7 +1183,7 @@ bool Client::requestRoomStatus(RoomStatusData &roomStatus, const std::string& lo
         return false;
     }
 
-    roomStatus.beat = beat;
+    roomStatus->setBeat(beat);
 
     std::cout << "Current beat : " << beat << std::endl;
     std::cout << "Failed mechs : " << size << std::endl;
@@ -1189,10 +1197,48 @@ bool Client::requestRoomStatus(RoomStatusData &roomStatus, const std::string& lo
             return false;
         }
 
-        roomStatus.failed.emplace_back(failed);
+        roomStatus->addFailed(failed);
 
         std::cout << "      " << failed << " " << std::endl;
     }
+
+    p >> size;
+
+    if (!p) {
+        std::cout << "requestRoomStatus : Data corrupted (size2)" << std::endl;
+        return false;
+    }
+
+    std::cout << "Drawn mechs : " << size << std::endl;
+
+    for (int i = 0; i < size; i++) {
+        sf::Int32 nbTargets, mech;
+        p >> mech >> nbTargets;
+
+        if (!p) {
+            std::cout << "requestRoomStatus : Data corrupted (nbTargets " << i << ")" << std::endl;
+            return false;
+        }
+        std::vector<sf::Vector2f> targets;
+        for (int j = 0; j < nbTargets; j++) {
+            float x, y;
+            p >> x >> y;
+
+
+            if (!p) {
+                std::cout << "requestRoomStatus : Data corrupted (draw pos " << i << "-" << j << "/ " << nbTargets << ")" << std::endl;
+                return false;
+            }
+
+            targets.emplace_back(x, y);
+
+            std::cout << "      " << i << " - (" << x << ";" << y << ")" << std::endl;
+        }
+
+        roomStatus->setMechPosition(mech, targets);
+    }
+
+
 
     float zoom, rotation, top, left, width, height;
 
@@ -1212,12 +1258,7 @@ bool Client::requestRoomStatus(RoomStatusData &roomStatus, const std::string& lo
         return false;
     }
 
-    roomStatus.zoom = zoom; 
-    roomStatus.rotation = rotation;
-    roomStatus.top = top;
-    roomStatus.left = left;
-    roomStatus.width = width;
-    roomStatus.height = height;
+    roomStatus->setArenaParameters(zoom, rotation, left, top, width, height);
 
     std::cout << "Arena : " << size << std::endl;
 
@@ -1230,10 +1271,7 @@ bool Client::requestRoomStatus(RoomStatusData &roomStatus, const std::string& lo
             return false;
         }
 
-        roomStatus.rt.emplace_back(rt);
-        roomStatus.rl.emplace_back(rl);
-        roomStatus.rw.emplace_back(rw);
-        roomStatus.rh.emplace_back(rh);
+        roomStatus->addArenaRect(rl, rt, rw, rh);
 
         std::cout << "      " << rt << " " << rl << " " <<
             rw << " " << rh << " " << std::endl;
@@ -1251,11 +1289,7 @@ bool Client::requestRoomStatus(RoomStatusData &roomStatus, const std::string& lo
             std::cout << "requestRoomStatus : Data corrupted (totems < " << i << ")" << std::endl;
             return false;
         }
-
-        roomStatus.totemColors.emplace_back(color);
-        roomStatus.totemActive.emplace_back(active == 1);
-        roomStatus.totemX.emplace_back(x);
-        roomStatus.totemY.emplace_back(y);
+        roomStatus->addTotem(i, color, active == 1, x, y);
 
         std::cout << "      " << color << " " << active << " " <<
             x << " " << y << " " << std::endl;
@@ -1270,17 +1304,16 @@ bool Client::requestRoomStatus(RoomStatusData &roomStatus, const std::string& lo
 
         p >> name >> color >> active >> x >> y;
 
+        std::string stdName = name;
+
         if (!p) {
             std::cout << "requestRoomStatus : Data corrupted (players < " << i << ")" << std::endl;
             return false;
         }
-        roomStatus.names.emplace_back(name);
-        roomStatus.playerColors.emplace_back(color);
-        roomStatus.playerActive.emplace_back(active == 1);
-        roomStatus.playerX.emplace_back(x);
-        roomStatus.playerY.emplace_back(y);
 
-        std::cout << "      " << std::string(name) << " " << color << " " << active << " " <<
+        roomStatus->addJoueur(i, stdName, color, active == 1, x, y);
+
+        std::cout << "      " << stdName << " " << color << " " << active << " " <<
             x << " " << y << " " << std::endl;
     }
 

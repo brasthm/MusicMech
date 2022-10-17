@@ -37,6 +37,7 @@ void NopeZone::setColor()
     playerIndicator_.setFillColor(fillColorPlayerIndicator);
     backColor_.addTarget("good", fillColor);
     backColor_.addTarget("failed", fillColorFailed);
+    backColor_.addTarget("hightlight", 0xe8bb00ff);
 
     backColor_.initCurrent("good");
     base_.setOutlineColor(sf::Color(outlineColor));
@@ -70,11 +71,24 @@ NopeZone::NopeZone(float beat, float width, float height, int nbShare, float act
     Mechanic::setSoundName("Sound/normal-hitnormal.wav");
 
     drawPriority_ = -10;
+
+    highlightTimer_ = sf::seconds(0);
+    highlight_ = false;
 }
 
 void NopeZone::onDraw(const sf::Time& elapsed, sf::RenderTarget& window)
 {
     if (draw_) {
+        if (isFailed()) {
+            backColor_.setSpeed({ 0.5, 0.5, 0.5, 0.5 });
+            highlightTimer_ += elapsed;
+            backColor_.updateColor(elapsed);
+            if (highlightTimer_.asSeconds() > 1) {
+                highlightTimer_ = sf::seconds(0);
+                backColor_.setCurrentTarget(highlight_ ? "failed" : "hightlight");
+                highlight_ = !highlight_;
+            }
+        }
         base_.setFillColor(backColor_.getCurrentColor());
         base_.setPosition(position_ + shift_);
         base_.setRotation(rotation_);
@@ -102,7 +116,7 @@ void NopeZone::onCheck(const sf::Time& elapsed, float currentBeat, float cuurent
 
     passed_ = nbIn_ == nbShare_;
 
-    if (!passed_) {
+    if (!passed_ && !pause_) {
         float mercy = 0;//active_ > 16 ? 4 : 2;
         if (currentBeat > beat_ - active_ + mercy)
             timer_ += elapsed;
@@ -164,6 +178,8 @@ void NopeZone::onFade(const sf::Time& elapsed, float currentBeat, float currentP
     color.a = 255 * (1 - currentPart);
     base_.setOutlineColor(color);
 
+    backColor_.setSpeed({ 0.1, 0.1, 0.1, 0.5 });
+
 
     backColor_.setCurrentColor(3, 255 * (1 - currentPart));
     playerIndicator_.updateAlpha(currentPart);
@@ -197,6 +213,22 @@ std::string NopeZone::toString()
     res += target_.to_string();
 
     return res;
+}
+
+void NopeZone::getTargetPos(std::vector<sf::Vector2f>& pos)
+{
+    pos.emplace_back(position_);
+}
+
+void NopeZone::setTargetPos(std::vector<sf::Vector2f>& pos)
+{
+    if (pos.size() != 1) {
+        std::cout << "NopeZone::setTargetPos : pos vector is wrong size." << std::endl;
+        return;
+    }
+
+    target_.type = TargetType::TARGET_POS;
+    target_.pos = pos[0];
 }
 
 Mechanic* NopeZone::clone()

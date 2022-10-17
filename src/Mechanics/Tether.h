@@ -23,6 +23,9 @@ class Tether : public Mechanic {
 
     ArrowShape arr1, arr2;
 
+    sf::Time highlightTimer_;
+    bool highlight_;
+
 public:
     Tether(float beat, const Target& t1, const Target& t2, float minDist, float active, bool inward, bool continu);
     void onDraw(const sf::Time &elapsed, sf::RenderTarget &window) override;
@@ -31,6 +34,8 @@ public:
     void onPassed(const sf::Time &elapsed, float currentBeat, float currentPart, EntityManager &em) override;
     void onFade(const sf::Time &elapsed, float currentBeat, float currentPart, EntityManager &em) override;
     void reset(float beat) override;
+    void getTargetPos(std::vector<sf::Vector2f>& pos) override;
+    void setTargetPos(std::vector<sf::Vector2f>& pos) override;
 
     std::string toString() override;
     Mechanic* clone() override;

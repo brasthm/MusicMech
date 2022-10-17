@@ -21,7 +21,7 @@ Totem::Totem() {
     baseSpeed_ = speed_;
 }
 
-void Totem::update(sf::Time elapsed, Arena* arena, float beat, bool hasFocus) {
+void Totem::update(sf::Time elapsed, Arena* arena, float beat) {
     sf::Vector2f vecDep;
     if(active_) {
         vecDep = targetPos_ - pos_;

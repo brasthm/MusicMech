@@ -20,6 +20,80 @@
 #include "../src/Network/Client.h"
 #include "../src/Graphics/BackgoundAnimation.h"
 
+void mainLoop(Client& c) {
+    Title t;
+    LobbyMenu lm;
+    LobbySelection ls;
+    SongDatabase sd;
+    RoomCreation rc;
+    BeatmapSelection bs;
+    RoomMenu rm;
+
+    Game g;
+
+    BackgroundAnimation bg;
+
+    sf::Music title;
+    title.openFromFile(RessourceLoader::getPath("Music/Hysteric Night Girl.mp3"));
+    title.setVolume(10);
+    title.setLoop(true);
+
+    sf::ContextSettings settings;
+    settings.antialiasingLevel = 8;
+    sf::RenderWindow mainWindow(sf::VideoMode(WIDOW_WIDTH, WIDOW_HEIGHT), "Sychrobeat", sf::Style::Fullscreen, settings);
+    mainWindow.setFramerateLimit(60);
+    int val;
+    bool isCreator = false;
+    bool beatmapChanged = false;
+    std::string roomName;
+
+
+TITLE_SCREEN:
+    title.play();
+    val = t.run(mainWindow, bg, &c);
+    if (val == -1) return;
+
+LOBBY_SELECTION:
+    if (title.getStatus() == sf::SoundSource::Status::Paused) title.play();
+    roomName = "";
+    isCreator = false;
+    beatmapChanged = false;
+    val = ls.run(mainWindow, bg, &c, sd);
+    title.pause();
+    if (val == 1)  goto LOBBY_CREATION;
+    if (val == 2)  goto LOBBY_ROOM;
+    if (val == -1) goto EXIT;
+
+    goto LOBBY_SELECTION;
+
+LOBBY_CREATION:
+    isCreator = true;
+    beatmapChanged = false;
+    val = rc.run(mainWindow, bg, &c, sd, roomName);
+    if (val == -1) goto LOBBY_SELECTION;
+    if (val == 1) bs.run(mainWindow, bg, &c, &sd, &beatmapChanged);
+    if (val == 2) goto LOBBY_ROOM;
+
+    goto LOBBY_CREATION;
+
+LOBBY_ROOM:
+    val = rm.run(mainWindow, bg, &c, &sd, &g, isCreator, beatmapChanged);
+    if (val == 1)  bs.run(mainWindow, bg, &c, &sd, &beatmapChanged);
+    if (val == 2)  goto GAME_SCREEN;
+    if (val == -1) goto LOBBY_SELECTION;
+
+    goto LOBBY_ROOM;
+
+GAME_SCREEN:
+
+    g.run(mainWindow, &c, isCreator);
+    goto LOBBY_ROOM;
+
+EXIT:
+    c.disconectToServer();
+    goto TITLE_SCREEN;
+}
+
 int console() {
     std::string cmd, nom;
 
@@ -82,70 +156,7 @@ int console() {
 
         }
         else if (cmd == "run") {
-            Title t;
-            LobbyMenu lm;
-            LobbySelection ls;
-            SongDatabase sd;
-            RoomCreation rc;
-            BeatmapSelection bs;
-            RoomMenu rm;
-
-            Game g;
-
-            BackgroundAnimation bg;
-
-            sf::Music title;
-            title.openFromFile(RessourceLoader::getPath("Music/Hysteric Night Girl.mp3"));
-            title.setVolume(10);
-            title.setLoop(true);
-
-            sf::ContextSettings settings;
-            settings.antialiasingLevel = 8;
-            sf::RenderWindow mainWindow(sf::VideoMode(WIDOW_WIDTH, WIDOW_HEIGHT), "Sychrobeat", sf::Style::Fullscreen, settings);
-            mainWindow.setFramerateLimit(60);
-            int val;
-            std::string roomName;
-            title.play();
-            val = t.run(mainWindow, bg, &c);
-            if (val == -1) return 0;
-            while (val != -1) {
-                roomName = "";
-                val = ls.run(mainWindow, bg, &c, sd);
-                if (val == 1) {
-                    title.pause();
-                    while (val != -1) {
-                        val = rc.run(mainWindow, bg, &c, sd, roomName);
-                        if (val == 1) val = bs.run(mainWindow, bg, &c, &sd);
-                        if (val == 2) {
-                            while (val != -1) {
-                                val = rm.run(mainWindow, bg, &c, &sd, &g, true, val == 1, false);
-                                if (val == 1) val = bs.run(mainWindow, bg, &c, &sd);
-                                if (val == 2) g.run(mainWindow, &c, true);
-                            }
-                        }
-
-                    }
-
-                    val = 0;
-                    title.play();
-                }
-                if (val == 2) {
-                    title.pause();
-                    val = 0;
-                    while (val != -1) {
-                        val = rm.run(mainWindow, bg, &c, &sd, &g, false, false, val == 2);
-                        if (val == 2) g.run(mainWindow, &c, false);
-                    }
-                    val = 0;
-                    title.play();
-                }
-
-            }
-
-            //Game g(&c);
-            //g.load();
-            //lm.run(mainWindow, g, c);
-            c.disconectToServer();
+            mainLoop(c);
         }
         else if (cmd == "save") {
             Game g;
@@ -180,74 +191,14 @@ int console() {
 }
 
 
-int game()
+void game()
 {
     Client c("");
-
-    Title t;
-    LobbyMenu lm;
-    LobbySelection ls;
-    SongDatabase sd;
-    RoomCreation rc;
-    BeatmapSelection bs;
-    RoomMenu rm;
-
-    Game g;
-
-    BackgroundAnimation bg;
-
-    sf::Music title;
-    title.openFromFile(RessourceLoader::getPath("Music/Hysteric Night Girl.mp3"));
-    title.setVolume(10);
-    title.setLoop(true);
-
-    sf::ContextSettings settings;
-    settings.antialiasingLevel = 16;
-    sf::RenderWindow mainWindow(sf::VideoMode(WIDOW_WIDTH, WIDOW_HEIGHT), "Sychrobeat", sf::Style::Fullscreen, settings);
-    mainWindow.setFramerateLimit(60);
-    int val;
-    std::string roomName;
-    title.play();
-    val = t.run(mainWindow, bg, &c);
-    if (val == -1) return 0;
-    while (val != -1) {
-        roomName = "";
-        val = ls.run(mainWindow, bg, &c, sd);
-        if (val == 1) {
-            title.pause();
-            while (val != -1) {
-                val = rc.run(mainWindow, bg, &c, sd, roomName);
-                if (val == 1) val = bs.run(mainWindow, bg, &c, &sd);
-                if (val == 2) {
-                    while (val != -1) {
-                        val = rm.run(mainWindow, bg, &c, &sd, &g, true, val == 1, false);
-                        if (val == 1) val = bs.run(mainWindow, bg, &c, &sd);
-                        if (val == 2) g.run(mainWindow, &c, true);
-                    }
-                }
-
-            }
-
-            val = 0;
-            title.play();
-        }
-        if (val == 2) {
-            title.pause();
-            val = 0;
-            while (val != -1) {
-                val = rm.run(mainWindow, bg, &c, &sd, &g, false, false, val == 2);
-                if (val == 2) g.run(mainWindow, &c, false);
-            }
-            val = 0;
-            title.play();
-        }
-
-    }
-    c.disconectToServer();
+    mainLoop(c);
 }
 
 int main() {
-    
+    GOD_MODE = true;
     console();
     //game();
     return 0;

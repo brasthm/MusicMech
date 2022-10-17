@@ -82,7 +82,6 @@ void Lobby::startGame() {
 
     failed = false;
     paused = false;
-    timer_.restart();
     auto check = getCheckpoint();
     position_ = sf::seconds(check.first);
     currentBeat_ = check.second;
@@ -105,12 +104,11 @@ void Lobby::startGame() {
 
 void Lobby::updateGame(sf::Time elapsed) {
     if(!paused) {
-        position_ += timer_.getElapsedTime();
-        timer_.restart();
+        position_ += elapsed;
         currentBeat_ = song_.getCumulativeNBeats(position_.asMilliseconds());
 
-        if (currentSection_ < song_.getCheckpoint(currentBeat_ - 0.5)) {
-            currentSection_ = song_.getCheckpoint(currentBeat_ - 0.5);
+        if (currentSection_ < song_.getCheckpoint(currentBeat_ - TRANSITION_DELAY)) {
+            currentSection_ = song_.getCheckpoint(currentBeat_ - TRANSITION_DELAY);
             std::cout << "Lobby " << id << " : Changed section (" << currentSection_ << ")" << std::endl;
         }
 
@@ -122,7 +120,7 @@ void Lobby::updateGame(sf::Time elapsed) {
         }
 
         for(auto & totem : totems_) {
-            totem.update(elapsed, &arena_, currentBeat_, false);
+            totem.update(elapsed, &arena_, currentBeat_);
         }
 
         arena_.update(elapsed);
@@ -143,7 +141,7 @@ void Lobby::updateGame(sf::Time elapsed) {
 }
 
 std::pair<float, float> Lobby::getCheckpoint() {
-    auto ind = song_.getCheckpoint(currentBeat_ - 0.5);
+    auto ind = song_.getCheckpoint(currentBeat_ - TRANSITION_DELAY);
 
     if (ind == -1)
         return std::pair<float, float>(0, 0);
@@ -180,12 +178,24 @@ void Lobby::setStatusPacket(sf::Packet &packet)
 
     std::cout << "Current beat : " << currentBeat_ << std::endl;
 
-    std::vector<sf::Int32> failedMechs;
+    std::vector<sf::Int32> failedMechs, drawMech;
+    std::vector<std::vector<sf::Vector2f>> drawMechPosition;
     for (int i = 0; i < mechanics_.size(); i++) {
         if (mechanics_[i]->isFailed()) {
             failedMechs.emplace_back(i);
         }
     }
+
+    for (int i = 0; i < mechanics_.size(); i++) {
+        if (mechanics_[i]->getDraw()) {
+            drawMech.emplace_back(i);
+            drawMechPosition.emplace_back();
+            mechanics_[i]->getTargetPos(drawMechPosition.back());
+        }
+    }
+
+
+
     packet << (sf::Int32)failedMechs.size();
 
     std::cout << "Failed mechs : " << (sf::Int32)failedMechs.size() << std::endl;
@@ -195,6 +205,17 @@ void Lobby::setStatusPacket(sf::Packet &packet)
 
         std::cout << "      " << failedMechs[i] << " " << std::endl;
     }
+
+    std::cout << "Draw mech position : "  << drawMech.size() << std::endl;
+    packet << (sf::Int32)drawMech.size();
+    for (int i = 0; i < drawMech.size(); i++) {
+        packet << (sf::Int32)drawMech[i] << (sf::Int32)drawMechPosition[i].size();
+        for (int j = 0; j < drawMechPosition[i].size(); j++) {
+            packet << drawMechPosition[i][j].x << drawMechPosition[i][j].y;
+
+            std::cout << "       " << drawMech[i] << " - (" << drawMechPosition[i][j].x << "; " << drawMechPosition[i][j].y << std::endl;
+        }
+     }
 
     packet << sf::Int32(arena_.getNbRects());
 

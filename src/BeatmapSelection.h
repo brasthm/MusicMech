@@ -14,7 +14,7 @@ class BeatmapSelection {
 	void load(SongDatabase *songs);
 public:
 	BeatmapSelection() = default;
-	int run(sf::RenderWindow& window, BackgroundAnimation& bg, Client* client, SongDatabase* songs);
+	void run(sf::RenderWindow& window, BackgroundAnimation& bg, Client* client, SongDatabase* songs, bool *beatmapChanged);
 };
 
 

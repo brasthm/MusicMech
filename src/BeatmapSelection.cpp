@@ -23,7 +23,7 @@ void BeatmapSelection::load(SongDatabase *songs)
 	}
 }
 
-int BeatmapSelection::run(sf::RenderWindow& window, BackgroundAnimation& bg, Client* client, SongDatabase* songs)
+void BeatmapSelection::run(sf::RenderWindow& window, BackgroundAnimation& bg, Client* client, SongDatabase* songs, bool* beatmapChanged)
 {
 	sf::Clock fps;
 	bool exit = false;
@@ -156,7 +156,8 @@ int BeatmapSelection::run(sf::RenderWindow& window, BackgroundAnimation& bg, Cli
 				songs->setMode(saucisse2.getIndex() == 0 ? "2P" : "4P");
 				if (changed && saucisse.isMoving())
 					songs->play();
-				return 1;
+				*beatmapChanged = true;
+				return;
 			}
 			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Left ||
 				event.type == sf::Event::JoystickMoved && event.joystickMove.axis == sf::Joystick::X && event.joystickMove.position == -100 ||
@@ -255,5 +256,6 @@ int BeatmapSelection::run(sf::RenderWindow& window, BackgroundAnimation& bg, Cli
 		window.display();
 	}
 
-	return 0;
+	*beatmapChanged = false;
+	return;
 }

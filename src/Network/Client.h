@@ -7,20 +7,11 @@
 
 #include "UDP_Port.h"
 #include "../Entity/Joueur.h"
+#include "../RoomStatus.h"
 #include "Lobby.h"
 #include <vector>
 
-class RoomStatusData {
-public:
-    float beat;
-    std::vector<int> failed;
-    float zoom, rotation, top, left, width, height;
-    std::vector<float> rt, rl, rw, rh;
-    std::vector<int> totemX, totemY, playerX, playerY;
-    std::vector<bool> totemActive, playerActive;
-    std::vector<std::string> names;
-    std::vector < sf::Uint32> totemColors, playerColors;
-};
+class RoomStatus;
 
 class Client {
 private:
@@ -36,6 +27,7 @@ private:
     sf::Uint64 startTime_;
     std::vector<sf::Int64> ping_;
     float serverBeat_, position_;
+    bool godMode_;
 public:
     Client(std::string name = "");
     ~Client();
@@ -60,7 +52,7 @@ public:
     bool sendReady(sf::Uint32 color);
     bool requestBeatmapChange(const std::string& beatmap, const std::string& mode);
     bool requestPing();
-    bool requestRoomStatus(RoomStatusData &status, const std::string& lobbyIndex = "");
+    bool requestRoomStatus(RoomStatus *status, const std::string& lobbyIndex = "");
 
     bool monitorLobby(int &state);
 
@@ -77,6 +69,7 @@ public:
     sf::Int64 getPing();
     float getPosition();
     unsigned short getUdpPort();
+    bool getGodMode();
 
 };
 

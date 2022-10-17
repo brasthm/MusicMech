@@ -60,12 +60,10 @@ void Game::run(sf::RenderWindow &window, Client* client, bool creator) {
     em_.addArena(&arena_);
 
 
-    bool godmode = false;
+    bool godmode = false, serverTrace = false;
 
     std::vector<sf::RectangleShape> namesInfo;
     std::vector<sf::Text> namesText;
-
-    RoomStatus roomStatus(&song_, &mechanicList_);
 
     for (int i = 0; i < joueurs_.size(); i++) {
         namesText.emplace_back();
@@ -125,6 +123,7 @@ void Game::run(sf::RenderWindow &window, Client* client, bool creator) {
     godmode_text.setFont(RessourceLoader::getFont("Font/Roboto-Regular.ttf"));
     godmode_text.setCharacterSize(18);
     godmode_text.setPosition(0, 20 * 6);
+    godmode_text.setString(GOD_MODE ? "Godmode: true" : "Godmode : false");
 
    section_text.setFont(RessourceLoader::getFont("Font/Roboto-Regular.ttf"));
    section_text.setCharacterSize(18);
@@ -240,12 +239,10 @@ void Game::run(sf::RenderWindow &window, Client* client, bool creator) {
                         }
                     }
                     else if (gameOverButtons.getCurrent() == "RECAP") {
-                        RoomStatusData data;
-                        client->requestRoomStatus(data);
-                        roomStatus.clear();
-                        roomStatus.setup(data);
-                        roomStatus.run(window, client);
+                        RoomStatus roomStatus(&song_, &mechanicList_);
+                        client->requestRoomStatus(&roomStatus);
                         
+                        res = roomStatus.run(window, client);
                     }
                     else if (gameOverButtons.getCurrent() == "QUIT") {
                         client->sendEndGame();
@@ -302,14 +299,11 @@ void Game::run(sf::RenderWindow &window, Client* client, bool creator) {
             }
             
             if(event.type == sf::Event::KeyPressed) {
-                if(event.key.code == sf::Keyboard::G) {
-                    GOD_MODE = true;
-                }
-                if(event.key.code == sf::Keyboard::H) {
-                    GOD_MODE = false;
-                }
                 if (event.key.code == sf::Keyboard::F1) {
                     drawDebug = !drawDebug;
+                }
+                if (event.key.code == sf::Keyboard::F2) {
+                    serverTrace = !serverTrace;
                 }
             }
         }
@@ -325,7 +319,7 @@ void Game::run(sf::RenderWindow &window, Client* client, bool creator) {
         }
 
 
-        godmode_text.setString(GOD_MODE ? "Godmode: true":"Godmode : false");
+        
 
         fps_text.setString("FPS: " + std::to_string(1.f / elapsedTime.asSeconds()));
         beat_text.setString("Beat: " + std::to_string(currentBeat_float));
@@ -372,7 +366,7 @@ void Game::run(sf::RenderWindow &window, Client* client, bool creator) {
                 }
 
                 for (auto& totem : totems_) {
-                    totem.update(elapsedTime, &arena_, currentBeat_float, window.hasFocus() && !paused);
+                    totem.update(elapsedTime, &arena_, currentBeat_float);
                 }
 
                 for (auto& mech : mechanicList_) {
@@ -402,10 +396,11 @@ void Game::run(sf::RenderWindow &window, Client* client, bool creator) {
             if (!exit && res == -1) {
                 res = client->updateFromServerPlayerPosition(joueurs_, checkpoint);
                 exit = res == 1;
-                newfailed = newfailed || res == 2;
-                if (failed) resume = res == 3;
-                refreshPing = res == 4;
             }
+
+            if(!newfailed) newfailed = res == 2;
+            if (failed)    resume = res == 3;
+            refreshPing = res == 4;
 
             // PAUSE UPDATE
             if (paused) {
@@ -427,7 +422,7 @@ void Game::run(sf::RenderWindow &window, Client* client, bool creator) {
 
                 ping_text.setString("Ping: " + std::to_string(client->getPing()));
                 beat_serv_text.setString("Server beat: " + std::to_string(serverbeat) + " (" + std::to_string(off) + ")");
-
+                godmode_text.setString(client->getGodMode() ? "Godmode: true" : "Godmode : false");
                 position_serv_text.setString("Server position: " + std::to_string(serverpos) + "(" + std::to_string((int)offpos) + "ms)");
             }
 
@@ -458,7 +453,7 @@ void Game::run(sf::RenderWindow &window, Client* client, bool creator) {
             }
 
             for(int i = 0; i < NB_MAX_JOUEURS; i++) {
-                joueurs_[i].draw(renderText);
+                joueurs_[i].draw(renderText, serverTrace);
             }
 
             renderText.display();
@@ -576,7 +571,6 @@ void Game::load(const std::string& path)
 
     song_.load(path, &music_, mechanicList_, &arena_);
     music_.setVolume(10);
-
 
 
     std::cout << "Mechanics number : " << mechanicList_.size() << std::endl;

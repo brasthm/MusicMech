@@ -15,7 +15,7 @@ class RoomMenu {
 	bool requestStart(Client* client, Game* game);
 public:
 	RoomMenu();
-	int run(sf::RenderWindow& window, BackgroundAnimation& bg, Client* client, SongDatabase* songs, Game *game, bool creator, bool beatmapChanged, bool needReload);
+	int run(sf::RenderWindow& window, BackgroundAnimation& bg, Client* client, SongDatabase* songs, Game *game, bool creator, bool beatmapChanged);
 };
 
 
