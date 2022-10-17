@@ -29,3 +29,9 @@ void Entity::setPosition(float x, float y) {
     pos_.x = x;
     pos_.y = y;
 }
+
+void Entity::setServerPosition(float x, float y)
+{
+    serv_pos_.x = x;
+    serv_pos_.y = y;
+}

@@ -32,9 +32,7 @@ public:
 
     void setTarget(const sf::Vector2f &, float speed, bool isInstant);
     void setPosition(float x, float y);
-
-    virtual void update(sf::Time elapsed, Arena* arena, float beat, bool hasFocus) = 0;
-    virtual void draw(sf::RenderTarget &window) = 0;
+    void setServerPosition(float x, float y);
 
     void applyDebuff(DebuffType type, float end);
     void setColor(sf::Uint32 color);

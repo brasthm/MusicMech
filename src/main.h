@@ -54,6 +54,7 @@ static constexpr unsigned short SERVER_LOGIN_PORT = 41103;
 static constexpr int SERVER_TICK_MS = 50;
 static constexpr int CLIENT_TICK_MS = 50;
 static constexpr int SERVER_SLEEP = 10;
+static constexpr float TRANSITION_DELAY = 0.5;
 
 
 #endif //MUSICMECH_SERVER_MAIN_H

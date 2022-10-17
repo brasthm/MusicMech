@@ -395,7 +395,9 @@ void Server::monitorPlayerData() {
                 position = lobbies_[lobbyInd].getPosition();
             }
 
-            response << state << clientTime << serverTime << beat << position;
+            sf::Int32 godmode = GOD_MODE;
+
+            response << state << clientTime << serverTime << beat << position << godmode;
 
             game_.send(response, players_[index].address, players_[index].udpPort);
 

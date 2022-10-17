@@ -29,9 +29,14 @@ public:
     RoomStatus(Song *song, std::vector<Mechanic*> *mechanicList);
     ~RoomStatus();
     int run(sf::RenderWindow& window, Client* client);
-    void clear();
 
-    void setup(RoomStatusData& data);
+    void addJoueur(int i, std::string &name, sf::Uint32 color, bool active, float x, float y);
+    void addTotem(int i, sf::Uint32 color, bool active, float x, float y);
+    void addFailed(int i);
+    void addArenaRect(float rl, float rt, float rw, float rh);
+    void setBeat(float beat);
+    void setArenaParameters(float zoom, float rotation, float left, float top, float width, float height);
+    void setMechPosition(int i, std::vector<sf::Vector2f>& positions);
 };
 
 

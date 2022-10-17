@@ -19,6 +19,9 @@ class Donut : public Mechanic {
     sf::Vector2f position_;
     sf::Color outlineColor_;
 
+    sf::Time highlightTimer_;
+    bool highlight_;
+
     void updatePosition(EntityManager& entityManager);
     void setColor();
 
@@ -32,6 +35,9 @@ public:
     void onFade(const sf::Time& elapsed, float currentBeat, float currentPart, EntityManager& entities) override;
     void onInit(const sf::Time& elapsed, float currentBeat, float currentPart, EntityManager& entities) override;
     void reset(float beat) override;
+    void getTargetPos(std::vector<sf::Vector2f>& pos) override;
+    void setTargetPos(std::vector<sf::Vector2f>& pos) override;
+
     std::string toString() override;
     Mechanic* clone() override;
 };

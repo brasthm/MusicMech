@@ -18,6 +18,10 @@ class Cone : public Mechanic {
     bool isShare_;
     ShiftColor backColor_;
     Target center_, anchor_;
+    sf::Time highlightTimer_;
+    bool highlight_;
+    sf::Vector2f anchorPos_;
+    sf::Vector2f centerPos_;
 
     void updatePosition(EntityManager& entityManager);
     void setColor();
@@ -33,6 +37,8 @@ public:
     void onInit(const sf::Time& elapsed, float currentBeat, float currentPart, EntityManager& entities) override;
     void reset(float beat) override;
     std::string toString() override;
+    void getTargetPos(std::vector<sf::Vector2f>& pos) override;
+    void setTargetPos(std::vector<sf::Vector2f>& pos) override;
     Mechanic* clone() override;
 };
 

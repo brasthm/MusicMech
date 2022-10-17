@@ -36,10 +36,23 @@ Spread::Spread(float beat, float radius, int nbShare, float active, const Target
     Mechanic::setSoundName("Sound/normal-hitnormal.wav");
 
     drawPriority_ = target_.timing == TARGET_FOLLOW ? 15: isShare_ ? 10 : 0;
+
+    highlightTimer_ = sf::seconds(0);
+    highlight_ = false;
 }
 
 void Spread::onDraw(const sf::Time &elapsed, sf::RenderTarget &window) {
     if(draw_) {
+        if (isFailed()) {
+            backColor_.setSpeed({ 0.5, 0.5, 0.5, 0.5 });
+            highlightTimer_ += elapsed;
+            backColor_.updateColor(elapsed);
+            if (highlightTimer_.asSeconds() > 1) {
+                highlightTimer_ = sf::seconds(0);
+                backColor_.setCurrentTarget(highlight_ ? "failed" : "hightlight");
+                highlight_ = !highlight_;
+            }
+        }
         approachCircle_.draw(window);
         base_.setFillColor(backColor_.getCurrentColor());
         window.draw(base_);
@@ -143,9 +156,26 @@ void Spread::reset(float beat) {
     base_.setRadius(radius_);
     base_.setPosition(position_.x - radius_, position_.y - radius_);
     approachCircle_.setDistance(radius_ + 10);
+    backColor_.setSpeed({ 0.1, 0.1, 0.1, 0.5 });
 
 
     Mechanic::reset(beat);
+}
+
+void Spread::getTargetPos(std::vector<sf::Vector2f>& pos)
+{
+    pos.emplace_back(position_);
+}
+
+void Spread::setTargetPos(std::vector<sf::Vector2f>& pos)
+{
+    if (pos.size() != 1) {
+        std::cout << "Spread::setTargetPos : pos vector is wrong size." << std::endl;
+        return;
+    }
+
+    target_.type = TargetType::TARGET_POS;
+    target_.pos = pos[0];
 }
 
 void Spread::setColor() {
@@ -189,6 +219,8 @@ void Spread::setColor() {
     playerIndicator_.setFillColor(fillColorPlayerIndicator);
     backColor_.addTarget("good", fillColor);
     backColor_.addTarget("failed", fillColorFailed);
+
+    backColor_.addTarget("hightlight", 0xe8bb00ff);
 
     backColor_.initCurrent("failed");
     base_.setOutlineColor(sf::Color(outlineColor));

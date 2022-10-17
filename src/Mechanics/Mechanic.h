@@ -16,6 +16,7 @@ protected:
     std::string sound_;
     bool played_, checked_;
     bool passed_, earlypassed_;
+    bool pause_;
     bool draw_;
     bool init_;
     bool activate_;
@@ -35,10 +36,15 @@ public:
     float getBeat() const;
     float getActive() const;
     bool isFailed() const;
+    void setFailed(bool val);
     void negateFailed();
+    bool getDraw() const;
+    void setPause(bool val);
 
     virtual void reset(float beat);
     virtual Mechanic* clone() ;
+    virtual void getTargetPos(std::vector<sf::Vector2f> &pos);
+    virtual void setTargetPos(std::vector<sf::Vector2f> &pos);
 
 
     virtual std::string toString() { return ""; };

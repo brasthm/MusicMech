@@ -2,6 +2,7 @@
 
 #include "../System/Utils.h"
 #include <cmath>
+#include <iostream>
 
 void Donut::updatePosition(EntityManager& entityManager)
 {
@@ -54,6 +55,7 @@ void Donut::setColor()
     playerIndicator_.setFillColor(fillColorPlayerIndicator);
     backColor_.addTarget("good", fillColor);
     backColor_.addTarget("failed", fillColorFailed);
+    backColor_.addTarget("hightlight", 0xe8bb00ff);
 
     backColor_.initCurrent("failed");
     base_.setOutlineColor(outlineColor);
@@ -84,11 +86,24 @@ Donut::Donut(float beat, float distanceMin, float distanceMax, int nbShare, floa
     Mechanic::setSoundName("Sound/normal-hitnormal.wav");
 
     drawPriority_ = -1;
+
+    highlightTimer_ = sf::seconds(0);
+    highlight_ = false;
 }
 
 void Donut::onDraw(const sf::Time& elapsed, sf::RenderTarget& window)
 {
     if(draw_) {
+        if (isFailed()) {
+            backColor_.setSpeed({ 0.5, 0.5, 0.5, 0.5 });
+            highlightTimer_ += elapsed;
+            backColor_.updateColor(elapsed);
+            if (highlightTimer_.asSeconds() > 1) {
+                highlightTimer_ = sf::seconds(0);
+                backColor_.setCurrentTarget(highlight_ ? "failed" : "hightlight");
+                highlight_ = !highlight_;
+            }
+        }
         approachCircle_.draw(window);
         base_.setFillColor(backColor_.getCurrentColor().toInteger());
         base_.draw(window);
@@ -186,8 +201,25 @@ void Donut::reset(float beat)
     setColor();
 
     target_.reset();
+    backColor_.setSpeed({ 0.1, 0.1, 0.1, 0.5 });
 
     Mechanic::reset(beat);
+}
+
+void Donut::getTargetPos(std::vector<sf::Vector2f>& pos)
+{
+    pos.emplace_back(position_);
+}
+
+void Donut::setTargetPos(std::vector<sf::Vector2f>& pos)
+{
+    if (pos.size() != 1) {
+        std::cout << "Donut::setTargetPos : pos vector is wrong size." << std::endl;
+        return;
+    }
+
+    target_.type = TargetType::TARGET_POS;
+    target_.pos = pos[0];
 }
 
 std::string Donut::toString()

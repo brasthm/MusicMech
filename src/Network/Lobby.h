@@ -30,7 +30,6 @@ class Lobby {
 
 private:
     Song song_;
-    sf::Clock timer_;
     sf::Time position_;
     EntityManager manager_;
 

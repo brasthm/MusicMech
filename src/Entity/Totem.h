@@ -12,8 +12,8 @@ private:
     bool draw_;
 public:
     Totem();
-    void update(sf::Time elapsed, Arena* arena, float beat, bool hasFocus) override;
-    void draw(sf::RenderTarget &window) override;
+    void update(sf::Time elapsed, Arena* arena, float beat);
+    void draw(sf::RenderTarget &window);
 
 };
 

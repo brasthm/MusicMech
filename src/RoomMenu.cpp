@@ -24,7 +24,7 @@ RoomMenu::RoomMenu()
 {
 }
 
-int RoomMenu::run(sf::RenderWindow& window, BackgroundAnimation& bg, Client* client, SongDatabase* songs, Game* game, bool creator, bool beatmapChanged, bool needReload)
+int RoomMenu::run(sf::RenderWindow& window, BackgroundAnimation& bg, Client* client, SongDatabase* songs, Game* game, bool creator, bool beatmapChanged)
 {
 	sf::Clock fps;
 	bool exit = false, focus = false, first = true;
@@ -224,18 +224,13 @@ int RoomMenu::run(sf::RenderWindow& window, BackgroundAnimation& bg, Client* cli
 
 	int saveColor;
 
-	if (creator) {
-		if (beatmapChanged)
-			beatmap = std::async(std::launch::async, &Client::requestBeatmapChange, client, songs->getSelectedSong().id, songs->getMode());
-		else
-			refresh = std::async(std::launch::async, &Client::requestLobbyInfo, client, client->getLobbyIndex());
-		loading.start("Loading room");
-	}
-
-	if (needReload) {
+	if (creator && beatmapChanged) 
+		beatmap = std::async(std::launch::async, &Client::requestBeatmapChange, client, songs->getSelectedSong().id, songs->getMode());
+	else 
 		refresh = std::async(std::launch::async, &Client::requestLobbyInfo, client, client->getLobbyIndex());
-		loading.start("Loading room");
-	}
+	
+
+	loading.start("Loading room");
 	
 
 	while (!exit)
@@ -254,8 +249,20 @@ int RoomMenu::run(sf::RenderWindow& window, BackgroundAnimation& bg, Client* cli
 				if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape ||
 					event.type == sf::Event::JoystickButtonPressed && event.joystickButton.button == 1) {
 					if (selection == 0) {
-						disconnect = std::async(std::launch::async, &Client::requestLobbyDisconnect, client);
-						loading.start("Disconnecting");
+						if (!ready[playerIndex]) {
+							disconnect = std::async(std::launch::async, &Client::requestLobbyDisconnect, client);
+							loading.start("Disconnecting");
+						}
+						else {
+							saveColor = colors[selectedColorIndex];
+							setReady = std::async(std::launch::async, &RoomMenu::requestReady, this, client, game, songs, 0, false);
+							loading.start("Loading");
+
+							if (creator)
+								buttons.change(3, "READY", "Ready");
+							else
+								buttons.change(2, "READY", "Ready");
+						}
 					}
 					else if (selection == 1) {
 						selection = 0;
