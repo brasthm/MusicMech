@@ -12,7 +12,7 @@ ApplyDebuff::ApplyDebuff(float beat, const Target& target, DebuffType type, floa
 }
 
 void ApplyDebuff::onPassed(const sf::Time &elapsed, float currentBeat, float currentPart, EntityManager &entities) {
-    entities.applyDebuff(target_, type_, end_);
+    entities.applyDebuff(currentBeat, target_, type_, end_);
 }
 
 Mechanic* ApplyDebuff::clone()

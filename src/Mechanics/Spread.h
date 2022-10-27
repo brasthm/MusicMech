@@ -9,6 +9,7 @@
 #include "../Graphics/PlayerIndicator.h"
 #include "../Graphics/RingShape.h"
 #include "../Graphics/ShiftColor.h"
+#include "../System/Debuff.h"
 
 
 class Spread : public Mechanic {
@@ -23,13 +24,15 @@ class Spread : public Mechanic {
     sf::Vector2f position_;
     sf::Time highlightTimer_;
     bool highlight_;
+    DebuffType debuffToApply_;
+    float debuffTimer_;
 
     void updatePosition(EntityManager &entityManager);
     void setColor();
 
 
 public:
-    Spread(float beat, float radius, int nbShare, float active, const Target &target);
+    Spread(float beat, float radius, int nbShare, float active, const Target &target, DebuffType debuffToApply = DEBUFF_NONE, float debuffTimer = 0);
     void onDraw(const sf::Time &elapsed, sf::RenderTarget &window) override;
     void onCheck(const sf::Time &elapsed, float currentBeat, float cuurentPart, EntityManager &entities) override;
     void onApproach(const sf::Time &elapsed, float currentBeat, float cuurentPart, EntityManager &entities) override;

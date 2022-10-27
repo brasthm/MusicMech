@@ -8,6 +8,7 @@
 #include "UDP_Port.h"
 #include "../Entity/Joueur.h"
 #include "../RoomStatus.h"
+#include "../Entity/EntityManager.h"
 #include "Lobby.h"
 #include <vector>
 
@@ -36,7 +37,7 @@ public:
     void sendCommand(const std::string& cmd);
     void sendPlayerData(sf::Int32 x, sf::Int32 y);
     int getIndex() const {return index_;};
-    int updateFromServerPlayerPosition(std::vector<Joueur> &joueurs, std::pair<float, float> &checkpoint);
+    int updateFromServerPlayerPosition(std::vector<Joueur> &joueurs, std::pair<float, float> &checkpoint, EntityManager& em);
 
     void changeName(const std::string& name);
 
@@ -52,9 +53,11 @@ public:
     bool sendReady(sf::Uint32 color);
     bool requestBeatmapChange(const std::string& beatmap, const std::string& mode);
     bool requestPing();
-    bool requestRoomStatus(RoomStatus *status, const std::string& lobbyIndex = "");
+    bool requestRoomStatus(RoomStatus *status, EntityManager& em, const std::string& lobbyIndex = "");
 
-    bool monitorLobby(int &state);
+    bool monitorLobby(int &state, EntityManager& em);
+
+    void fetchRandomSequence(sf::Packet& p, EntityManager& em);
 
     bool waitToStart();
 

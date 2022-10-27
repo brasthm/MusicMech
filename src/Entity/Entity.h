@@ -10,6 +10,13 @@
 #include "../System/Arena.h"
 
 
+class DebuffInfo {
+public:
+    std::string icon, name, desc;
+    float end;
+};
+
+
 class Entity {
 protected:
     sf::CircleShape shape_;
@@ -17,7 +24,7 @@ protected:
     sf::Vector2f serv_pos_;
     float speed_=0, radius_=0, baseSpeed_=0;
     bool active_=false;
-    Debuff debuff_;
+    std::vector<Debuff> debuffs_;
     sf::Uint32 color_;
 
 public:
@@ -37,6 +44,12 @@ public:
     void applyDebuff(DebuffType type, float end);
     void setColor(sf::Uint32 color);
     sf::Uint32 getColor();
+
+    void getCurrentDebuffs(std::vector<DebuffType>& debuffs);
+    void getCurrentDebuffs(std::vector<std::pair<DebuffType, float>>& debuffs);
+    void getDebuffs(std::vector<DebuffInfo>& debuffsInfo);
+
+    void setRadius(float radius);
 };
 
 

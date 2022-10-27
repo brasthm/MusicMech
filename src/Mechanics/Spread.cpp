@@ -8,7 +8,7 @@
 #include <cmath>
 #include <iostream>
 
-Spread::Spread(float beat, float radius, int nbShare, float active, const Target &target) :
+Spread::Spread(float beat, float radius, int nbShare, float active, const Target &target, DebuffType debuffToApply, float debuffTimer) :
         target_(target),
         approachCircle_({}, radius + 10, 20, 0),
         playerIndicator_({}, sf::Vector2f(0, radius*0.6f), nbShare,
@@ -24,6 +24,9 @@ Spread::Spread(float beat, float radius, int nbShare, float active, const Target
     isShare_ = nbShare != 0;
     active_ = active;
     newRadius_ = radius_;
+
+    debuffToApply_ = debuffToApply;
+    debuffTimer_ = debuffTimer;
 
     setColor();
 
@@ -115,6 +118,20 @@ void Spread::onApproach(const sf::Time &elapsed, float currentBeat, float curren
 void Spread::onPassed(const sf::Time &elapsed, float currentBeat, float currentPart, EntityManager &entities) {
     if(target_.timing == TARGET_ONBEAT) {
         updatePosition(entities);
+    }
+
+    if (debuffToApply_ != DEBUFF_NONE) {
+        for (int i = 0; i < entities.getSizePlayers(); i++) {
+            Target t(TARGET_ENTITY, TARGET_PLAYERS, i);
+            if (!entities.getActive(t))
+                break;
+
+            bool good = Utils::distance(entities.getPosition(t), position_) < radius_;
+
+            if (good) {
+                entities.applyDebuff(currentBeat, t, debuffToApply_, currentBeat + debuffTimer_);
+            }
+        }
     }
 }
 
@@ -230,7 +247,8 @@ std::string Spread::toString() {
     std::string res;
 
     res = "SPREAD," + std::to_string(beat_) + "," + std::to_string(nbShare_) + "," +
-            std::to_string(radius_) + "," + std::to_string(active_) + ",";
+            std::to_string(radius_) + "," + std::to_string(active_) + "," +
+            std::to_string(debuffToApply_) + "," + std::to_string(debuffTimer_) + ",";
 
     res += target_.to_string();
 

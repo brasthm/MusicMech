@@ -4,15 +4,16 @@
 
 #include "ActivateTotem.h"
 
-ActivateTotem::ActivateTotem(float beat, const Target& target, bool val, sf::Uint32 color) : target_(target){
+ActivateTotem::ActivateTotem(float beat, const Target& target, bool val, sf::Uint32 color, float radius) : target_(target){
     beat_ = beat;
     val_ = val;
     passed_ = true;
     color_ = color;
+    radius_ = radius;
 }
 
 void ActivateTotem::onPassed(const sf::Time &elapsed, float currentBeat, float currentPart, EntityManager &entities) {
-    entities.setActive(target_, val_, color_);
+    entities.setActive(target_, val_, radius_, color_);
 }
 
 Mechanic* ActivateTotem::clone()
@@ -21,7 +22,8 @@ Mechanic* ActivateTotem::clone()
 }
 
 std::string ActivateTotem::toString() {
-    std::string res =  "ACTIVATE," + std::to_string(beat_) + "," + std::to_string(val_) + "," + std::to_string(color_) + ",";
+    std::string res =  "ACTIVATE," + std::to_string(beat_) + "," + std::to_string(val_) + "," 
+        + std::to_string(radius_) + "," + std::to_string(color_) + ",";
     res += target_.to_string();
 
     return res;

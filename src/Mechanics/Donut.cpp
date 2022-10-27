@@ -63,7 +63,7 @@ void Donut::setColor()
     outlineColor_ = sf::Color(outlineColor);
 }
 
-Donut::Donut(float beat, float distanceMin, float distanceMax, int nbShare, float active, const Target& target) :
+Donut::Donut(float beat, float distanceMin, float distanceMax, int nbShare, float active, const Target& target, DebuffType debuffToApply, float debuffTimer) :
     target_(target),
     approachCircle_({}, distanceMin - 50, 20, 0),
     base_({}, distanceMin, distanceMax - distanceMin, 1.f, 5),
@@ -80,6 +80,10 @@ Donut::Donut(float beat, float distanceMin, float distanceMax, int nbShare, floa
 
     isShare_ = nbShare != 0;
     active_ = active;
+
+
+    debuffToApply_ = debuffToApply;
+    debuffTimer_ = debuffTimer;
 
     setColor();
 
@@ -172,6 +176,20 @@ void Donut::onPassed(const sf::Time& elapsed, float currentBeat, float currentPa
     if (target_.timing == TARGET_ONBEAT) {
         updatePosition(entities);
     }
+
+    for (int i = 0; i < entities.getSizePlayers(); i++) {
+        Target t(TARGET_ENTITY, TARGET_PLAYERS, i);
+        if (!entities.getActive(t))
+            break;
+
+        float dist = Utils::distance(entities.getPosition(t), position_);
+
+        bool good = dist >= distanceMin_ && dist <= distanceMax_;
+
+        if (good) {
+            entities.applyDebuff(currentBeat, t, debuffToApply_, debuffTimer_);
+        }
+    }
 }
 
 void Donut::onFade(const sf::Time& elapsed, float currentBeat, float currentPart, EntityManager& entities)
@@ -227,7 +245,8 @@ std::string Donut::toString()
     std::string res;
 
     res = "DONUT," + std::to_string(beat_) + "," + std::to_string(nbShare_) + "," +
-        std::to_string(distanceMin_) + "," + std::to_string(distanceMax_) + "," + std::to_string(active_) + ",";
+        std::to_string(distanceMin_) + "," + std::to_string(distanceMax_) + "," + std::to_string(active_) + "," +
+        std::to_string(debuffToApply_) + "," + std::to_string(debuffTimer_) + ",";
 
     res += target_.to_string();
 

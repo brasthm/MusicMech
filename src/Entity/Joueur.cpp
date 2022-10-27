@@ -24,19 +24,33 @@ Joueur::Joueur() {
     speed_ = 700;
     active_ = false;
     name_ = "";
+    color_ = 0x888888FF;
     baseSpeed_ = speed_;
 
     plateOpacity_ = 255;
     nameText_.setFont(RessourceLoader::getFont("Font/Roboto-Bold.ttf"));
     nameText_.setCharacterSize(28);
-    drawPlate_ = false;
-    
+    drawPlate_ = false;    
 }
 
-void Joueur::update(sf::Time elapsed, Arena* arena, float beat, bool hasFocus) {
-
+bool Joueur::update(sf::Time elapsed, Arena* arena, float beat, bool hasFocus) {
+    shape_.setOrigin(radius_, radius_);
+    shape_.setRadius(radius_);
     if(active_) {
-        debuff_.update(elapsed, beat);
+        for (int i = 0; i < debuffs_.size(); i++) {
+            bool val = debuffs_[i].update(elapsed, beat);
+            if (val) return true;
+        }
+
+        sf::Vector2f vecDep(0,0);
+
+        for (int i = 0; i < debuffs_.size(); i++) {
+            if (debuffs_[i].type() == DEBUFF_ROOT)
+                return false;
+        }
+
+        if (IS_SERVER)
+            return false;
 
         if (drawPlate_) {
             if (plateLimit_.asSeconds() != 0) {
@@ -50,11 +64,7 @@ void Joueur::update(sf::Time elapsed, Arena* arena, float beat, bool hasFocus) {
             }
         }
 
-
-
-        sf::Vector2f vecDep(0,0);
-
-        if(controlledByPlayer_ && hasFocus && debuff_.type() != DEBUFF_ROOT) {
+        if(controlledByPlayer_ && hasFocus) {
             if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up)) {
                 vecDep.y = -1;
             }
@@ -126,6 +136,8 @@ void Joueur::update(sf::Time elapsed, Arena* arena, float beat, bool hasFocus) {
         }
     }
 
+    return false;
+
 }
 
 void Joueur::draw(sf::RenderTarget &window, bool serverPos) {
@@ -136,7 +148,25 @@ void Joueur::draw(sf::RenderTarget &window, bool serverPos) {
             window.draw(shape_);
         }
 
-        debuff_.draw(window, pos_);
+        int index = -1;
+        for (int i = 0; i < debuffs_.size(); i++) {
+            if (debuffs_[i].isNotif()) {
+                int val = debuffs_[i].getNotif();
+                if(index < val) index = val;
+            }
+        }
+
+        
+
+        for (int i = 0; i < debuffs_.size(); i++) {
+            debuffs_[i].draw(window, pos_);
+            if (debuffs_[i].isNotif()) {
+                if(debuffs_[i].getNotif() == -1) index++;
+                debuffs_[i].setNotif(index);
+                debuffs_[i].notification(window, pos_);
+            }
+        }
+
         shape_.setPosition(pos_);
         shape_.setFillColor(sf::Color(color_));
         window.draw(shape_);
@@ -177,7 +207,7 @@ void Joueur::setDataFromServer(sf::Packet &packet)  {
 }
 
 void Joueur::reset() {
-    debuff_.clense();
+    debuffs_.clear();
 }
 
 void Joueur::setName(std::string name)
@@ -205,6 +235,8 @@ void Joueur::computePlate()
     auto size = nameText_.getGlobalBounds();
     namePlate_.setSize(sf::Vector2f(size.width + 15, size.height + 15));
 }
+
+
 
 std::string Joueur::getName()
 {

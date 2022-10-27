@@ -21,6 +21,7 @@ private:
     std::vector<Totem> totems_;
     std::vector<Mechanic*> mechanicList_;
     std::vector<int> failed_;
+    std::vector<int> debuffsNumbers_;
     Song *song_;
     Arena arena_;
     float beat_;
@@ -37,6 +38,9 @@ public:
     void setBeat(float beat);
     void setArenaParameters(float zoom, float rotation, float left, float top, float width, float height);
     void setMechPosition(int i, std::vector<sf::Vector2f>& positions);
+    void setDebuffs(int i, DebuffType type, float end);
+
+    EntityManager& getEntityManager();
 };
 
 

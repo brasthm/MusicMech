@@ -3,6 +3,7 @@
 //
 
 #include "Lobby.h"
+#include "../MapsCode.h"
 
 #include <iostream>
 
@@ -116,6 +117,10 @@ void Lobby::updateGame(sf::Time elapsed) {
         for(int i = 0; i < players.size(); i++) {
             if(players[i] != nullptr) {
                 joueurs_[i].setPosition(players[i]->x, players[i]->y);
+                bool val = joueurs_[i].update(elapsed, &arena_, currentBeat_, false);
+                if (!GOD_MODE && val) {
+                    failed = true;
+                }
             }
         }
 
@@ -155,7 +160,6 @@ std::pair<float, float> Lobby::getCheckpoint() {
 
 void Lobby::resetTimer()
 {
-    arena_.clear();
     position_ = sf::seconds(0);
     currentBeat_ = 0;
     currentSection_ = -1;
@@ -255,6 +259,22 @@ void Lobby::setStatusPacket(sf::Packet &packet)
         std::cout << "      " << sf::String(joueurs_[i].getName()).toAnsiString() << " " << joueurs_[i].getColor() << " " << joueurs_[i].getActive() << " " <<
             joueurs_[i].getPosX() << " " << joueurs_[i].getPosY() << " " << std::endl;
     }
+
+
+    std::cout << "Debuffs : " << std::endl;
+    for (int i = 0; i < joueurs_.size(); i++) {
+        std::vector<std::pair<DebuffType, float>> debuffType;
+
+        joueurs_[i].getCurrentDebuffs(debuffType);
+
+        packet << sf::Int32(debuffType.size());
+        for (int j = 0; j < debuffType.size(); j++) {
+            packet << sf::Int32(debuffType[j].first) << debuffType[j].second;
+            std::cout << "      " << i << " - " << sf::Int32(debuffType[j].first) << " : " << debuffType[j].second << std::endl;
+        }
+    }
+    
+    setRandomSequence(packet);
 }
 
 void Lobby::setPlayer(int i, std::string name, sf::Uint32 color)
@@ -263,10 +283,25 @@ void Lobby::setPlayer(int i, std::string name, sf::Uint32 color)
     joueurs_[i].setColor(color);
 }
 
+void Lobby::computeSequences()
+{
+    manager_.computeSequences();
+}
+
+void Lobby::setRandomSequence(sf::Packet& packet)
+{
+    manager_.setPacketRandomSequence(packet);
+}
+
 void Lobby::load(const std::string &filename) {
+    manager_.deleteSequences();
     song_.load(filename,
                nullptr,
                mechanics_, &arena_);
+
+    sf::Music m;
+    mechanics_.clear();
+    getMechsFromCode(beatmap, mechanics_, song_, m, manager_);
 
     std::cout << "Arena : " << arena_.getNbRects() << std::endl;
     std::cout << "Mechanics number : " << mechanics_.size() << std::endl;

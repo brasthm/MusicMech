@@ -26,7 +26,7 @@ private:
     
 public:
     Joueur();
-    void update(sf::Time elapsed, Arena* arena, float beat, bool hasFocus);
+    bool update(sf::Time elapsed, Arena* arena, float beat, bool hasFocus);
     void draw(sf::RenderTarget &window, bool serverPos);
     void setControlledByPlayer(bool b) {controlledByPlayer_=b;};
     void setDataFromServer(sf::Packet &packet);

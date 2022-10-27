@@ -31,11 +31,13 @@ public:
     ~Game();
     void run(sf::RenderWindow &window, Client* client, bool creator);
     void load();
-    void load(const std::string &path);
+    void loadFromFile(const std::string &path);
+    void loadFromCode(const std::string &id, const std::string& path);
     void save(const std::string &filename);
     void reset(float beat);
     void clearPlayer();
     void addPlayer(std::string name, sf::Uint32 color);
+    EntityManager& getEntityManager();
 };
 
 

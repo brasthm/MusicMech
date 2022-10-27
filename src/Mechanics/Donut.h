@@ -19,6 +19,9 @@ class Donut : public Mechanic {
     sf::Vector2f position_;
     sf::Color outlineColor_;
 
+    DebuffType debuffToApply_;
+    float debuffTimer_;
+
     sf::Time highlightTimer_;
     bool highlight_;
 
@@ -27,7 +30,7 @@ class Donut : public Mechanic {
 
 
 public:
-    Donut(float beat, float distanceMin, float distanceMax, int nbShare, float active, const Target& target);
+    Donut(float beat, float distanceMin, float distanceMax, int nbShare, float active, const Target& target, DebuffType debuffToApply = DEBUFF_NONE, float debuffTimer = 0);
     void onDraw(const sf::Time& elapsed, sf::RenderTarget& window) override;
     void onCheck(const sf::Time& elapsed, float currentBeat, float cuurentPart, EntityManager& entities) override;
     void onApproach(const sf::Time& elapsed, float currentBeat, float cuurentPart, EntityManager& entities) override;

@@ -8,31 +8,20 @@
 #include "Game.h"
 #include "main.h"
 #include "RoomStatus.h"
+
+#include "System/Song.h"
+
+#include "System/RessourceLoader.h"
+#include "Mechanics/Mechanic.h"
+
 #include "Graphics/LoadingScreen.h"
 #include "Graphics/RingShape.h"
 #include "Graphics/ButtonGroup.h"
 #include "System/RessourceLoader.h"
-#include "Mechanics/Mechanic.h"
-#include "Mechanics/ZoomArena.h"
-#include "Mechanics/RotateArena.h"
-#include "Mechanics/MoveArena.h"
-#include "Mechanics/SnapArena.h"
-#include "Mechanics/AddArena.h"
-#include "Mechanics/RemoveArena.h"
-#include "Mechanics/Donut.h"
-#include "Mechanics/Spread.h"
-#include "Mechanics/NopeZone.h"
-#include "Mechanics/Cone.h"
-#include "Mechanics/ActivateTotem.h"
-#include "Mechanics/MoveEntity.h"
-#include "Mechanics/Tether.h"
-#include "Mechanics/ApplyDebuff.h"
-#include "Mechanics/DisplayImage.h"
-#include "Mechanics/ClearArenaa.h"
+
 #include "Mechanics/EndMap.h"
 
-
-#include "System/Song.h"
+#include "MapsCode.h"
 
 
 #include <cmath>
@@ -202,6 +191,8 @@ void Game::run(sf::RenderWindow &window, Client* client, bool creator) {
        joueurs_[i].showPlate();
    }
 
+
+   int currentControled = 0;
    float gameOverBeat, gameOverSection;
 
    //client->requestPing();
@@ -228,52 +219,24 @@ void Game::run(sf::RenderWindow &window, Client* client, bool creator) {
                 client->sendEndGame();
                 interupted = true;
             }
- 
-            if (failed) {
-                if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Return ||
-                    event.type == sf::Event::JoystickButtonPressed && event.joystickButton.button == 0) {
-                    if (gameOverButtons.getCurrent() == "RETRY") {
-                        if (!restartSent) {
-                            client->sendResumeGame();
-                            restartSent = true;
-                        }
-                    }
-                    else if (gameOverButtons.getCurrent() == "RECAP") {
-                        RoomStatus roomStatus(&song_, &mechanicList_);
-                        client->requestRoomStatus(&roomStatus);
-                        
-                        res = roomStatus.run(window, client);
-                    }
-                    else if (gameOverButtons.getCurrent() == "QUIT") {
-                        client->sendEndGame();
-                        interupted = true;
-                    }
-                }
-
-                if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Up ||
-                    event.type == sf::Event::JoystickMoved && event.joystickMove.axis == sf::Joystick::Y && event.joystickMove.position == -100 ||
-                    event.type == sf::Event::JoystickMoved && event.joystickMove.axis == sf::Joystick::PovY && event.joystickMove.position == 100) {
-                    gameOverButtons.prev();
-                }
-                if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Down ||
-                    event.type == sf::Event::JoystickMoved && event.joystickMove.axis == sf::Joystick::Y && event.joystickMove.position == 100 ||
-                    event.type == sf::Event::JoystickMoved && event.joystickMove.axis == sf::Joystick::PovY && event.joystickMove.position == -100) {
-                    gameOverButtons.next();
-                }
-            }
-            else {
-                if (paused) {
-                    if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape ||
-                        event.type == sf::Event::JoystickButtonPressed && event.joystickButton.button == 1 ||
-                        event.type == sf::Event::JoystickButtonPressed && event.joystickButton.button == 7) {
-                        paused = false;
-                    }
+            
+            if (!loading.getActive()) {
+                if (failed) {
                     if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Return ||
                         event.type == sf::Event::JoystickButtonPressed && event.joystickButton.button == 0) {
-                        if (pauseButtons.getCurrent() == "RESUME") {
-                            paused = false;
+                        if (gameOverButtons.getCurrent() == "RETRY") {
+                            if (!restartSent) {
+                                client->sendResumeGame();
+                                restartSent = true;
+                            }
                         }
-                        else if (pauseButtons.getCurrent() == "QUIT") {
+                        else if (gameOverButtons.getCurrent() == "RECAP") {
+                            RoomStatus roomStatus(&song_, &mechanicList_);
+                            client->requestRoomStatus(&roomStatus, roomStatus.getEntityManager());
+
+                            res = roomStatus.run(window, client);
+                        }
+                        else if (gameOverButtons.getCurrent() == "QUIT") {
                             client->sendEndGame();
                             interupted = true;
                         }
@@ -282,28 +245,72 @@ void Game::run(sf::RenderWindow &window, Client* client, bool creator) {
                     if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Up ||
                         event.type == sf::Event::JoystickMoved && event.joystickMove.axis == sf::Joystick::Y && event.joystickMove.position == -100 ||
                         event.type == sf::Event::JoystickMoved && event.joystickMove.axis == sf::Joystick::PovY && event.joystickMove.position == 100) {
-                        pauseButtons.prev();
+                        gameOverButtons.prev();
                     }
                     if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Down ||
                         event.type == sf::Event::JoystickMoved && event.joystickMove.axis == sf::Joystick::Y && event.joystickMove.position == 100 ||
                         event.type == sf::Event::JoystickMoved && event.joystickMove.axis == sf::Joystick::PovY && event.joystickMove.position == -100) {
-                        pauseButtons.next();
+                        gameOverButtons.next();
                     }
                 }
                 else {
-                    if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape && !interupted ||
-                        event.type == sf::Event::JoystickButtonPressed && event.joystickButton.button == 7 && !interupted) {
-                        paused = !paused;
+                    if (paused) {
+                        if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape ||
+                            event.type == sf::Event::JoystickButtonPressed && event.joystickButton.button == 1 ||
+                            event.type == sf::Event::JoystickButtonPressed && event.joystickButton.button == 7) {
+                            paused = false;
+                        }
+                        if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Return ||
+                            event.type == sf::Event::JoystickButtonPressed && event.joystickButton.button == 0) {
+                            if (pauseButtons.getCurrent() == "RESUME") {
+                                paused = false;
+                            }
+                            else if (pauseButtons.getCurrent() == "QUIT") {
+                                client->sendEndGame();
+                                interupted = true;
+                            }
+                        }
+
+                        if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Up ||
+                            event.type == sf::Event::JoystickMoved && event.joystickMove.axis == sf::Joystick::Y && event.joystickMove.position == -100 ||
+                            event.type == sf::Event::JoystickMoved && event.joystickMove.axis == sf::Joystick::PovY && event.joystickMove.position == 100) {
+                            pauseButtons.prev();
+                        }
+                        if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Down ||
+                            event.type == sf::Event::JoystickMoved && event.joystickMove.axis == sf::Joystick::Y && event.joystickMove.position == 100 ||
+                            event.type == sf::Event::JoystickMoved && event.joystickMove.axis == sf::Joystick::PovY && event.joystickMove.position == -100) {
+                            pauseButtons.next();
+                        }
+                    }
+                    else {
+                        if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape && !interupted ||
+                            event.type == sf::Event::JoystickButtonPressed && event.joystickButton.button == 7 && !interupted) {
+                            paused = !paused;
+                        }
                     }
                 }
-            }
-            
-            if(event.type == sf::Event::KeyPressed) {
-                if (event.key.code == sf::Keyboard::F1) {
-                    drawDebug = !drawDebug;
-                }
-                if (event.key.code == sf::Keyboard::F2) {
-                    serverTrace = !serverTrace;
+
+                if (event.type == sf::Event::KeyPressed) {
+                    if (event.key.code == sf::Keyboard::F1) {
+                        drawDebug = !drawDebug;
+                    }
+                    if (event.key.code == sf::Keyboard::F2) {
+                        serverTrace = !serverTrace;
+                    }
+                    if (event.key.code == sf::Keyboard::F3) {
+                        currentControled++;
+                        currentControled = currentControled % joueurs_.size();
+                        for(int i = 0; i < joueurs_.size(); i++)
+                            joueurs_[i].setControlledByPlayer(i == currentControled);
+                    }
+                    if (event.key.code == sf::Keyboard::F8) {
+                        auto checkpoint = song_.getNextCheckpoint(currentBeat_float);
+                        music_.setPlayingOffset(sf::seconds(checkpoint.first + 5));
+                    }
+                    if (event.key.code == sf::Keyboard::F7) {
+                        auto checkpoint = song_.getCurrentCheckpoint(currentBeat_float);
+                        music_.setPlayingOffset(sf::seconds(checkpoint.first));
+                    }
                 }
             }
         }
@@ -394,10 +401,11 @@ void Game::run(sf::RenderWindow &window, Client* client, bool creator) {
 
             // MONITOR SERVER
             if (!exit && res == -1) {
-                res = client->updateFromServerPlayerPosition(joueurs_, checkpoint);
-                exit = res == 1;
+                res = client->updateFromServerPlayerPosition(joueurs_, checkpoint, em_);
             }
 
+
+            exit = res == 1;
             if(!newfailed) newfailed = res == 2;
             if (failed)    resume = res == 3;
             refreshPing = res == 4;
@@ -463,8 +471,32 @@ void Game::run(sf::RenderWindow &window, Client* client, bool creator) {
             song_.drawProgress(window, currentBeat_float, currentSection);
 
             for (int i = 0; i < namesInfo.size(); i++) {
-                window.draw(namesInfo[i]);
-                window.draw(namesText[i]);
+                if (joueurs_[i].getActive()) {
+                    window.draw(namesInfo[i]);
+                    window.draw(namesText[i]);
+
+                    std::vector<DebuffInfo> debuffsInfo;
+
+                    joueurs_[i].getDebuffs(debuffsInfo);
+
+                    auto size = namesInfo[i].getGlobalBounds();
+
+                    for (int j = 0; j < debuffsInfo.size(); j++) {
+                        sf::Sprite sp;
+                        sp.setTexture(RessourceLoader::getTexture(debuffsInfo[j].icon));
+                        sp.setScale(0.25, 0.25);
+                        sp.setPosition(size.width + 10 + j * 55, size.top - 2);
+                        window.draw(sp);
+
+                        sf::Text txt;
+                        txt.setFont(RessourceLoader::getFont("Font/Roboto-Bold.ttf"));
+                        txt.setCharacterSize(30);
+                        txt.setString(std::to_string(int(debuffsInfo[j].end - currentBeat_float)));
+                        txt.setFillColor(sf::Color::Black);
+                        txt.setPosition(size.width + 10 + j * 55 + 2, size.top + 16);
+                        window.draw(txt);
+                    }
+                }
             }
         }
         // DRAW GAMEOVER 
@@ -560,7 +592,7 @@ void Game::run(sf::RenderWindow &window, Client* client, bool creator) {
 void Game::load() {
 }
 
-void Game::load(const std::string& path)
+void Game::loadFromFile(const std::string& path)
 {
     for (int i = 0; i < mechanicList_.size(); i++) {
         delete mechanicList_[i];
@@ -576,6 +608,43 @@ void Game::load(const std::string& path)
     std::cout << "Mechanics number : " << mechanicList_.size() << std::endl;
 
    //music_.setPlayingOffset(sf::seconds(167));
+
+    std::sort(mechanicList_.begin(), mechanicList_.end(),
+        [](Mechanic* m1, Mechanic* m2) {return *m1 < *m2; });
+
+    bool found = false;
+    float beat;
+    for (int i = 0; i < mechanicList_.size(); i++) {
+        if (EndMap* em = dynamic_cast<EndMap*>(mechanicList_[i])) {
+            beat = em->getBeat();
+            found = true;
+            break;
+        }
+    }
+
+    if (!found) {
+        std::cout << "Warning : no EndMap" << std::endl;
+        beat = song_.getCumulativeNBeats(music_.getDuration().asMilliseconds());
+    }
+
+    std::cout << "EndMap : " << beat << std::endl;
+    song_.setEndBeat(beat);
+}
+
+void Game::loadFromCode(const std::string& id, const std::string& path)
+{
+    em_.deleteSequences();
+
+    song_.load(path, &music_, mechanicList_, &arena_);
+    music_.setVolume(10);
+
+    mechanicList_.clear();
+
+    getMechsFromCode(id, mechanicList_, song_, music_, em_);
+
+    std::cout << "Mechanics number : " << mechanicList_.size() << std::endl;
+
+    //music_.setPlayingOffset(sf::seconds(145));
 
     std::sort(mechanicList_.begin(), mechanicList_.end(),
         [](Mechanic* m1, Mechanic* m2) {return *m1 < *m2; });
@@ -629,9 +698,16 @@ void Game::clearPlayer()
 void Game::addPlayer(std::string name ,sf::Uint32 color)
 {
     joueurs_.emplace_back();
-    joueurs_.back().setName(name);
-    joueurs_.back().setColor(color);
+    if (name != "") {
+        joueurs_.back().setName(name);
+        joueurs_.back().setColor(color);
+    }
     joueurs_.back().computePlate();
+}
+
+EntityManager& Game::getEntityManager()
+{
+    return em_;
 }
 
 void Game::save(const std::string &filename) {

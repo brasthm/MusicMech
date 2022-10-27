@@ -83,7 +83,7 @@ int RoomCreation::run(sf::RenderWindow& window, BackgroundAnimation& bg, Client*
 	beatmapText.setFillColor(sf::Color::Black);
 
 	nbText.setFont(RessourceLoader::getFont("Font/Roboto-Bold.ttf"));
-	nbText.setString(songs.getMode());
+	nbText.setString(songs.getCurentNbPlayers()+"P");
 	nbText.setCharacterSize(80);
 	nbText.setFillColor(sf::Color::Black);
 
@@ -131,10 +131,13 @@ int RoomCreation::run(sf::RenderWindow& window, BackgroundAnimation& bg, Client*
 	beatmapFond.setSize({ WIDOW_WIDTH * 0.6f + nameFond.getGlobalBounds().left
 		- vignette.getGlobalBounds().left - vignette.getGlobalBounds().width,
 		vignette.getGlobalBounds().height});
-	if(songs.getMode() == "4P")
+	if(songs.getCurentNbPlayers() == "4")
 		beatmapFond.setFillColor(sf::Color(0xff6392ff));
-	else
+	else if(songs.getCurentNbPlayers() == "2")
 		beatmapFond.setFillColor(sf::Color(0xa5c882ff));
+	else if(songs.getCurentNbPlayers() == "8")
+		beatmapFond.setFillColor(sf::Color(0x5ab1bbff));
+
 	beatmapFond.setPosition(vignette.getGlobalBounds().left + vignette.getGlobalBounds().width, vignette.getGlobalBounds().top);
 
 	nbText.setPosition(beatmapFond.getGlobalBounds().left + beatmapFond.getGlobalBounds().width/2 - nbText.getGlobalBounds().width/2,
@@ -194,7 +197,7 @@ int RoomCreation::run(sf::RenderWindow& window, BackgroundAnimation& bg, Client*
 						}
 						if (reponse == "CREATE") {
 							if (roomName != "") {
-								createRoom = std::async(std::launch::async, &RoomCreation::request, this, client, roomName, songs.getSelectedSong().id, songs.getMode());
+								createRoom = std::async(std::launch::async, &RoomCreation::request, this, client, roomName, songs.getSelectedSong().id, songs.getCurentNbPlayers());
 								loading.start("Creating room");
 							}
 						}

@@ -14,6 +14,14 @@ Target::Target(TargetType t, sf::Vector2f p) {
     id = -1;
 }
 
+Target::Target(TargetType ty, TargetTeam t, sf::Vector2f param, TargetTiming tt)
+{
+    type = ty;
+    team = t;
+    timing = tt;
+    pos = param;
+}
+
 Target::Target(TargetType ty, TargetTeam t, int i, TargetTiming tt) {
     type = ty;
     team = t;
@@ -125,6 +133,8 @@ int EntityManager::getRandomSequence(int n) {
 
 Entity *EntityManager::getEntity(Target &target) {
     std::vector<Entity*> active;
+    int nbSeq;
+    int nbVal;
 
     switch(target.type) {
         case TARGET_POS:
@@ -132,50 +142,19 @@ Entity *EntityManager::getEntity(Target &target) {
         case TARGET_ENTITY:
             return target.team == TARGET_TOTEMS ? totems_[target.id] :
                    players_[target.id];
-        case TARGET_RANDOM:
+        case TARGET_RANDOMSEQUENCE:
+
+            nbSeq = target.pos.x;
+            nbVal = target.pos.y;
 
             if(target.team == TARGET_TOTEMS) {
-                for(int  i = 0; i < totems_.size(); i++)
-                    if(totems_[i]->getActive())
-                        active.push_back(totems_[i]);
+                return totems_[randomSequences_[nbSeq].get(nbVal)];
             }
 
             if(target.team == TARGET_PLAYERS) {
-                for(int  i = 0; i < players_.size(); i++)
-                    if(players_[i]->getActive())
-                        active.push_back(players_[i]);
+                return players_[randomSequences_[nbSeq].get(nbVal)];
             }
-            if(target.save == -1) {
-                target.save = Random::randint(0, active.size());
-            }
-
-            return active[target.save];
-        case TARGET_RANDOM2:
-            if(target.save == -1) {
-                target.save = getRandomSequence(2);
-            }
-            return target.team == TARGET_TOTEMS ? totems_[target.save]:players_[target.save];
-        case TARGET_RANDOM3:
-            if(target.save == -1) {
-                target.save = getRandomSequence(3);
-            }
-            return target.team == TARGET_TOTEMS ? totems_[target.save]:players_[target.save];
-        case TARGET_RANDOM4:
-            if(target.save == -1) {
-                target.save = getRandomSequence(4);
-            }
-            return target.team == TARGET_TOTEMS ? totems_[target.save]:players_[target.save];
-        case TARGET_RANDOM8:
-            if(target.save == -1) {
-                target.save = getRandomSequence(8);
-            }
-            return target.team == TARGET_TOTEMS ? totems_[target.save]:players_[target.save];
-        case TARGET_RANDOM_END:
-            if(target.save == -1) {
-                target.save = getRandomSequence(1000);
-                current_ = 0;
-            }
-            return target.team == TARGET_TOTEMS ? totems_[target.save]:players_[target.save];
+        
         case TARGET_CLOSEST:
             if(target.target == nullptr)
                 return nullptr;
@@ -232,14 +211,16 @@ int EntityManager::getBySorted(const Target &target, bool descending) {
                   });
     }
 
-
+    if (target.id >= distances.size())
+        return 0;
 
     return distances[target.id].first;
 }
 
-void EntityManager::setActive(Target &target, bool val, sf::Uint32 color) {
+void EntityManager::setActive(Target &target, bool val, float radius, sf::Uint32 color) {
     getEntity(target)->setActive(val);
     getEntity(target)->setColor(color);
+    getEntity(target)->setRadius(radius);
 }
 
 void EntityManager::setTargetPosition(Target &entity, Target &target, float speed, bool isInstant) {
@@ -283,10 +264,28 @@ void EntityManager::clear() {
     clearArena();
     current_ = 0;
     cleared_ = false;
+
 }
 
-void EntityManager::applyDebuff(Target &target, DebuffType type, float end) {
-    getEntity(target)->applyDebuff(type, end);
+void EntityManager::applyDebuff(float beat, Target &target, DebuffType type, float end) {
+    Entity* en = getEntity(target);
+    
+    std::vector<DebuffType> currentDebufs;
+    en->getCurrentDebuffs(currentDebufs);
+
+    for (int i = 0; i < currentDebufs.size(); i++) {
+        if (type == DEBUFF_CRITICAL && currentDebufs[i] == DEBUFF_CRITICAL) {
+            en->applyDebuff(DEBUFF_SUDDENDEATH, beat + 1);
+        }
+        if (type == DEBUFF_MASK1 && currentDebufs[i] == DEBUFF_MASK1) {
+            en->applyDebuff(DEBUFF_SUDDENDEATH, beat + 1);
+        }
+        if (type == DEBUFF_MASK2 && currentDebufs[i] == DEBUFF_MASK2) {
+            en->applyDebuff(DEBUFF_SUDDENDEATH, beat + 1);
+        }
+    }
+
+    en->applyDebuff(type, end);
 }
 
 void EntityManager::zoomArena(float val, float speed)
@@ -301,10 +300,22 @@ void EntityManager::rotateArena(float val, float speed)
         arena_->rotate(val, speed);
 }
 
+void EntityManager::deleteSequences()
+{
+    randomSequences_.clear();
+}
+
+
 void EntityManager::moveArena(float x, float y, float speed)
 {
     if (arena_ != nullptr)
         arena_->move(x, y, speed);
+}
+
+void EntityManager::computeSequences()
+{
+    for (int i = 0; i < randomSequences_.size(); i++)
+        randomSequences_[i].compute();
 }
 
 void EntityManager::snapArena(float x, float y)
@@ -330,8 +341,69 @@ void EntityManager::startEndAnim()
     cleared_ = true;
 }
 
+void EntityManager::initRandomSequence(int max)
+{
+    randomSequences_.emplace_back(max);
+}
+
 bool EntityManager::getCleared()
 {
     return cleared_;
 }
 
+void EntityManager::setRandomSequenceVal(int i, int j, int val)
+{
+    randomSequences_[i].set(j, val);
+    std::cout << val << " ";
+}
+
+void EntityManager::setPacketRandomSequence(sf::Packet& packet)
+{
+    std::cout << "Random Sequence : " << randomSequences_.size() << std::endl;
+    packet << (sf::Int32)randomSequences_.size();
+
+    for (int i = 0; i < randomSequences_.size(); i++) {
+        packet << (sf::Int32)randomSequences_[i].size();
+        std::cout << "     ";
+        for (int j = 0; j < randomSequences_[i].size(); j++) {
+            packet << (sf::Int32)randomSequences_[i].get(j);
+            std::cout << randomSequences_[i].get(j) << " ";
+        }
+        std::cout << std::endl;
+    }
+}
+
+RandomSequence::RandomSequence(int size)
+{
+    size_ = size;
+    val_.clear();
+    for (int i = 0; i < size_; i++) {
+        val_.emplace_back(i);
+    }
+}
+
+void RandomSequence::compute()
+{
+    Random::shuffle(val_);
+
+    std::cout << "New sequence : ";
+    for (int i = 0; i < val_.size(); i++) {
+        std::cout << val_[i] << " ";
+    }
+    std::cout << std::endl;
+}
+
+int RandomSequence::get(int i)
+{
+    return val_[i];
+}
+
+void RandomSequence::set(int i, int val)
+{
+    val_[i] = val;
+}
+
+int RandomSequence::size()
+{
+    return val_.size();
+}
