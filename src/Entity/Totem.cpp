@@ -22,6 +22,8 @@ Totem::Totem() {
 }
 
 void Totem::update(sf::Time elapsed, Arena* arena, float beat) {
+    shape_.setOrigin(radius_, radius_);
+    shape_.setRadius(radius_);
     sf::Vector2f vecDep;
     if(active_) {
         vecDep = targetPos_ - pos_;

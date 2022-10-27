@@ -98,13 +98,18 @@ void BeatmapSelection::run(sf::RenderWindow& window, BackgroundAnimation& bg, Cl
 	
 	std::cout << "selected " << songs->getSelected() << std::endl;
 	saucisse.setCenter(songs->getSelected());
-	if(songs->getMode() == "4P")
+	if(songs->getCurentNbPlayers() == "4")
 		saucisse2.right();
+	if (songs->getCurentNbPlayers() == "8") {
+		saucisse2.right();
+		saucisse2.right();
+	}
+		
 
 	bool changed = false;
 
 
-	sf::Text titleText, artistText, difficultyText, info;
+	sf::Text titleText, artistText, difficultyText, info, nbPlayers;
 
 	titleText.setFont(RessourceLoader::getFont("Font/Roboto-Bold.ttf"));
 	titleText.setCharacterSize(52);
@@ -120,6 +125,11 @@ void BeatmapSelection::run(sf::RenderWindow& window, BackgroundAnimation& bg, Cl
 	difficultyText.setCharacterSize(36);
 	difficultyText.setFillColor(sf::Color::Black);
 	difficultyText.setPosition(30, 570);
+
+	nbPlayers.setFont(RessourceLoader::getFont("Font/Roboto-Bold.ttf"));
+	nbPlayers.setCharacterSize(36);
+	nbPlayers.setFillColor(sf::Color::Black);
+	nbPlayers.setPosition(30, 530);
 
 	info.setFont(RessourceLoader::getFont("Font/Roboto-Regular.ttf"));
 	info.setCharacterSize(32);
@@ -153,7 +163,6 @@ void BeatmapSelection::run(sf::RenderWindow& window, BackgroundAnimation& bg, Cl
 			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Return ||
 				event.type == sf::Event::JoystickButtonPressed && event.joystickButton.button == 0) {
 				songs->setSelected(saucisse.getIndex());
-				songs->setMode(saucisse2.getIndex() == 0 ? "2P" : "4P");
 				if (changed && saucisse.isMoving())
 					songs->play();
 				*beatmapChanged = true;
@@ -173,10 +182,6 @@ void BeatmapSelection::run(sf::RenderWindow& window, BackgroundAnimation& bg, Cl
 			}
 			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::W ||
 				event.type == sf::Event::JoystickButtonPressed && event.joystickButton.button == 2) {
-				if (saucisse2.getIndex() == 0)
-					saucisse2.right();
-				else
-					saucisse2.left();
 			}
 			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::X ||
 				event.type == sf::Event::JoystickButtonPressed && event.joystickButton.button == 3) {
@@ -223,16 +228,18 @@ void BeatmapSelection::run(sf::RenderWindow& window, BackgroundAnimation& bg, Cl
 
 		bg.update(elapsedTime);
 		saucisse.update(elapsedTime);
-		saucisse2.update(elapsedTime);
+		//saucisse2.update(elapsedTime);
 
 
 		titleText.setString(songs->getSong(saucisse.getIndex()).name);
 		artistText.setString(songs->getSong(saucisse.getIndex()).artist);
 		difficultyText.setString("Difficulty: " + songs->getSong(saucisse.getIndex()).difficulty);
+		nbPlayers.setString("Players: " + songs->getSong(saucisse.getIndex()).nbPlayers);
 
 		saucisse.getCenterTexture().draw(titleText);
 		saucisse.getCenterTexture().draw(artistText);
 		saucisse.getCenterTexture().draw(difficultyText);
+		saucisse.getCenterTexture().draw(nbPlayers);
 		if (loadVignettes.wait_for(std::chrono::seconds(0)) == std::future_status::ready)
 			saucisse.getCenterTexture().draw(vignettes_[saucisse.getIndex()]);
 		else {
@@ -251,7 +258,7 @@ void BeatmapSelection::run(sf::RenderWindow& window, BackgroundAnimation& bg, Cl
 		window.draw(header);
 		window.draw(headerText);
 		saucisse.draw(window);
-		saucisse2.draw(window);
+		//saucisse2.draw(window);
 		window.draw(info);
 		window.display();
 	}

@@ -49,7 +49,7 @@ public:
     Lobby(const Lobby&) = default;
     Lobby& operator=(const Lobby&) = default;
 
-    std::string name, beatmap, mode;
+    std::string name, beatmap;
     LobbyStatus status;
     std::vector<PlayerInfo*> players;
     sf::Uint8 nbIn, limit;
@@ -66,6 +66,8 @@ public:
     float getPosition();
     void setStatusPacket(sf::Packet & packet);
     void setPlayer(int i, std::string name, sf::Uint32 color);
+    void computeSequences();
+    void setRandomSequence(sf::Packet& packet);
 };
 
 

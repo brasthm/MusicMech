@@ -11,7 +11,7 @@
 
 #include <future>
 
-bool LobbySelection::requestJoinRoom(Client* client, int selection)
+bool LobbySelection::requestJoinRoom(Client* client, int selection, Game* game)
 {
 	bool ok = true;
 	ok = client->requestLobbyJoin(client->getLobby(selection).id);
@@ -21,7 +21,7 @@ bool LobbySelection::requestJoinRoom(Client* client, int selection)
 	if (!ok) return false;
 
 	while (state == 0) {
-		client->monitorLobby(state);
+		client->monitorLobby(state, game->getEntityManager());
 	}
 
 	if (state == 2) {
@@ -43,7 +43,7 @@ LobbySelection::~LobbySelection()
 	
 }
 
-int LobbySelection::run(sf::RenderWindow& window, BackgroundAnimation& bg, Client *client, SongDatabase& songs)
+int LobbySelection::run(sf::RenderWindow& window, BackgroundAnimation& bg, Client *client, SongDatabase& songs, Game* game)
 {
 
 	sf::Clock fps;
@@ -169,7 +169,7 @@ int LobbySelection::run(sf::RenderWindow& window, BackgroundAnimation& bg, Clien
 					}
 					else {
 						save = listind[selection];
-						joinRoom = std::async(std::launch::async, &LobbySelection::requestJoinRoom, this, client, save);
+						joinRoom = std::async(std::launch::async, &LobbySelection::requestJoinRoom, this, client, save, game);
 						loading.start("Joining room");
 					}
 				}
@@ -254,7 +254,6 @@ int LobbySelection::run(sf::RenderWindow& window, BackgroundAnimation& bg, Clien
 		}
 
 		if (joinRoom.valid() && joinRoom.wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
-			songs.setMode(client->getCurrentLobby().mode);
 			songs.setSelectedById(client->getCurrentLobby().beatmap);
 			loading.stop();
 			return joinRoom.get() ? 2:-1;

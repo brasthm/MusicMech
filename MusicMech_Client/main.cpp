@@ -58,7 +58,7 @@ LOBBY_SELECTION:
     roomName = "";
     isCreator = false;
     beatmapChanged = false;
-    val = ls.run(mainWindow, bg, &c, sd);
+    val = ls.run(mainWindow, bg, &c, sd, &g);
     title.pause();
     if (val == 1)  goto LOBBY_CREATION;
     if (val == 2)  goto LOBBY_ROOM;
@@ -160,7 +160,7 @@ int console() {
         }
         else if (cmd == "save") {
             Game g;
-            g.load("a");
+            g.load();
             g.save("output.txt");
 
         }

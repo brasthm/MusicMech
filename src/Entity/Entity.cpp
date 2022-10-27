@@ -12,7 +12,8 @@ void Entity::setTarget(const sf::Vector2f &pos, float speed, bool isInstant) {
 }
 
 void Entity::applyDebuff(DebuffType type, float end) {
-    debuff_.apply(type, end);
+    debuffs_.emplace_back();
+    debuffs_.back().apply(type, end);
 }
 
 void Entity::setColor(sf::Uint32 color)
@@ -23,6 +24,44 @@ void Entity::setColor(sf::Uint32 color)
 sf::Uint32 Entity::getColor()
 {
     return color_;
+}
+
+void Entity::getCurrentDebuffs(std::vector<DebuffType>& debuffs)
+{
+    debuffs.clear();
+    for (int i = 0; i < debuffs_.size(); i++) {
+        if (debuffs_[i].type() != DEBUFF_NONE)
+            debuffs.emplace_back(debuffs_[i].type());
+    }
+}
+
+void Entity::getCurrentDebuffs(std::vector<std::pair<DebuffType, float>>& debuffs) {
+    debuffs.clear();
+    for (int i = 0; i < debuffs_.size(); i++) {
+        if (debuffs_[i].type() != DEBUFF_NONE)
+            debuffs.emplace_back(debuffs_[i].type(), debuffs_[i].getEnd());
+    }
+}
+
+void Entity::getDebuffs(std::vector<DebuffInfo>& debuffsInfo)
+{
+    debuffsInfo.clear();
+    for (int i = 0; i < debuffs_.size(); i++) {
+        if (debuffs_[i].getDrawIcon()) {
+            DebuffInfo info;
+            info.name = debuffs_[i].getName();
+            info.desc = debuffs_[i].getDesc();
+            info.icon = debuffs_[i].getIcon();
+            info.end = debuffs_[i].getEnd();
+            debuffsInfo.emplace_back(info);
+        }
+            
+    }
+}
+
+void Entity::setRadius(float radius)
+{
+    radius_ = radius;
 }
 
 void Entity::setPosition(float x, float y) {

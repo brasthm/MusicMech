@@ -5,6 +5,7 @@ PreviewTime:112076
 Title:Still Into You
 Artist:Paramore
 Difficulty:9
+Players:2
 [Arena]
 0,0,1000,1000
 [TimingPoints]

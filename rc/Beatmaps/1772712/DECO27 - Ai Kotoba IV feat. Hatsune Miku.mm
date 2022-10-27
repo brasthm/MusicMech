@@ -1,0 +1,24 @@
+AudioFilename:audio.ogg
+BackgroundImage:bg.jpg
+VignetteImage:vignette.png
+PreviewTime:150120
+Title:Ai Kotoba IV feat. Hatsune Miku
+Artist:DECO*27
+Difficulty:12
+Players:2
+[Arena]
+0,0,1000,1000
+[TimingPoints]
+552,431.655,4,2,1,60,1,0
+[Checkpoints]
+0,0
+18,48
+30,78
+44,112
+58,140
+89,212
+104,248
+120,280
+133,308
+146,344
+173,412

@@ -28,6 +28,8 @@
 #include "../Mechanics/DisplayImage.h"
 #include "../Mechanics/ClearArenaa.h"
 #include "../Mechanics/EndMap.h"
+#include "../Mechanics/TetherIndicator.h"
+#include "../Mechanics/TextIndicator.h"
 
 
 std::pair<float, float> Song::getCurrentBeat(float ms)
@@ -174,18 +176,20 @@ void Song::load(const std::string& osuFile, sf::Music *music, std::vector<Mechan
                 }
                 else if (*parsing == "[Objects]") {
                     if(words[0] == "SPREAD") {
-                        float beat, active, radius;
-                        int nbShare;
+                        float beat, active, radius, duration;
+                        int nbShare, debuff;
 
                         beat = std::stof(words[1]);
                         nbShare = std::stoi(words[2]);
                         radius = std::stof(words[3]);
                         active = std::stof(words[4]);
+                        debuff = std::stoi(words[5]);
+                        duration = std::stof(words[6]);
 
                         Target t;
 
-                        t.parse(5, words);
-                        mechs.emplace_back(new Spread(beat, radius, nbShare, active, t));
+                        t.parse(7, words);
+                        mechs.emplace_back(new Spread(beat, radius, nbShare, active, t, (DebuffType)debuff, duration));
                     }
                     else if(words[0] == "TETHER") {
                         float beat, minDist, active;
@@ -204,6 +208,38 @@ void Song::load(const std::string& osuFile, sf::Music *music, std::vector<Mechan
                         t2.parse(off, words);
 
                         mechs.emplace_back(new Tether(beat, t1, t2, minDist, active, inward, continu));
+                    }
+                    else if (words[0] == "TETHERINDICATOR") {
+                        float beat, active;
+                        sf::Uint32 color;
+
+                        Target t1, t2;
+
+                        beat = std::stof(words[1]);
+                        active = std::stof(words[2]);
+                        color = std::stoul(words[3]);
+
+                        int off = t1.parse(4, words);
+                        t2.parse(off, words);
+
+                        mechs.emplace_back(new TetherIndicator(beat, t1, t2, active, color));
+                    }
+                    else if (words[0] == "TEXTINDICATOR") {
+                        float beat, active;
+                        sf::Uint32 color;
+                        std::string text;
+
+                        Target t;
+
+                        beat = std::stof(words[1]);
+                        active = std::stof(words[2]);
+                        color = std::stoul(words[3]);
+                        text = words[4];
+
+                        int off = t.parse(5, words);
+                        t.parse(off, words);
+
+                        mechs.emplace_back(new TextIndicator(beat, t, active, text, color));
                     }
                     else if(words[0] == "MOVE") {
                         float beat, speed;
@@ -234,50 +270,55 @@ void Song::load(const std::string& osuFile, sf::Music *music, std::vector<Mechan
                         mechs.emplace_back(new ApplyDebuff(beat, t, debufftype, duration));
                     }
                     else if(words[0] == "ACTIVATE") {
-                        float beat;
+                        float beat, radius;
                         bool val;
                         Target t;
                         sf::Uint32 color;
 
                         beat = std::stof(words[1]);
                         val = std::stoi(words[2]) == 1;
-                        color = std::stoul(words[3]);
-                        t.parse(4, words);
+                        radius = std::stof(words[3]);
+                        color = std::stoul(words[4]);
+                        t.parse(5, words);
 
                         mechs.emplace_back(new ActivateTotem(beat, t, val, color));
                     }
                     else if (words[0] == "CONE") {
-                        float beat, active, width, distance;
-                        int nbShare;
+                        float beat, active, width, distance, duration;
+                        int nbShare, debuff;
 
                         beat = std::stof(words[1]);
                         nbShare = std::stoi(words[2]);
                         width = std::stof(words[3]);
                         distance = std::stof(words[4]);
                         active = std::stof(words[5]);
+                        debuff = std::stoi(words[6]);
+                        duration = std::stof(words[7]);
 
                         Target t1, t2;
 
-                        int off = t1.parse(6, words);
+                        int off = t1.parse(8, words);
                         t2.parse(off, words);
 
-                        mechs.emplace_back(new Cone(beat, width, distance, nbShare, active, t1, t2));
+                        mechs.emplace_back(new Cone(beat, width, distance, nbShare, active, t1, t2, (DebuffType)debuff, duration));
                     }
                     else if (words[0] == "DONUT") {
-                        float beat, active, minDist, maxDist;
-                        int nbShare;
+                        float beat, active, minDist, maxDist, duration;
+                        int nbShare, debuff;
 
                         beat = std::stof(words[1]);
                         nbShare = std::stoi(words[2]);
                         minDist = std::stof(words[3]);
                         maxDist = std::stof(words[4]);
                         active = std::stof(words[5]);
+                        debuff = std::stoi(words[6]);
+                        duration = std::stof(words[7]);
 
                         Target t;
 
-                        t.parse(6, words);
+                        t.parse(8, words);
 
-                        mechs.emplace_back(new Donut(beat, minDist, maxDist, nbShare, active, t));
+                        mechs.emplace_back(new Donut(beat, minDist, maxDist, nbShare, active, t, (DebuffType)debuff, duration));
                     }
                     else if (words[0] == "NOPEZONE") {
                         float beat, active, width, height;

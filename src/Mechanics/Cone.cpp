@@ -77,7 +77,7 @@ void Cone::setColor()
     base_.setOutlineColor(sf::Color(outlineColor));
 }
 
-Cone::Cone(float beat, float width, float distance, int nbShare, float active, const Target& center, const Target& anchor) :
+Cone::Cone(float beat, float width, float distance, int nbShare, float active, const Target& center, const Target& anchor, DebuffType debuffToApply, float debuffTimer) :
     anchor_(anchor),
     center_(center), 
     approachCircle_({}, 120, 20, 0),
@@ -87,6 +87,9 @@ Cone::Cone(float beat, float width, float distance, int nbShare, float active, c
 
     width_ = width;
     distance_ = distance;
+
+    debuffToApply_ = debuffToApply;
+    debuffTimer_ = debuffTimer;
 
 
     beat_ = beat;
@@ -190,6 +193,18 @@ void Cone::onPassed(const sf::Time& elapsed, float currentBeat, float currentPar
     if (anchor_.timing == TARGET_ONBEAT || center_.timing == TARGET_ONBEAT) {
         updatePosition(entities);
     }
+
+    for (int i = 0; i < entities.getSizePlayers(); i++) {
+        Target t(TARGET_ENTITY, TARGET_PLAYERS, i);
+        if (!entities.getActive(t))
+            break;
+
+        bool good = Utils::pointInTriangle(entities.getPosition(t), base_.getPoint(0), base_.getPoint(1), base_.getPoint(2));
+
+        if (good) {
+            entities.applyDebuff(currentBeat, t, debuffToApply_, currentBeat + debuffTimer_);
+        }
+    }
 }
 
 void Cone::onFade(const sf::Time& elapsed, float currentBeat, float currentPart, EntityManager& entities)
@@ -232,7 +247,8 @@ std::string Cone::toString()
     std::string res;
 
     res = "CONE," + std::to_string(beat_) + "," + std::to_string(nbShare_) + "," +
-       std::to_string(width_) + "," + std::to_string(distance_) + "," + std::to_string(active_) + ",";
+       std::to_string(width_) + "," + std::to_string(distance_) + "," + std::to_string(active_) + "," +
+        std::to_string(debuffToApply_) + "," + std::to_string(debuffTimer_) + ",";
 
     res += center_.to_string() + ",";
     res += anchor_.to_string();

@@ -7,13 +7,14 @@
 
 
 #include <SFML/Graphics.hpp>
+#include <SFML/Network.hpp>
 #include "Entity.h"
 
 #include "../System/Arena.h"
 
 enum TargetType {
     TARGET_POS, TARGET_ENTITY,
-    TARGET_RANDOM, TARGET_RANDOM8, TARGET_RANDOM4, TARGET_RANDOM3, TARGET_RANDOM2, TARGET_RANDOM_END,
+    TARGET_RANDOMSEQUENCE,
     TARGET_CLOSEST, TARGET_FURTHEST
 };
 
@@ -38,6 +39,7 @@ public:
     Target();
     Target(const Target &t);
     Target(TargetType, sf::Vector2f);
+    Target(TargetType, TargetTeam, sf::Vector2f, TargetTiming = TARGET_ONINIT);
     Target(TargetType, TargetTeam, int, TargetTiming = TARGET_ONINIT);
     Target(TargetType, TargetTeam, TargetTiming tt = TARGET_ONINIT);
     Target(TargetType, TargetTeam, int, Target*, TargetTiming);
@@ -52,10 +54,24 @@ public:
 };
 
 
+class RandomSequence {
+    std::vector<int> val_;
+    int size_;
+
+public:
+    RandomSequence(int size);
+    void compute();
+    int get(int i);
+    void set(int i, int val);
+    int size();
+};
+
 class EntityManager {
 private:
     std::vector<Entity*> players_;
     std::vector<Entity*> totems_;
+
+    std::vector<RandomSequence> randomSequences_;
 
     Arena* arena_ = nullptr;
 
@@ -75,25 +91,30 @@ public:
     void addTotem(Entity* totem);
     void addArena(Arena* arena);
     void clear();
+    void deleteSequences();
+    void computeSequences();
     void clearPlayers();
     void clearTotems();
     void clearArena();
     void resetArena();
     sf::Vector2f getPosition(Target &target);
     Arena* getArena();
-    void setActive(Target &target, bool val, sf::Uint32 color);
+    void setActive(Target &target, bool val, float radius,  sf::Uint32 color);
     void setTargetPosition(Target &entity, Target &target, float speed, bool isInstant);
     int getSizePlayers();
     int getSizeTotems();
     bool getActive(Target &target);
-    void applyDebuff(Target &target, DebuffType type, float end);
+    void applyDebuff(float beat, Target &target, DebuffType type, float end);
     void zoomArena(float val, float speed);
     void rotateArena(float val, float speed);
     void moveArena(float x, float y, float speed);
     void snapArena(float x, float y);
     void addArenaPortion(float x, float y, float w, float h);
     void removeArenaPortion(int index);
-   
+    void initRandomSequence(int nb);
+    void setRandomSequenceVal(int i, int j, int val);
+    void setPacketRandomSequence(sf::Packet& packet);
+
     void startEndAnim();
     bool getCleared();
 

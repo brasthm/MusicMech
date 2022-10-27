@@ -11,7 +11,7 @@
 
 class SongData {
 public:
-	std::string name, artist, image, vignette, id, songpath, mmpath, difficulty;
+	std::string name, artist, image, vignette, id, songpath, mmpath, difficulty, nbPlayers;
 	int preview;
 };
 
@@ -22,7 +22,6 @@ private:
 	sf::Music music_;
 
 	int selected_;
-	std::string mode_;
 public:
 	SongDatabase();
 	SongData getSelectedSong();
@@ -35,9 +34,9 @@ public:
 	SongData getSong(int i);
 	void setSong(int i);
 	bool isPlaying();
-	std::string getMode();
+	std::string getCurentNbPlayers();
 	std::string getSelectedPath();
-	void setMode(const std::string &mode);
+	std::string getCurrentId();
 };
 
 

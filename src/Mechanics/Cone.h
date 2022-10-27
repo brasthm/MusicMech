@@ -22,13 +22,15 @@ class Cone : public Mechanic {
     bool highlight_;
     sf::Vector2f anchorPos_;
     sf::Vector2f centerPos_;
+    DebuffType debuffToApply_;
+    float debuffTimer_;
 
     void updatePosition(EntityManager& entityManager);
     void setColor();
 
 
 public:
-    Cone(float beat, float width, float distance, int nbShare, float active, const Target& center, const Target& anchor);
+    Cone(float beat, float width, float distance, int nbShare, float active, const Target& center, const Target& anchor, DebuffType debuffToApply = DEBUFF_NONE, float debuffTimer = 0);
     void onDraw(const sf::Time& elapsed, sf::RenderTarget& window) override;
     void onCheck(const sf::Time& elapsed, float currentBeat, float cuurentPart, EntityManager& entities) override;
     void onApproach(const sf::Time& elapsed, float currentBeat, float cuurentPart, EntityManager& entities) override;

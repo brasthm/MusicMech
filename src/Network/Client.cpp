@@ -254,7 +254,7 @@ void Client::sendPlayerData(sf::Int32 x, sf::Int32 y) {
     packetID_++;
 }
 
-int Client::updateFromServerPlayerPosition(std::vector<Joueur> &joueurs, std::pair<float, float> &checkpoint) {
+int Client::updateFromServerPlayerPosition(std::vector<Joueur> &joueurs, std::pair<float, float> &checkpoint, EntityManager& em) {
 
 
     sf::Packet packet;
@@ -303,6 +303,9 @@ int Client::updateFromServerPlayerPosition(std::vector<Joueur> &joueurs, std::pa
             startTime_ = startTime;
 
             return 3;
+        }
+        if (state == 36) {
+            fetchRandomSequence(packet, em);
         }
     }
 
@@ -354,7 +357,7 @@ int Client::updateFromServerPlayerPosition(std::vector<Joueur> &joueurs, std::pa
 
 
 
-bool Client::monitorLobby(int& roomState) {
+bool Client::monitorLobby(int& roomState, EntityManager& em) {
 
     
     sf::Packet packet;
@@ -395,9 +398,45 @@ bool Client::monitorLobby(int& roomState) {
         if (state == 32) { // Refresh Lobby Info
             roomState = 2;
         }
+        if (state == 36) { // Random Sequence
+            fetchRandomSequence(packet, em);
+        }
     }
 
     return true;
+}
+
+void Client::fetchRandomSequence(sf::Packet& p, EntityManager& em)
+{
+    em.deleteSequences();
+    sf::Int32 nb;
+    p >> nb;
+    if (!p) {
+        std::cout << "fetchRandomSequence : Data corrupted (nb)" << std::endl;
+        return;
+    }
+    for (int i = 0; i < nb; i++) {
+        sf::Int32 nb2;
+        p >> nb2;
+        if (!p) {
+            std::cout << "fetchRandomSequence : Data corrupted (nb2 " << i << ")" << std::endl;
+            return;
+        }
+        std::cout << "Fetch sequence : ";
+        em.initRandomSequence(nb2);
+        for (int j = 0; j < nb2; j++) {
+            sf::Int32 val;
+            p >> val;
+            if (!p) {
+                std::cout << "fetchRandomSequence : Data corrupted (val " << i << " " << j   <<")" << std::endl;
+                return;
+            }
+            em.setRandomSequenceVal(i, j, val);
+        }
+        std::cout << std::endl;
+        
+    }
+
 }
 
 bool Client::waitToStart()
@@ -574,9 +613,9 @@ bool Client::requestLobbyInfo(const std::string& lobbyIndex) {
 
     sf::Uint8 nbIn, limit, playerstatus;
     sf::Uint32 color;
-    sf::String lobyname, playername, beatmap, mode;
+    sf::String lobyname, playername, beatmap;
 
-    p >> lobyname >> nbIn >> limit >> beatmap >> mode;
+    p >> lobyname >> nbIn >> limit >> beatmap;
 
     if (!p) {
         std::cout << "requestLobbyInfo : Data corrupted (header)" << std::endl;
@@ -587,7 +626,6 @@ bool Client::requestLobbyInfo(const std::string& lobbyIndex) {
     lobbyList_[id].nbIn = nbIn;
     lobbyList_[id].limit = limit;
     lobbyList_[id].beatmap = beatmap;
-    lobbyList_[id].mode = mode;
 
     for (int i = 0; i < NB_MAX_JOUEURS; i++) {
         p >> playerstatus >> playername >> color;
@@ -1125,7 +1163,7 @@ bool Client::requestPing()
     return false;
 }
 
-bool Client::requestRoomStatus(RoomStatus *roomStatus, const std::string& lobbyIndex)
+bool Client::requestRoomStatus(RoomStatus *roomStatus, EntityManager& em, const std::string& lobbyIndex)
 {
     sf::Socket::Status status;
 
@@ -1232,7 +1270,7 @@ bool Client::requestRoomStatus(RoomStatus *roomStatus, const std::string& lobbyI
 
             targets.emplace_back(x, y);
 
-            std::cout << "      " << i << " - (" << x << ";" << y << ")" << std::endl;
+            std::cout << "      " << mech << " - (" << x << ";" << y << ")" << std::endl;
         }
 
         roomStatus->setMechPosition(mech, targets);
@@ -1316,6 +1354,36 @@ bool Client::requestRoomStatus(RoomStatus *roomStatus, const std::string& lobbyI
         std::cout << "      " << stdName << " " << color << " " << active << " " <<
             x << " " << y << " " << std::endl;
     }
+
+
+    std::cout << "Debuffs : " << std::endl;
+
+    for (int i = 0; i < NB_MAX_JOUEURS; i++) {
+        sf::Int32 nbTargets;
+        p >> nbTargets;
+
+        if (!p) {
+            std::cout << "requestRoomStatus : Data corrupted (Debuffs " << i << ")" << std::endl;
+            return false;
+        }
+        for (int j = 0; j < nbTargets; j++) {
+            sf::Int32 type;
+            float endTime;
+            p >> type >> endTime;
+
+
+            if (!p) {
+                std::cout << "requestRoomStatus : Data corrupted (debuff infos " << i << "-" << j << "/ " << nbTargets << ")" << std::endl;
+                return false;
+            }
+            roomStatus->setDebuffs(i, DebuffType(type), endTime);
+            std::cout << "      " << i << " - " << type << " : " << endTime << std::endl;
+        }
+    }
+
+    fetchRandomSequence(p, em);
+
+
 
     return false;
 }

@@ -9,7 +9,9 @@
 bool RoomMenu::requestReady(Client* client, Game* game, SongDatabase* songs, sf::Uint32 color, bool load)
 {
 	if(load)
-		game->load(songs->getSelectedPath());
+		game->loadFromCode(songs->getCurrentId(), songs->getSelectedPath());
+		//game->loadFromFile(songs->getSelectedPath());
+
 	bool ok = client->sendReady(color);
 	return ok;
 }
@@ -148,9 +150,9 @@ int RoomMenu::run(sf::RenderWindow& window, BackgroundAnimation& bg, Client* cli
 
 	int nbMax = client->getCurrentLobby().limit;
 
-	std::vector<bool> ready(nbMax);
+	std::vector<bool> ready(NB_MAX_JOUEURS);
 
-	for (int i = 0; i < 4; i++) {
+	for (int i = 0; i < NB_MAX_JOUEURS; i++) {
 		playersRect.emplace_back();
 		playersText.emplace_back();
 		playersRect.back().setSize({ WIDOW_WIDTH * 0.5, 60 });
@@ -165,17 +167,21 @@ int RoomMenu::run(sf::RenderWindow& window, BackgroundAnimation& bg, Client* cli
 	std::vector<sf::Uint32> colors;
 
 	colors.emplace_back(0x3B00EAFF);
-	colors.emplace_back(0xAAFF1FFF);
-	colors.emplace_back(0xFF007DFF);
+	colors.emplace_back(0x60FF0AFF);
+	colors.emplace_back(0xFF3396FF);
 	colors.emplace_back(0xFFF100FF);
+
+	colors.emplace_back(0x9B2FDEFF);
+	colors.emplace_back(0xFF3F0AFF);
+	colors.emplace_back(0xF9E0DCFF);
+	colors.emplace_back(0x65E2CDFF);
 
 	std::vector<sf::CircleShape> circles;
 
-
-	circles.emplace_back(20.f, 500);
-	circles.emplace_back(20.f, 500);
-	circles.emplace_back(20.f, 500);
-	circles.emplace_back(20.f, 500);
+	for (int i = 0; i < NB_MAX_JOUEURS; i++) {
+		circles.emplace_back(20.f, 500);
+	}
+	
 
 	for (int i = 0; i < circles.size(); i++) {
 		circles[i].setOutlineThickness(3);
@@ -222,10 +228,10 @@ int RoomMenu::run(sf::RenderWindow& window, BackgroundAnimation& bg, Client* cli
 			circles[i].setFillColor(sf::Color(client->getCurrentLobby().players[i]->color));
 	}
 
-	int saveColor;
+	sf::Uint32 saveColor;
 
 	if (creator && beatmapChanged) 
-		beatmap = std::async(std::launch::async, &Client::requestBeatmapChange, client, songs->getSelectedSong().id, songs->getMode());
+		beatmap = std::async(std::launch::async, &Client::requestBeatmapChange, client, songs->getSelectedSong().id, songs->getCurentNbPlayers());
 	else 
 		refresh = std::async(std::launch::async, &Client::requestLobbyInfo, client, client->getLobbyIndex());
 	
@@ -368,7 +374,6 @@ int RoomMenu::run(sf::RenderWindow& window, BackgroundAnimation& bg, Client* cli
 		if (refresh.valid() && refresh.wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
 			std::cout << "Room refresh request" << std::endl;
 			nbMax = client->getCurrentLobby().limit;
-			songs->setMode(client->getCurrentLobby().mode);
 			if (songs->getSelectedSong().id != client->getCurrentLobby().beatmap) {
 				songs->setSelectedById(client->getCurrentLobby().beatmap);
 				titleText.setString(songs->getSelectedSong().name);
@@ -470,7 +475,7 @@ int RoomMenu::run(sf::RenderWindow& window, BackgroundAnimation& bg, Client* cli
 
 		state = 0;
 		if(!disconnect.valid() && !refresh.valid() && !beatmap.valid() && !setReady.valid() && !launchGame.valid() && !waiting.valid())
-			client->monitorLobby(state);
+			client->monitorLobby(state, game->getEntityManager());
 
 		if (state == -1) {
 			disconnect = std::async(std::launch::async, &Client::requestLobbyDisconnect, client);

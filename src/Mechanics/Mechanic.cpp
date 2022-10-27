@@ -80,6 +80,7 @@ void Mechanic::update(const sf::Time &elapsed, float currentBeat, EntityManager 
             onPassed(elapsed, currentBeat, currentPart, entities);
 
             checked_ = true;
+            passed_ = true;
         }
 
         if(!checked_ && !passed_ && currentPart > 0.25) {

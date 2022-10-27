@@ -6,13 +6,15 @@
 #define MUSICMECH_CLIENT_ACTIVATETOTEM_H
 
 #include "Mechanic.h"
+#include "../main.h"
 
 class ActivateTotem : public Mechanic {
     Target target_;
     bool val_;
     sf::Uint32 color_;
+    float radius_;
 public:
-    ActivateTotem(float beat, const Target& target, bool val, sf::Uint32 color = 0xFFFFFFFF);
+    ActivateTotem(float beat, const Target& target, bool val, sf::Uint32 color = 0xFFFFFFFF, float radius = BASE_TOTEM_RADIUS);
 
     void onPassed(const sf::Time &elapsed, float currentBeat, float currentPart, EntityManager &entities) override;
     Mechanic* clone() override;

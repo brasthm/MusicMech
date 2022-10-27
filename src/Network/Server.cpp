@@ -450,8 +450,9 @@ void Server::sendPlayerData() {
                     }
                     else {
                         if (GOD_MODE) {
-                            sf::Int32 err = 200 * i + 200;
-                            packet << true << err << 100;
+                            sf::Int32 errX = 200 * (i%4) + 200;
+                            sf::Int32 errY = int(i / 4) * 800 + 100;
+                            packet << true << errX << errY;
                         }
                         else {
                             sf::Int32 err = 0;
@@ -703,8 +704,8 @@ void Server::monitorClient(int i)
         lobbies_[lobbyIndex].players[0] = &players_[index];
         lobbies_[lobbyIndex].name = lobbyName;
         lobbies_[lobbyIndex].beatmap = beatmap;
-        lobbies_[lobbyIndex].mode = mode;
-        lobbies_[lobbyIndex].limit = mode == "2P" ? 2 : NB_MAX_JOUEURS;
+        int nb = std::stoi(std::string(mode));
+        lobbies_[lobbyIndex].limit = (sf::Uint8)nb;
         lobbies_[lobbyIndex].nbIn = 1;
 
         players_[index].status = PlayerStatus::PLAYER_WAITING;
@@ -924,13 +925,13 @@ void Server::monitorClient(int i)
         }
 
         songs_.setSelectedById(lobbies_[lobbyIndex].beatmap);
-        songs_.setMode(lobbies_[lobbyIndex].mode);
 
         sf::Uint64 currentTime = std::chrono::duration_cast<std::chrono::milliseconds>(
             std::chrono::steady_clock::now().time_since_epoch() + std::chrono::seconds(5)).count();
 
         lobbies_[lobbyIndex].resetTimer();
         lobbies_[lobbyIndex].load(songs_.getSelectedPath());
+        lobbies_[lobbyIndex].computeSequences();
         lobbies_[lobbyIndex].startingTime = currentTime;
         
         //lobbies_[lobbyIndex].startGame();
@@ -943,6 +944,7 @@ void Server::monitorClient(int i)
 
         clients_[i]->send(responsePacket);
         
+        sendRoomLobbyNotif(lobbyIndex, 36, 2);
         sendRoomLobbyNotif(lobbyIndex, resstate, 1, currentTime);
         return;
     }
@@ -1071,12 +1073,14 @@ void Server::monitorClient(int i)
 
         lobbies_[lobbyIndex].status = LobbyStatus::LOBBY_STARTING;
         lobbies_[lobbyIndex].startingTime = currentTime;
+        lobbies_[lobbyIndex].computeSequences();
 
         std::cout << "LOBBY : Game resume at " << currentTime << " in lobby " << lobbies_[lobbyIndex].id << std::endl;
 
         responsePacket << state << response;
         clients_[i]->send(responsePacket);
         sf::Uint8 resstate = 35;
+        sendRoomLobbyNotif(lobbyIndex, 36, 2);
         sendRoomLobbyNotif(lobbyIndex, resstate, 1, currentTime);
 
         return;
@@ -1193,30 +1197,29 @@ void Server::monitorClient(int i)
         }
 
         lobbies_[lobbyIndex].beatmap = beatmap;
-        lobbies_[lobbyIndex].mode = mode;
+        int nbPlayers = std::stoi(std::string(mode));
 
-        std::cout << "LOBBY : Beatmap changed to [" << lobbies_[lobbyIndex].beatmap << "] " <<
-            lobbies_[lobbyIndex].mode << " in lobby " << lobbies_[lobbyIndex].id << std::endl;
+        if (nbPlayers < lobbies_[lobbyIndex].limit) {
+            sf::Packet p;
+            sf::Uint8 data = 31;
+            p << data;
+            for (int j = nbPlayers; j < lobbies_[lobbyIndex].limit; j++) {
+                if (lobbies_[lobbyIndex].players[j] != nullptr && lobbies_[lobbyIndex].players[j]->socket != nullptr) {
+                    lobbies_[lobbyIndex].players[j]->socket->send(p); 
+                }
+            }
+        }
+
+        lobbies_[lobbyIndex].limit = nbPlayers;
 
         for (int j = 0; j < lobbies_[lobbyIndex].limit; j++) {
             if (lobbies_[lobbyIndex].players[j] != nullptr)
                 lobbies_[lobbyIndex].players[j]->status = PlayerStatus::PLAYER_WAITING;
         }
 
-        if (lobbies_[lobbyIndex].mode == "2P" && lobbies_[lobbyIndex].limit > 2) {
-            sf::Packet p;
-            sf::Uint8 data = 31;
-            p << data;
-            for (int j = 2; j < lobbies_[lobbyIndex].limit; j++) {
-                if (lobbies_[lobbyIndex].players[j] != nullptr && lobbies_[lobbyIndex].players[j]->socket != nullptr) {
-                    lobbies_[lobbyIndex].players[j]->socket->send(p); 
-                }
-            }
-            lobbies_[lobbyIndex].limit = 2;
-        }
-        else if (lobbies_[lobbyIndex].mode == "4P" && lobbies_[lobbyIndex].limit < 4) {
-            lobbies_[lobbyIndex].limit = 4;
-        }
+        std::cout << "LOBBY : Beatmap changed to [" << lobbies_[lobbyIndex].beatmap << "] " <<
+            (int)lobbies_[lobbyIndex].limit << "P in lobby " << lobbies_[lobbyIndex].id << std::endl;
+        
 
         sf::Uint8 resstate = 32;
         responsePacket << state << response;
@@ -1326,8 +1329,7 @@ void Server::monitorClient(int i)
             sf::String(lobbies_[lobbyIndex].name) <<
             lobbies_[lobbyIndex].nbIn <<
             lobbies_[lobbyIndex].limit <<
-            sf::String(lobbies_[lobbyIndex].beatmap) <<
-            sf::String(lobbies_[lobbyIndex].mode);
+            sf::String(lobbies_[lobbyIndex].beatmap);
 
         for (int i = 0; i < NB_MAX_JOUEURS; i++) {
             if (lobbies_[lobbyIndex].players[i] == nullptr)
@@ -1352,6 +1354,7 @@ void Server::sendRoomLobbyNotif(int index, sf::Uint8 state, sf::Uint8 param, sf:
             sf::Packet p;
             p << state;
             if (param == 1) p << i;
+            else if(param == 2) lobbies_[index].setRandomSequence(p);
             else p << param;
 
             if (timestamp != 0) {

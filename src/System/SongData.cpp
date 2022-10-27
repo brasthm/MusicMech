@@ -16,7 +16,7 @@ SongDatabase::SongDatabase()
 		songs_.back().id = infos[0];
 		songs_.back().mmpath = infos[1];
 
-		std::ifstream mmfile(RessourceLoader::getPath("Beatmaps/" + songs_.back().id + "/[4P] " + songs_.back().mmpath));
+		std::ifstream mmfile(RessourceLoader::getPath("Beatmaps/" + songs_.back().id + "/" + songs_.back().mmpath));
 		while (std::getline(mmfile, line))
 		{
 			auto words = Utils::split(line, ':');
@@ -35,6 +35,8 @@ SongDatabase::SongDatabase()
 				songs_.back().preview = std::stoi(words[1]);
 			if (words[0] == "Difficulty")
 				songs_.back().difficulty = words[1];
+			if (words[0] == "Players")
+				songs_.back().nbPlayers = words[1];
 
 			if (words[0] == "[TimingPoints]")
 				break;
@@ -42,8 +44,6 @@ SongDatabase::SongDatabase()
 		mmfile.close();
 	}
 	file_.close();
-
-	mode_ = "4P";
 
 	selected_ = Random::randint(0, songs_.size());
 
@@ -116,17 +116,17 @@ bool SongDatabase::isPlaying()
 	return music_.getStatus() == sf::SoundSource::Status::Playing;
 }
 
-std::string SongDatabase::getMode()
+std::string SongDatabase::getCurentNbPlayers()
 {
-	return mode_;
+	return songs_[selected_].nbPlayers;
 }
 
 std::string SongDatabase::getSelectedPath()
 {
-	return "Beatmaps/" + songs_[selected_].id + "/[" + mode_ + "] " + songs_[selected_].mmpath;
+	return "Beatmaps/" + songs_[selected_].id + "/" + songs_[selected_].mmpath;
 }
 
-void SongDatabase::setMode(const std::string& mode)
+std::string SongDatabase::getCurrentId()
 {
-	mode_ = mode;
+	return songs_[selected_].id;
 }
