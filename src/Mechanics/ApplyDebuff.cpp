@@ -28,3 +28,9 @@ std::string ApplyDebuff::toString() {
 
     return res;
 }
+
+void ApplyDebuff::reset(float beat)
+{
+    target_.reset();
+    Mechanic::reset(beat);
+}

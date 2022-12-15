@@ -321,13 +321,26 @@ bool Server::checkConnected(sf::IpAddress address, unsigned short port) {
 void Server::monitorPlayerData() {
     if(game_.recieve()) {
         sf::Uint8 state;
+        sf::Uint32 playerId;
         sf::Packet packet;
+
+        game_.getRecievedPacket() >> playerId;
 
         int index = findUDPConnected(game_.getSender(), game_.getSenderPort());
         if (index == -1) {
-            std::cout << "GAME PORT : Can't find player (" << game_.getSender().toString() << ":" << game_.getSenderPort() << ")" << std::endl;
-            return;
+            std::cout << "GAME PORT : Can't find player address (" << game_.getSender().toString() << ":" << game_.getSenderPort() << ")" << std::endl;
+            index = findConnectedById(playerId);
+
+            if (index == -1) {
+                std::cout << "GAME PORT : Can't find player id (" << playerId << ")" << std::endl;
+                return;
+            }
+
+            players_[index].address = game_.getSender();
+            players_[index].port = game_.getSenderPort();
         }
+
+        
 
         sf::Int32 challengeResponse,
                 solution = players_[index].seed ^serverSeed_;
@@ -401,6 +414,10 @@ void Server::monitorPlayerData() {
 
             game_.send(response, players_[index].address, players_[index].udpPort);
 
+            return;
+        }
+
+        if (state == 19) {
             return;
         }
         std::cout << "GAME PORT : State unrecognized (" << (int)state << ")." << std::endl;
@@ -508,6 +525,14 @@ int Server::findLobbyContainingPlayer(sf::IpAddress address, unsigned short port
     return -1;
 }
 
+int Server::findConnectedById(sf::Uint32 id)
+{
+    for (int i = 0; i < players_.size(); i++) {
+        if (players_[i].status != PlayerStatus::PLAYER_DISCONNECTED && players_[i].id == id)
+            return i;
+    }
+}
+
 int Server::findConnected(sf::IpAddress address, unsigned short port) {
     for (size_t i = 0; i < players_.size(); i++) {
         if (players_[i].status != PlayerStatus::PLAYER_DISCONNECTED &&
@@ -575,8 +600,11 @@ void Server::monitorClient(int i)
         players_[index].status = PlayerStatus::PLAYER_IDLE;
         players_[index].packetID = 0;
         players_[index].socket = clients_[i];
+        do {
+            players_[index].id = Random::randuint();
+        } while (findConnectedById(players_[index].id) == -1);
 
-        std::cout << "100 TCP_SOCKET (" << i << ") : New connection. (" << players_[index].address << ":" << players_[index].port << ")" << std::endl;
+        std::cout << "100 TCP_SOCKET (" << i << ") : New connection. (" << players_[index].id << "/" << players_[index].address << ":" << players_[index].port << ")" << std::endl;
 
         responsePacket << state << response << serverSeed_;
         clients_[i]->send(responsePacket);
@@ -613,7 +641,7 @@ void Server::monitorClient(int i)
             return;
         }
 
-        responsePacket << state << response;
+        responsePacket << state << response << players_[index].id;
         clients_[i]->send(responsePacket);
 
         std::cout << "101 TCP_SOCKET (" << i << ") : Identified." << std::endl;
@@ -725,7 +753,7 @@ void Server::monitorClient(int i)
             " " << lobbies_[lobbyIndex].players[0]->name << std::endl;
 
         return;
-        
+
     }
 
     // JOIN LOBBY
@@ -769,7 +797,7 @@ void Server::monitorClient(int i)
         }
 
         int playerIndex = findFirstAvailablePlayerSpot(lobbies_, lobbyIndex);
-        if (lobbyIndex == -1) {
+        if (playerIndex == -1) {
             std::cout << "11 TCP_SOCKET (" << i << ") : Room is full" << std::endl;
             response = 4;
             responsePacket << state << response;
@@ -865,12 +893,15 @@ void Server::monitorClient(int i)
         responsePacket << state << response << resstate;
         clients_[i]->send(responsePacket);
 
-        if(resstate != 50)
+        if (resstate != 50)
             sendRoomLobbyNotif(lobbyIndex, resstate, 0);
 
         return;
     }
 
+    if (state == 19) {
+        return;
+    }
     // GAME START
     if (state == 20) {
         sf::Uint8 response = 0;
@@ -893,8 +924,8 @@ void Server::monitorClient(int i)
             clients_[i]->send(responsePacket);
             return;
         }
-        
-        
+
+
         /*if (lobbies_[lobbyIndex].nbIn == lobbies_[lobbyIndex].limit) {
             std::cout << "20 TCP_SOCKET (" << i << ") : " << lobbies_[lobbyIndex].name << "(" << lobbies_[lobbyIndex].id << ") is not filled. Game not started." << std::endl;
             response = 2;
@@ -933,7 +964,7 @@ void Server::monitorClient(int i)
         lobbies_[lobbyIndex].load(songs_.getSelectedPath());
         lobbies_[lobbyIndex].computeSequences();
         lobbies_[lobbyIndex].startingTime = currentTime;
-        
+
         //lobbies_[lobbyIndex].startGame();
 
 
@@ -943,7 +974,7 @@ void Server::monitorClient(int i)
         responsePacket << state << response;
 
         clients_[i]->send(responsePacket);
-        
+
         sendRoomLobbyNotif(lobbyIndex, 36, 2);
         sendRoomLobbyNotif(lobbyIndex, resstate, 1, currentTime);
         return;
@@ -972,13 +1003,13 @@ void Server::monitorClient(int i)
             return;
         }
 
-        if (lobbies_[lobbyIndex].status != LobbyStatus::LOBBY_PLAYING) {
+        /*if (lobbies_[lobbyIndex].status != LobbyStatus::LOBBY_PLAYING) {
             std::cout << "21 TCP_SOCKET (" << i << ") : " << lobbies_[lobbyIndex].name << "(" << lobbies_[lobbyIndex].id << ") is not playing." << std::endl;
             response = 2;
             responsePacket << state << response;
             clients_[i]->send(responsePacket);
             return;
-        }
+        }*/
 
         lobbies_[lobbyIndex].status = LobbyStatus::LOBBY_FILLING;
         for (int j = 0; j < NB_MAX_JOUEURS; j++) {
@@ -1129,7 +1160,7 @@ void Server::monitorClient(int i)
         }
         sf::Uint32 color;
         packet >> color;
-        
+
         if (!packet) {
             std::cout << "24 TCP_SOCKET (" << i << ") : Invalid packet (color)." << std::endl;
             return;
@@ -1161,7 +1192,7 @@ void Server::monitorClient(int i)
         sf::String lobbyID;
         packet >> lobbyID;
 
-        
+
 
         if (!packet) {
             std::cout << "25 TCP_SOCKET (" << i << ") : Invalid packet (25)." << std::endl;
@@ -1205,7 +1236,7 @@ void Server::monitorClient(int i)
             p << data;
             for (int j = nbPlayers; j < lobbies_[lobbyIndex].limit; j++) {
                 if (lobbies_[lobbyIndex].players[j] != nullptr && lobbies_[lobbyIndex].players[j]->socket != nullptr) {
-                    lobbies_[lobbyIndex].players[j]->socket->send(p); 
+                    lobbies_[lobbyIndex].players[j]->socket->send(p);
                 }
             }
         }
@@ -1219,7 +1250,7 @@ void Server::monitorClient(int i)
 
         std::cout << "LOBBY : Beatmap changed to [" << lobbies_[lobbyIndex].beatmap << "] " <<
             (int)lobbies_[lobbyIndex].limit << "P in lobby " << lobbies_[lobbyIndex].id << std::endl;
-        
+
 
         sf::Uint8 resstate = 32;
         responsePacket << state << response;
@@ -1344,7 +1375,8 @@ void Server::monitorClient(int i)
         return;
     }
 
-    std::cout << "TCP_SOCKET (" << i << ") : Unrecognized message (" << state << ")." << std::endl;
+    std::cout << "TCP_SOCKET (" << i << ") : Unrecognized message (" << (int)state << ")." << std::endl;
+    
 }
 
 void Server::sendRoomLobbyNotif(int index, sf::Uint8 state, sf::Uint8 param, sf::Uint64 timestamp) {

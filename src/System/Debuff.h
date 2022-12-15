@@ -13,7 +13,9 @@
 
 
 enum DebuffType {
-    DEBUFF_NONE, DEBUFF_ROOT, DEBUFF_CRITICAL, DEBUFF_SUDDENDEATH, DEBUFF_MASK1, DEBUFF_MASK2
+    DEBUFF_NONE, DEBUFF_ROOT, DEBUFF_CRITICAL, DEBUFF_SUDDENDEATH, 
+    DEBUFF_MASK1, DEBUFF_MASK2, 
+    DEBUFF_HAATO, DEBUFF_GAADO, DEBUFF_EYE1, DEBUFF_EYE2, DEBUFF_EYE3, DEBUFF_EYER
 };
 
 class Debuff {
@@ -45,6 +47,7 @@ public:
     bool getDrawIcon();
     std::string getName();
     std::string getDesc();
+    void set(DebuffType type, float end);
 };
 
 

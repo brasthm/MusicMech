@@ -27,6 +27,7 @@ public:
         x = 0; y = 0;
 
         status = PlayerStatus::PLAYER_DISCONNECTED;
+        id = 0;
         state = 0;
         color = 0;
         socket = nullptr;
@@ -43,6 +44,7 @@ public:
         x = 0; y = 0;
 
         status = PlayerStatus::PLAYER_DISCONNECTED;
+        id = 0;
         state = 0;
         color = 0;
         socket = nullptr;
@@ -55,6 +57,7 @@ public:
         x = 0; y = 0;
 
         status = PlayerStatus::PLAYER_DISCONNECTED;
+        id = 0;
         state = 0;
         color = 0;
         socket = nullptr;
@@ -70,6 +73,7 @@ public:
     PlayerStatus status;
     sf::Uint32 color;
     TCP_Socket* socket;
+    sf::Uint32 id;
 
 };
 

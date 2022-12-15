@@ -29,7 +29,7 @@ private:
 public:
     RoomStatus(Song *song, std::vector<Mechanic*> *mechanicList);
     ~RoomStatus();
-    int run(sf::RenderWindow& window, Client* client);
+    int run(sf::RenderWindow& window, Client* client, EntityManager& em);
 
     void addJoueur(int i, std::string &name, sf::Uint32 color, bool active, float x, float y);
     void addTotem(int i, sf::Uint32 color, bool active, float x, float y);

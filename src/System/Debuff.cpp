@@ -39,16 +39,56 @@ void Debuff::setParams()
         name_ = "Unscrupulous Cheers";
         iconPath_ = "Images/Debuff/mask1.png";
         desc_ = "The unscrupulous cheers were all fake. If <Unscrupulous Cheers> is applied again, inflicts <Sudden Death> to the target.";
-        color_.addTarget("Weekness", 0xAE2012FF);
         drawIcon_ = true;
         break;
     case DEBUFF_MASK2:
         name_ = "Fake Feelings";
         iconPath_ = "Images/Debuff/mask2.png";
         desc_ = "Your seeping jealousy drips out. If <Fake Feelings> is applied again, inflicts <Sudden Death> to the target.";
-        color_.addTarget("Sudden Death", 0xFFFFFF00);
         drawIcon_ = true;
         break;
+
+    case DEBUFF_HAATO:
+        name_ = "Haato";
+        iconPath_ = "Images/Debuff/haato.png";
+        desc_ = "Kuruado no Haato! If <Haato> is applied again, inflicts <Sudden Death> to the target.";
+        drawIcon_ = true;
+        break;
+    case DEBUFF_GAADO:
+        name_ = "Gaado";
+        iconPath_ = "Images/Debuff/gaado.png";
+        desc_ = "Kono Gaado! If <Gaado> is applied again, inflicts <Sudden Death> to the target.";
+        drawIcon_ = true;
+        break;
+
+    case DEBUFF_EYE1:
+        name_ = "First Eye";
+        iconPath_ = "Images/Debuff/firsteye.png";
+        desc_ = "It's asleep.";
+        drawIcon_ = true;
+        break;
+
+    case DEBUFF_EYE2:
+        name_ = "Second Eye";
+        iconPath_ = "Images/Debuff/secondeye.png";
+        desc_ = "It's waking.";
+        drawIcon_ = true;
+        break;
+
+    case DEBUFF_EYE3:
+        name_ = "Third Eye";
+        iconPath_ = "Images/Debuff/thirdeye.png";
+        desc_ = "It's watching!";
+        drawIcon_ = true;
+        break;
+
+    case DEBUFF_EYER:
+        name_ = "Third Eyer";
+        iconPath_ = "Images/Debuff/thirdeyer.png";
+        desc_ = "Mieru mieru! If <Thrid Eye> is not applied, inflicts <Sudden Death> to the target.";
+        drawIcon_ = true;
+        break;
+
     }
 }
 
@@ -176,6 +216,14 @@ std::string Debuff::getName()
 std::string Debuff::getDesc()
 {
     return drawDesc_;
+}
+
+void Debuff::set(DebuffType type, float end)
+{
+    type_ = type;
+    end_ = end;
+
+    setParams();
 }
 
 void Debuff::clense() {

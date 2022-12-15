@@ -283,6 +283,43 @@ void EntityManager::applyDebuff(float beat, Target &target, DebuffType type, flo
         if (type == DEBUFF_MASK2 && currentDebufs[i] == DEBUFF_MASK2) {
             en->applyDebuff(DEBUFF_SUDDENDEATH, beat + 1);
         }
+        if (type == DEBUFF_GAADO && currentDebufs[i] == DEBUFF_GAADO) {
+            en->applyDebuff(DEBUFF_SUDDENDEATH, beat + 1);
+        }
+        if (type == DEBUFF_GAADO && currentDebufs[i] == DEBUFF_HAATO) {
+            en->changeDebuff(i, DEBUFF_NONE, beat);
+        }
+        if (type == DEBUFF_HAATO && currentDebufs[i] == DEBUFF_HAATO) {
+            en->applyDebuff(DEBUFF_SUDDENDEATH, beat + 1);
+        }
+        if (type == DEBUFF_HAATO && currentDebufs[i] == DEBUFF_GAADO) {
+            en->changeDebuff(i, DEBUFF_NONE, beat);
+        }
+        if (type == DEBUFF_EYE1 && currentDebufs[i] == DEBUFF_EYE1) {
+            en->changeDebuff(i, DEBUFF_NONE, beat);
+            type = DEBUFF_EYE2;
+        }
+        if (type == DEBUFF_EYE1 && currentDebufs[i] == DEBUFF_EYE2) {
+            en->changeDebuff(i, DEBUFF_NONE, beat);
+            type = DEBUFF_EYE3;
+        }
+        if (type == DEBUFF_EYE1 && currentDebufs[i] == DEBUFF_EYE3) {
+            en->changeDebuff(i, DEBUFF_NONE, beat);
+            type = DEBUFF_EYE3;
+        }
+    }
+
+    if (type == DEBUFF_EYER) {
+        bool found = false;
+        for (int j = 0; j < currentDebufs.size(); j++) {
+            if (currentDebufs[j] == DEBUFF_EYE3) {
+                en->changeDebuff(j, DEBUFF_NONE, beat);
+                found = true;
+                break;
+            }
+        }
+        if (!found)
+            en->applyDebuff(DEBUFF_SUDDENDEATH, beat + 1);            
     }
 
     en->applyDebuff(type, end);

@@ -48,6 +48,7 @@ public:
     void getCurrentDebuffs(std::vector<DebuffType>& debuffs);
     void getCurrentDebuffs(std::vector<std::pair<DebuffType, float>>& debuffs);
     void getDebuffs(std::vector<DebuffInfo>& debuffsInfo);
+    void changeDebuff(int index, DebuffType type, float end);
 
     void setRadius(float radius);
 };

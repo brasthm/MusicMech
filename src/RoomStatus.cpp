@@ -53,7 +53,7 @@ RoomStatus::~RoomStatus()
     }
 }
 
-int RoomStatus::run(sf::RenderWindow& window, Client* client)
+int RoomStatus::run(sf::RenderWindow& window, Client* client, EntityManager &em)
 {
     bool exit = false;
 
@@ -254,6 +254,8 @@ int RoomStatus::run(sf::RenderWindow& window, Client* client)
             }*/
         }
 
+        client->keepAlive();
+
         menuButtons.update(elapsedTime);
         fps.restart();
         for (auto& joueur : joueurs_) {
@@ -265,13 +267,13 @@ int RoomStatus::run(sf::RenderWindow& window, Client* client)
         }
 
         for (auto& mech : mechanicList_) {
-            mech->update(elapsedTime, currentBeat, em_);
+            //mech->update(elapsedTime, currentBeat, em_);
         }
 
         arena_.update(elapsedTime);
 
         
-        int res = client->updateFromServerPlayerPosition(joueurs_, checkpoint, em_);
+        int res = client->updateFromServerPlayerPosition(joueurs_, checkpoint, em);
         if (res == 1 || res == 2 || res == 3)
             return res;
 

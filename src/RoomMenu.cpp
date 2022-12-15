@@ -216,7 +216,8 @@ int RoomMenu::run(sf::RenderWindow& window, BackgroundAnimation& bg, Client* cli
 	int state = 0;
 
 	int playerIndex = client->getPlayerIndex();
-	int selectedColorIndex = playerIndex, prevColorIndex = selectedColorIndex;
+	int selectedColorIndex = playerIndex;
+	int prevColorIndex = selectedColorIndex;
 	sf::Uint32 selectedColor = colors[playerIndex];
 	circles[playerIndex].setFillColor(sf::Color(selectedColor));
 
@@ -365,6 +366,8 @@ int RoomMenu::run(sf::RenderWindow& window, BackgroundAnimation& bg, Client* cli
 			}
 		}
 
+		client->keepAlive();
+
 		if (disconnect.valid() && disconnect.wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
 			songs->stop();
 			loading.stop();
@@ -420,6 +423,16 @@ int RoomMenu::run(sf::RenderWindow& window, BackgroundAnimation& bg, Client* cli
 				if (ready[i])
 					circles[i].setFillColor(sf::Color(client->getCurrentLobby().players[i]->color));
 				if (i == playerIndex) {
+
+					for (int j = 0; j < colors.size(); j++) {
+						if (colors[j] == client->getCurrentLobby().players[i]->color) {
+							selectedColor = colors[j];
+							selectedColorIndex = j;
+							prevColorIndex = j;
+						}
+							
+					}
+
 					if (!ready[i]) {
 						if (creator)
 							buttons.change(3, "READY", "Ready");

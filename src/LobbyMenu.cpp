@@ -115,6 +115,8 @@ int LobbyMenu::run(sf::RenderWindow &window, Game &game, Client &client) {
         }
 
 
+        client.keepAlive();
+
         //if(!client.monitorLobby(lobbyList_, index_, state))
             //std::cout << "MONITOR ERROR" << std::endl;
         if(state == 3) { // Launch game

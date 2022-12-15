@@ -76,7 +76,7 @@ void Game::run(sf::RenderWindow &window, Client* client, bool creator) {
 
     int current = client->getPlayerIndex();
 
-    sf::Text fps_text, beat_text, beat_serv_text, ping_text ,godmode_text, position_text, position_serv_text, section_text;
+    sf::Text fps_text, beat_text, beat_serv_text, ping_text ,godmode_text, position_text, position_serv_text, section_text, death_text;
 
     fps_text.setFont(RessourceLoader::getFont("Font/Roboto-Regular.ttf"));
     fps_text.setCharacterSize(18);
@@ -117,6 +117,8 @@ void Game::run(sf::RenderWindow &window, Client* client, bool creator) {
    section_text.setFont(RessourceLoader::getFont("Font/Roboto-Regular.ttf"));
    section_text.setCharacterSize(18);
    section_text.setPosition(0, 20 * 7);
+
+
 
 
     joueurs_[current].setActive(true);
@@ -186,6 +188,12 @@ void Game::run(sf::RenderWindow &window, Client* client, bool creator) {
    gameOverInfo.setCharacterSize(50);
    gameOverInfo.setFillColor(sf::Color::White);
 
+   death_text.setFont(RessourceLoader::getFont("Font/Roboto-Bold.ttf"));
+   death_text.setCharacterSize(30);
+   death_text.setPosition(10, 10);
+
+
+   int death = 0;
 
    for (int i = 0; i < joueurs_.size(); i++) {
        joueurs_[i].showPlate();
@@ -234,7 +242,7 @@ void Game::run(sf::RenderWindow &window, Client* client, bool creator) {
                             RoomStatus roomStatus(&song_, &mechanicList_);
                             client->requestRoomStatus(&roomStatus, roomStatus.getEntityManager());
 
-                            res = roomStatus.run(window, client);
+                            res = roomStatus.run(window, client, em_);
                         }
                         else if (gameOverButtons.getCurrent() == "QUIT") {
                             client->sendEndGame();
@@ -297,7 +305,7 @@ void Game::run(sf::RenderWindow &window, Client* client, bool creator) {
                     if (event.key.code == sf::Keyboard::F2) {
                         serverTrace = !serverTrace;
                     }
-                    if (event.key.code == sf::Keyboard::F3) {
+                    /*if (event.key.code == sf::Keyboard::F3) {
                         currentControled++;
                         currentControled = currentControled % joueurs_.size();
                         for(int i = 0; i < joueurs_.size(); i++)
@@ -310,11 +318,12 @@ void Game::run(sf::RenderWindow &window, Client* client, bool creator) {
                     if (event.key.code == sf::Keyboard::F7) {
                         auto checkpoint = song_.getCurrentCheckpoint(currentBeat_float);
                         music_.setPlayingOffset(sf::seconds(checkpoint.first));
-                    }
+                    }*/
                 }
             }
         }
 
+        client->keepAlive();
 
         // CLEARED
         if (!cleared) {
@@ -511,6 +520,7 @@ void Game::run(sf::RenderWindow &window, Client* client, bool creator) {
             song_.drawSection(window, gameOverBeat, gameOverSection);
             window.draw(gameOverText);
             window.draw(gameOverInfo);
+            window.draw(death_text);
         }
 
         // FAILED
@@ -538,8 +548,11 @@ void Game::run(sf::RenderWindow &window, Client* client, bool creator) {
                 gameOverText.setPosition(WIDOW_WIDTH / 2.f - gameOverText.getGlobalBounds().width / 2.f, 100);
 
                 int pourcentage = song_.getSectionPourcentage(gameOverBeat, gameOverSection);
-                gameOverInfo.setString("Current phase : " + std::to_string(pourcentage) + "%");
+                gameOverInfo.setString("Current phase: " + std::to_string(pourcentage) + "%");
                 gameOverInfo.setPosition(WIDOW_WIDTH / 2.f - gameOverInfo.getGlobalBounds().width / 2.f, 400);
+
+                death++;
+                death_text.setString("Death counter: " + std::to_string(death));
 
             }
 
@@ -644,7 +657,7 @@ void Game::loadFromCode(const std::string& id, const std::string& path)
 
     std::cout << "Mechanics number : " << mechanicList_.size() << std::endl;
 
-    //music_.setPlayingOffset(sf::seconds(145));
+    //music_.setPlayingOffset(sf::seconds(221));
 
     std::sort(mechanicList_.begin(), mechanicList_.end(),
         [](Mechanic* m1, Mechanic* m2) {return *m1 < *m2; });

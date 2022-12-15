@@ -38,6 +38,9 @@ static constexpr int WIDOW_HEIGHT = 1080;
 static constexpr float JOYSTICK_DEADZONE = 15;
 static constexpr float JOYSTICK_MAXZONE = 85;
 
+
+static constexpr float KEEP_ALIVE_TIMER = 30;
+
 // Server Info
 
 static const std::string SERVER_NAME = "SYNCHROBEATSERV";
@@ -51,8 +54,8 @@ static constexpr unsigned short SERVER_ADMIN_PORT = 41110;
 static constexpr unsigned short SERVER_CONNECT_PORT = 41101;
 static constexpr unsigned short SERVER_GAME_PORT = 41102;
 static constexpr unsigned short SERVER_LOGIN_PORT = 41103;
-static constexpr int SERVER_TICK_MS = 50;
-static constexpr int CLIENT_TICK_MS = 50;
+static constexpr int SERVER_TICK_MS = 200;
+static constexpr int CLIENT_TICK_MS = 200;
 static constexpr int SERVER_SLEEP = 10;
 static constexpr float TRANSITION_DELAY = 0.5;
 
