@@ -25,6 +25,10 @@ void getMechsFromCode(const std::string& id, std::vector<Mechanic*>& mechanics, 
 		itte(mechanics, song, music, em);
     if (id == "1493511")
         furachi(mechanics, song, music, em);
+    if (id == "30328")
+        lazySong(mechanics, song, music, em);
+    if (id == "239584")
+        thirdeye(mechanics, song, music, em);
 }
 
 void hystericNightGirl(std::vector<Mechanic*>& mechanics, Song& song, sf::Music& music, EntityManager& em)
@@ -1396,10 +1400,10 @@ void oblivion(std::vector<Mechanic*>& mechanics, Song& song, sf::Music& music, E
                 y = 100;
             }
 
-            mechanics.emplace_back(new Spread(292 + 4 * i, 150, 2, 4, Target(TARGET_POS, { 200, 200 })));
-            mechanics.emplace_back(new Spread(292 + 4 * i, 150, 2, 4, Target(TARGET_POS, { 200, 800 })));
-            mechanics.emplace_back(new Spread(292 + 4 * i, 150, 2, 4, Target(TARGET_POS, { 800, 200 })));
-            mechanics.emplace_back(new Spread(292 + 4 * i, 150, 2, 4, Target(TARGET_POS, { 800, 800 })));
+            mechanics.emplace_back(new Spread(292 + 4 * i, 150, 1, 4, Target(TARGET_POS, { 200, 200 })));
+            mechanics.emplace_back(new Spread(292 + 4 * i, 150, 1, 4, Target(TARGET_POS, { 200, 800 })));
+            mechanics.emplace_back(new Spread(292 + 4 * i, 150, 1, 4, Target(TARGET_POS, { 800, 200 })));
+            mechanics.emplace_back(new Spread(292 + 4 * i, 150, 1, 4, Target(TARGET_POS, { 800, 800 })));
 
             mechanics.emplace_back(new Cone(292 + 4 * i, 45, 1500, 2, 4, Target(TARGET_POS, { x, y }),
                 Target(TARGET_CLOSEST, TARGET_PLAYERS, 0, new Target(TARGET_POS, { x, y }), TARGET_FOLLOW)));
@@ -3890,12 +3894,12 @@ void furachi(std::vector<Mechanic*>& mechanics, Song& song, sf::Music& music, En
         Target(TARGET_CLOSEST, TARGET_PLAYERS, 1, new Target(TARGET_ENTITY, TARGET_TOTEMS, 1, TARGET_FOLLOW), TARGET_FOLLOW), 26));
 
     for (int i = 0; i < 4; i++) {
-        mechanics.emplace_back(new Spread(290 + 4 * i, 350, 1, 0, Target(TARGET_CLOSEST, TARGET_PLAYERS, 0, new Target(TARGET_ENTITY, TARGET_TOTEMS, 1, TARGET_FOLLOW), TARGET_FOLLOW),
+        mechanics.emplace_back(new Spread(290 + 4 * i, 250, 1, 0, Target(TARGET_CLOSEST, TARGET_PLAYERS, 0, new Target(TARGET_ENTITY, TARGET_TOTEMS, 1, TARGET_FOLLOW), TARGET_FOLLOW),
             DEBUFF_MASK2, 20));
-        mechanics.emplace_back(new Spread(290 + 4 * i, 350, 1, 0, Target(TARGET_CLOSEST, TARGET_PLAYERS, 1, new Target(TARGET_ENTITY, TARGET_TOTEMS, 1, TARGET_FOLLOW), TARGET_FOLLOW),
+        mechanics.emplace_back(new Spread(290 + 4 * i, 250, 1, 0, Target(TARGET_CLOSEST, TARGET_PLAYERS, 1, new Target(TARGET_ENTITY, TARGET_TOTEMS, 1, TARGET_FOLLOW), TARGET_FOLLOW),
             DEBUFF_MASK2, 20));
 
-        mechanics.emplace_back(new Spread(290 + 4 * i, 175, 2, 4, Target(TARGET_POS, { 500, 500 })));
+        mechanics.emplace_back(new Spread(290 + 4 * i, 175, 4, 4, Target(TARGET_POS, { 500, 500 })));
 
         mechanics.emplace_back(new Cone(290 + 4 * i, 90, 2500, 1, 0, Target(TARGET_ENTITY, TARGET_TOTEMS, 0),
             Target(TARGET_RANDOMSEQUENCE, TARGET_PLAYERS, { 2, (float)i }, TARGET_FOLLOW)));
@@ -3956,4 +3960,691 @@ void furachi(std::vector<Mechanic*>& mechanics, Song& song, sf::Music& music, En
     mechanics.emplace_back(new EndMap(372));
      
     //music.setPlayingOffset(sf::seconds(99));
+}
+
+void lazySong(std::vector<Mechanic*>& mechanics, Song& song, sf::Music& music, EntityManager& em)
+{
+    song.addCheckpoint(0, 0);
+
+    mechanics.emplace_back(new Spread( 8, 150, 1, 8, Target(TARGET_POS, { 500, 500 })));
+    mechanics.emplace_back(new Spread(16, 150, 1, 8, Target(TARGET_POS, { 200, 200 })));
+    mechanics.emplace_back(new Spread(24, 150, 1, 8, Target(TARGET_POS, { 200, 800 })));
+    mechanics.emplace_back(new Spread(32, 150, 1, 8, Target(TARGET_POS, { 800, 800 })));
+
+
+    song.addCheckpoint(24, 33);
+
+    mechanics.emplace_back(new Spread(40, 700, 0, 8, Target(TARGET_POS, { 900, 900 })));
+    mechanics.emplace_back(new Spread(48, 700, 0, 8, Target(TARGET_POS, { 100, 100 })));
+    mechanics.emplace_back(new Spread(56, 700, 0, 8, Target(TARGET_POS, { 900, 900 })));
+    mechanics.emplace_back(new Spread(64, 700, 0, 8, Target(TARGET_POS, { 100, 100 })));
+
+    song.addCheckpoint(46, 65);
+
+    mechanics.emplace_back(new Tether(70, Target(TARGET_ENTITY, TARGET_PLAYERS, 0, TARGET_FOLLOW), Target(TARGET_POS, { 800, 800 }), 500, 6, false, false));
+
+    song.addCheckpoint(52, 71);
+
+    mechanics.emplace_back(new Spread(76, 150, 1, 8, Target(TARGET_POS, { 800, 800 })));
+    mechanics.emplace_back(new Spread(80, 150, 1, 8, Target(TARGET_POS, { 600, 600 })));
+    mechanics.emplace_back(new Spread(84, 150, 1, 8, Target(TARGET_POS, { 371, 598 })));
+    mechanics.emplace_back(new Spread(88, 150, 1, 8, Target(TARGET_POS, { 187, 346 })));
+    mechanics.emplace_back(new Spread(92, 150, 1, 8, Target(TARGET_POS, { 196, 63 })));
+    mechanics.emplace_back(new Spread(96, 150, 1, 8, Target(TARGET_POS, { 477, 96 })));
+    mechanics.emplace_back(new Spread(100, 150, 1, 8, Target(TARGET_POS, { 714, 250 })));
+    mechanics.emplace_back(new Spread(104, 150, 1, 8, Target(TARGET_POS, { 799, 520 })));
+
+    mechanics.emplace_back(new Donut(112, 200, 2000, 0, 8, Target(TARGET_POS, { 200, 800 })));
+    mechanics.emplace_back(new Donut(120, 200, 2000, 0, 8, Target(TARGET_POS, { 800, 200 })));
+
+    song.addCheckpoint(85, 124);
+
+    mechanics.emplace_back(new Spread(128, 700, 0, 8, Target(TARGET_POS, { 900, 100 })));
+    mechanics.emplace_back(new Spread(128, 700, 0, 8, Target(TARGET_POS, { 900, 900 })));
+    mechanics.emplace_back(new Spread(128, 700, 0, 8, Target(TARGET_POS, { 100, 100 })));
+
+    mechanics.emplace_back(new Spread(136, 700, 0, 8, Target(TARGET_POS, { 100, 900})));
+    mechanics.emplace_back(new Spread(136, 700, 0, 8, Target(TARGET_POS, { 900, 900 })));
+    mechanics.emplace_back(new Spread(136, 700, 0, 8, Target(TARGET_POS, { 100, 100 })));
+
+    mechanics.emplace_back(new Spread(144, 700, 0, 8, Target(TARGET_POS, { 900, 100 })));
+    mechanics.emplace_back(new Spread(144, 700, 0, 8, Target(TARGET_POS, { 900, 900 })));
+    mechanics.emplace_back(new Spread(144, 700, 0, 8, Target(TARGET_POS, { 100, 100 })));
+
+    mechanics.emplace_back(new Spread(152, 700, 0, 8, Target(TARGET_POS, { 100, 900 })));
+    mechanics.emplace_back(new Spread(152, 700, 0, 8, Target(TARGET_POS, { 900, 900 })));
+    mechanics.emplace_back(new Spread(152, 700, 0, 8, Target(TARGET_POS, { 100, 100 })));
+
+    mechanics.emplace_back(new Tether(158, Target(TARGET_ENTITY, TARGET_PLAYERS, 0, TARGET_FOLLOW), Target(TARGET_POS, { 900, 100 }), 500, 6, false, false));
+
+    song.addCheckpoint(112, 160);
+
+    mechanics.emplace_back(new Spread(160, 150, 1, 8, Target(TARGET_POS, { 100, 900 })));
+    mechanics.emplace_back(new Spread(162, 150, 1, 8, Target(TARGET_POS, { 200, 800 })));
+    mechanics.emplace_back(new Spread(164, 150, 1, 8, Target(TARGET_POS, { 230, 661 })));
+    mechanics.emplace_back(new Spread(166, 150, 1, 8, Target(TARGET_POS, { 275, 527 })));
+    mechanics.emplace_back(new Spread(168, 150, 1, 8, Target(TARGET_POS, { 336, 400 })));
+    mechanics.emplace_back(new Spread(170, 150, 1, 8, Target(TARGET_POS, { 293, 265 })));
+    mechanics.emplace_back(new Spread(172, 150, 1, 8, Target(TARGET_POS, { 330, 128 })));
+    mechanics.emplace_back(new Spread(174, 150, 1, 8, Target(TARGET_POS, { 469, 102 })));
+    mechanics.emplace_back(new Spread(176, 150, 1, 8, Target(TARGET_POS, { 598, 161 })));
+    mechanics.emplace_back(new Spread(178, 150, 1, 8, Target(TARGET_POS, { 654, 290 })));
+    mechanics.emplace_back(new Spread(180, 150, 1, 8, Target(TARGET_POS, { 691, 427 })));
+    mechanics.emplace_back(new Spread(182, 150, 1, 8, Target(TARGET_POS, { 670, 566 })));
+    mechanics.emplace_back(new Spread(184, 150, 1, 8, Target(TARGET_POS, { 634, 703 })));
+    mechanics.emplace_back(new Spread(186, 150, 1, 8, Target(TARGET_POS, { 660, 842 })));
+    mechanics.emplace_back(new Spread(188, 150, 1, 8, Target(TARGET_POS, { 772, 930 })));
+    mechanics.emplace_back(new Spread(190, 150, 1, 8, Target(TARGET_POS, { 919, 942 })));
+
+
+    mechanics.emplace_back(new Donut(194, 200, 2000, 0, 4, Target(TARGET_POS, { 200, 800 })));
+    mechanics.emplace_back(new Donut(198, 200, 2000, 0, 4, Target(TARGET_POS, { 200, 200 })));
+    mechanics.emplace_back(new Donut(202, 200, 2000, 0, 4, Target(TARGET_POS, { 800, 200 })));
+    mechanics.emplace_back(new Donut(206, 200, 2000, 0, 4, Target(TARGET_POS, { 800, 800 })));
+
+    mechanics.emplace_back(new Donut(210, 200, 2000, 0, 4, Target(TARGET_POS, { 200, 800 })));
+    mechanics.emplace_back(new Donut(214, 200, 2000, 0, 4, Target(TARGET_POS, { 200, 200 })));
+    mechanics.emplace_back(new Donut(218, 200, 2000, 0, 4, Target(TARGET_POS, { 800, 200 })));
+    mechanics.emplace_back(new Donut(222, 200, 2000, 0, 4, Target(TARGET_POS, { 800, 800 })));
+
+    song.addCheckpoint(155, 224);
+
+    mechanics.emplace_back(new Spread(224, 150, 1, 8, Target(TARGET_POS, { 800, 800 })));
+    mechanics.emplace_back(new Spread(226, 150, 0, 8, Target(TARGET_POS, { 847, 612 })));
+    mechanics.emplace_back(new Spread(228, 150, 1, 8, Target(TARGET_POS, { 889, 423 })));
+    mechanics.emplace_back(new Spread(230, 150, 0, 8, Target(TARGET_POS, { 893, 230 })));
+    mechanics.emplace_back(new Spread(232, 150, 1, 8, Target(TARGET_POS, { 715, 153 })));
+    mechanics.emplace_back(new Spread(234, 150, 0, 8, Target(TARGET_POS, { 524, 122 })));
+    mechanics.emplace_back(new Spread(236, 150, 1, 8, Target(TARGET_POS, { 361, 225 })));
+    mechanics.emplace_back(new Spread(238, 150, 0, 8, Target(TARGET_POS, { 179, 293 })));
+    mechanics.emplace_back(new Spread(240, 150, 1, 8, Target(TARGET_POS, { 120, 476 })));
+    mechanics.emplace_back(new Spread(242, 150, 0, 8, Target(TARGET_POS, { 169, 664 })));
+    mechanics.emplace_back(new Spread(244, 150, 1, 8, Target(TARGET_POS, { 281, 822 })));
+    mechanics.emplace_back(new Spread(246, 150, 0, 8, Target(TARGET_POS, { 428, 695 })));
+    mechanics.emplace_back(new Spread(248, 150, 1, 8, Target(TARGET_POS, { 572, 566 })));
+    mechanics.emplace_back(new Spread(250, 150, 0, 8, Target(TARGET_POS, { 714, 435 })));
+    mechanics.emplace_back(new Spread(252, 150, 1, 8, Target(TARGET_POS, { 854, 301 })));
+    mechanics.emplace_back(new Spread(254, 150, 0, 8, Target(TARGET_POS, { 894, 112 })));
+
+    mechanics.emplace_back(new Spread(258, 150, 1, 8, Target(TARGET_POS, { 800, 200 })));
+    mechanics.emplace_back(new Spread(258, 424, 0, 4, Target(TARGET_POS, { 500, 500 })));
+    mechanics.emplace_back(new Spread(264, 150, 1, 8, Target(TARGET_POS, { 800, 800 })));
+    mechanics.emplace_back(new Donut(264, 424, 2000, 0, 4, Target(TARGET_POS, { 500, 500 })));
+    mechanics.emplace_back(new Spread(268, 150, 1, 8, Target(TARGET_POS, { 200, 800 })));
+    mechanics.emplace_back(new Spread(268, 424, 0, 4, Target(TARGET_POS, { 500, 500 })));
+    mechanics.emplace_back(new Spread(272, 150, 1, 8, Target(TARGET_POS, { 200, 200 })));
+    mechanics.emplace_back(new Donut(272, 424, 2000, 0, 4, Target(TARGET_POS, { 500, 500 })));
+
+    
+    mechanics.emplace_back(new EndMap(274));
+
+
+    //music.setPlayingOffset(sf::seconds(52));
+}
+
+void thirdeye(std::vector<Mechanic*>& mechanics, Song& song, sf::Music& music, EntityManager& em)
+{
+    song.addCheckpoint(0, 0);
+
+    mechanics.emplace_back(new Spread(4, 120, 1, 8, Target(TARGET_POS, { 300, 200 }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(4, 120, 1, 8, Target(TARGET_POS, { 700, 200 }), DEBUFF_HAATO, 8, "purple"));
+
+    mechanics.emplace_back(new Spread(8, 120, 1, 8, Target(TARGET_POS, { 700, 400 }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(8, 120, 1, 8, Target(TARGET_POS, { 300, 400 }), DEBUFF_HAATO, 8, "purple"));
+
+    mechanics.emplace_back(new Spread(12, 120, 1, 8, Target(TARGET_POS, { 300, 600 }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(12, 120, 1, 8, Target(TARGET_POS, { 700, 600 }), DEBUFF_HAATO, 8, "purple"));
+
+    mechanics.emplace_back(new Spread(16, 120, 1, 8, Target(TARGET_POS, { 300, 800 }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(16, 120, 1, 8, Target(TARGET_POS, { 700, 800 }), DEBUFF_HAATO, 8, "purple"));
+
+
+    song.addCheckpoint(17, 26);
+
+    mechanics.emplace_back(new ActivateTotem(28, Target(TARGET_ENTITY, TARGET_TOTEMS, 0), true, 0xFFFFFFFF, 15));
+    mechanics.emplace_back(new MoveEntity(28, Target(TARGET_ENTITY, TARGET_TOTEMS, 0), Target(TARGET_POS, { 500, 500 }), 1000, true));
+    mechanics.emplace_back(new TetherIndicator(28, Target(TARGET_ENTITY, TARGET_TOTEMS, 0, TARGET_FOLLOW), Target(TARGET_CLOSEST, TARGET_PLAYERS, 0, new Target(TARGET_ENTITY, TARGET_TOTEMS, 0, TARGET_FOLLOW), TARGET_FOLLOW), 30));
+
+
+    for (int i = 0; i < 6; i++) {
+        mechanics.emplace_back(new ApplyDebuff(32 + 2 * i, Target(TARGET_CLOSEST, TARGET_PLAYERS, 0, new Target(TARGET_ENTITY, TARGET_TOTEMS, 0), TARGET_FOLLOW), DEBUFF_EYE1, 32));
+    }
+
+    mechanics.emplace_back(new ApplyDebuff(46.5, Target(TARGET_ENTITY, TARGET_PLAYERS, 0), DEBUFF_EYER, 2));
+    mechanics.emplace_back(new ApplyDebuff(46.5, Target(TARGET_ENTITY, TARGET_PLAYERS, 1), DEBUFF_EYER, 2));
+
+    mechanics.emplace_back(new DisplayImage(47.5, "Beatmaps/239584/sasasasasa.png", 2, Target(TARGET_POS, { 0, 270 })));
+    mechanics.emplace_back(new DisplayImage(47.5, "Beatmaps/239584/saadaiya.png", 1, Target(TARGET_POS, { 0, 425 })));
+
+    
+    for (int i = 0; i < 6; i++) {
+        mechanics.emplace_back(new ApplyDebuff(48 + 2 * i, Target(TARGET_CLOSEST, TARGET_PLAYERS, 0, new Target(TARGET_ENTITY, TARGET_TOTEMS, 0), TARGET_FOLLOW), DEBUFF_EYE1, 32));
+    }
+
+    mechanics.emplace_back(new ApplyDebuff(62.5, Target(TARGET_ENTITY, TARGET_PLAYERS, 0), DEBUFF_EYER, 2));
+    mechanics.emplace_back(new ApplyDebuff(62.5, Target(TARGET_ENTITY, TARGET_PLAYERS, 1), DEBUFF_EYER, 2));
+
+    mechanics.emplace_back(new DisplayImage(63.5, "Beatmaps/239584/sasasasasa.png", 2, Target(TARGET_POS, { 0, 270 })));
+    mechanics.emplace_back(new DisplayImage(63.5, "Beatmaps/239584/saadaiya.png", 1, Target(TARGET_POS, { 0, 425 })));
+    
+    mechanics.emplace_back(new ActivateTotem(60, Target(TARGET_ENTITY, TARGET_TOTEMS, 0), false));
+    
+
+
+    song.addCheckpoint(40, 64);
+
+
+    int arrayI[] = {1, 2, 1, 0, 1, 2, 1};
+    int arrayJ[] = {1, 2, 3, 2, 1, 0, 1};
+
+    for (int n = 0; n < 7; n++) {
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                if (i == arrayI[n] && j == arrayJ[n]) continue;
+                mechanics.emplace_back(new Spread(66 + 2*n, 180, 0, 2, Target(TARGET_POS, { 125 + 250.f * i, 125 + 250.f * j })));
+            }
+        }
+    }
+
+    mechanics.emplace_back(new ActivateTotem(78, Target(TARGET_ENTITY, TARGET_TOTEMS, 0), true, 0xFFFFFFFF, 15));
+    mechanics.emplace_back(new MoveEntity(78, Target(TARGET_ENTITY, TARGET_TOTEMS, 0), Target(TARGET_POS, { 500, 500 }), 1000, true));
+    mechanics.emplace_back(new TetherIndicator(78, Target(TARGET_ENTITY, TARGET_TOTEMS, 0, TARGET_FOLLOW), Target(TARGET_CLOSEST, TARGET_PLAYERS, 0, new Target(TARGET_ENTITY, TARGET_TOTEMS, 0, TARGET_FOLLOW), TARGET_FOLLOW), 12));
+
+    int arrayI2[] = { 1, 2, 3, 3, 3, 2};
+    int arrayJ2[] = { 0, 0, 1, 2, 1, 3};
+
+    int arrayI3[] = { 2, 1, 2, 2, 2, 1};
+    int arrayJ3[] = { 1, 1, 2, 1, 2, 2};
+
+    for (int n = 0; n < 6; n++) {
+        mechanics.emplace_back(new ApplyDebuff(80 + 2 * n, Target(TARGET_CLOSEST, TARGET_PLAYERS, 0, new Target(TARGET_ENTITY, TARGET_TOTEMS, 0), TARGET_FOLLOW), DEBUFF_EYE1, 32));
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                if (i == arrayI2[n] && j == arrayJ2[n]) continue;
+                if (i == arrayI3[n] && j == arrayJ3[n]) continue;
+                mechanics.emplace_back(new Spread(80 + 2 * n, 180, 0, 2, Target(TARGET_POS, { 125 + 250.f * i, 125 + 250.f * j })));
+            }
+        }
+    }
+
+
+    mechanics.emplace_back(new ApplyDebuff(94.5, Target(TARGET_ENTITY, TARGET_PLAYERS, 0), DEBUFF_EYER, 2));
+    mechanics.emplace_back(new ApplyDebuff(94.5, Target(TARGET_ENTITY, TARGET_PLAYERS, 1), DEBUFF_EYER, 2));
+
+    mechanics.emplace_back(new DisplayImage(95.5, "Beatmaps/239584/sasasasasa.png", 3, Target(TARGET_POS, { 0, 270 })));
+    mechanics.emplace_back(new DisplayImage(95.5, "Beatmaps/239584/saadaiya.png", 1, Target(TARGET_POS, { 0, 425 })));
+
+    mechanics.emplace_back(new ActivateTotem(90, Target(TARGET_ENTITY, TARGET_TOTEMS, 0), false));
+                                            
+    song.addCheckpoint(62, 95.7);
+
+    mechanics.emplace_back(new ActivateTotem(96, Target(TARGET_ENTITY, TARGET_TOTEMS, 0), true, 0xFFFFFFFF, 15));
+    mechanics.emplace_back(new MoveEntity(96, Target(TARGET_ENTITY, TARGET_TOTEMS, 0), Target(TARGET_POS, { 500, 900 }), 1000, true));
+    mechanics.emplace_back(new TetherIndicator(96, Target(TARGET_ENTITY, TARGET_TOTEMS, 0, TARGET_FOLLOW), Target(TARGET_CLOSEST, TARGET_PLAYERS, 0, new Target(TARGET_ENTITY, TARGET_TOTEMS, 0, TARGET_FOLLOW), TARGET_FOLLOW), 28));
+
+    for (int i = 0; i < 6; i++) {
+        mechanics.emplace_back(new ApplyDebuff(98 + 2 * i, Target(TARGET_CLOSEST, TARGET_PLAYERS, 0, new Target(TARGET_ENTITY, TARGET_TOTEMS, 0), TARGET_FOLLOW), DEBUFF_EYE1, 32));
+    }
+
+
+    mechanics.emplace_back(new Spread(98, 120, 1, 2, Target(TARGET_POS, { 200, 200 }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(100, 120, 1, 2, Target(TARGET_POS, { 300, 400 }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(102, 120, 1, 2, Target(TARGET_POS, { 200, 600 }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(104, 120, 1, 2, Target(TARGET_POS, { 300, 800 }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(106, 120, 1, 2, Target(TARGET_POS, { 400, 600 }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(108, 120, 1, 2, Target(TARGET_POS, { 300, 400 }), DEBUFF_GAADO, 8, "blue"));
+
+
+    mechanics.emplace_back(new Spread(98, 120, 1, 2, Target(TARGET_POS, { 800, 200 }), DEBUFF_HAATO, 8, "purple"));
+    mechanics.emplace_back(new Spread(100, 120, 1, 2, Target(TARGET_POS, { 700, 400 }), DEBUFF_HAATO, 8, "purple"));
+    mechanics.emplace_back(new Spread(102, 120, 1, 2, Target(TARGET_POS, { 800, 600 }), DEBUFF_HAATO, 8, "purple"));
+    mechanics.emplace_back(new Spread(104, 120, 1, 2, Target(TARGET_POS, { 700, 800 }), DEBUFF_HAATO, 8, "purple"));
+    mechanics.emplace_back(new Spread(106, 120, 1, 2, Target(TARGET_POS, { 600, 600 }), DEBUFF_HAATO, 8, "purple"));
+    mechanics.emplace_back(new Spread(108, 120, 1, 2, Target(TARGET_POS, { 700, 400 }), DEBUFF_HAATO, 8, "purple"));
+
+    mechanics.emplace_back(new ApplyDebuff(110.5, Target(TARGET_ENTITY, TARGET_PLAYERS, 0), DEBUFF_EYER, 2));
+    mechanics.emplace_back(new ApplyDebuff(110.5, Target(TARGET_ENTITY, TARGET_PLAYERS, 1), DEBUFF_EYER, 2));
+
+    mechanics.emplace_back(new DisplayImage(111.5, "Beatmaps/239584/sasasasasa.png", 2, Target(TARGET_POS, { 0, 270 })));
+    mechanics.emplace_back(new DisplayImage(111.5, "Beatmaps/239584/saadaiya.png", 1, Target(TARGET_POS, { 0, 425 })));
+
+
+    for (int i = 0; i < 6; i++) {
+        mechanics.emplace_back(new ApplyDebuff(114 + 2 * i, Target(TARGET_CLOSEST, TARGET_PLAYERS, 0, new Target(TARGET_ENTITY, TARGET_TOTEMS, 0), TARGET_FOLLOW), DEBUFF_EYE1, 32));
+    }
+
+
+    mechanics.emplace_back(new Spread(114, 120, 1, 2, Target(TARGET_POS, { 200, 200 }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(116, 120, 1, 2, Target(TARGET_POS, { 300, 400 }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(118, 120, 1, 2, Target(TARGET_POS, { 200, 600 }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(120, 120, 1, 2, Target(TARGET_POS, { 300, 800 }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(122, 120, 1, 2, Target(TARGET_POS, { 400, 600 }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(124, 120, 1, 2, Target(TARGET_POS, { 300, 400 }), DEBUFF_GAADO, 8, "blue"));
+
+
+    mechanics.emplace_back(new Spread(114, 120, 1, 2, Target(TARGET_POS, { 800, 200 }), DEBUFF_HAATO, 8, "purple"));
+    mechanics.emplace_back(new Spread(116, 120, 1, 2, Target(TARGET_POS, { 700, 400 }), DEBUFF_HAATO, 8, "purple"));
+    mechanics.emplace_back(new Spread(118, 120, 1, 2, Target(TARGET_POS, { 800, 600 }), DEBUFF_HAATO, 8, "purple"));
+    mechanics.emplace_back(new Spread(120, 120, 1, 2, Target(TARGET_POS, { 700, 800 }), DEBUFF_HAATO, 8, "purple"));
+    mechanics.emplace_back(new Spread(122, 120, 1, 2, Target(TARGET_POS, { 600, 600 }), DEBUFF_HAATO, 8, "purple"));
+    mechanics.emplace_back(new Spread(124, 120, 1, 2, Target(TARGET_POS, { 700, 400 }), DEBUFF_HAATO, 8, "purple"));
+
+    mechanics.emplace_back(new ApplyDebuff(126.5, Target(TARGET_ENTITY, TARGET_PLAYERS, 0), DEBUFF_EYER, 2));
+    mechanics.emplace_back(new ApplyDebuff(126.5, Target(TARGET_ENTITY, TARGET_PLAYERS, 1), DEBUFF_EYER, 2));
+
+    mechanics.emplace_back(new DisplayImage(127.5, "Beatmaps/239584/sasasasasa.png", 2, Target(TARGET_POS, { 0, 270 })));
+    mechanics.emplace_back(new DisplayImage(127.5, "Beatmaps/239584/saadaiya.png", 1, Target(TARGET_POS, { 0, 425 })));
+
+    mechanics.emplace_back(new ActivateTotem(124, Target(TARGET_ENTITY, TARGET_TOTEMS, 0), false));
+
+    song.addCheckpoint(83, 128);
+
+    mechanics.emplace_back(new Spread(130, 120, 1, 2, Target(TARGET_POS, { 300, 200 }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(132, 120, 1, 2, Target(TARGET_POS, { 300, 300 }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(134, 120, 1, 2, Target(TARGET_POS, { 300, 400 }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(136, 120, 1, 2, Target(TARGET_POS, { 700, 500 }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(138, 120, 1, 2, Target(TARGET_POS, { 700, 600 }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(140, 120, 1, 2, Target(TARGET_POS, { 700, 700 }), DEBUFF_GAADO, 8, "blue"));
+
+    mechanics.emplace_back(new Spread(130, 120, 1, 2, Target(TARGET_POS, { 700, 200 }), DEBUFF_HAATO, 8, "purple"));
+    mechanics.emplace_back(new Spread(132, 120, 1, 2, Target(TARGET_POS, { 700, 300 }), DEBUFF_HAATO, 8, "purple"));
+    mechanics.emplace_back(new Spread(134, 120, 1, 2, Target(TARGET_POS, { 700, 400 }), DEBUFF_HAATO, 8, "purple"));
+    mechanics.emplace_back(new Spread(136, 120, 1, 2, Target(TARGET_POS, { 300, 500 }), DEBUFF_HAATO, 8, "purple"));
+    mechanics.emplace_back(new Spread(138, 120, 1, 2, Target(TARGET_POS, { 300, 600 }), DEBUFF_HAATO, 8, "purple"));
+    mechanics.emplace_back(new Spread(140, 120, 1, 2, Target(TARGET_POS, { 300, 700 }), DEBUFF_HAATO, 8, "purple"));
+
+
+    mechanics.emplace_back(new ActivateTotem(142, Target(TARGET_ENTITY, TARGET_TOTEMS, 0), true, 0xFFFFFFFF, 15));
+    mechanics.emplace_back(new MoveEntity(142, Target(TARGET_ENTITY, TARGET_TOTEMS, 0), Target(TARGET_POS, { 500, 900 }), 1000, true));
+    mechanics.emplace_back(new TetherIndicator(142, Target(TARGET_ENTITY, TARGET_TOTEMS, 0, TARGET_FOLLOW), Target(TARGET_CLOSEST, TARGET_PLAYERS, 0, new Target(TARGET_ENTITY, TARGET_TOTEMS, 0, TARGET_FOLLOW), TARGET_FOLLOW), 12));
+
+    for (int i = 0; i < 6; i++) {
+        mechanics.emplace_back(new ApplyDebuff(144 + 2 * i, Target(TARGET_CLOSEST, TARGET_PLAYERS, 0, new Target(TARGET_ENTITY, TARGET_TOTEMS, 0), TARGET_FOLLOW), DEBUFF_EYE1, 32));
+    }
+
+    mechanics.emplace_back(new Spread(144, 120, 1, 2, Target(TARGET_POS, {300, 200}), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(146, 120, 1, 2, Target(TARGET_POS, { 300, 300 }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(148, 120, 1, 2, Target(TARGET_POS, { 300, 400 }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(150, 120, 1, 2, Target(TARGET_POS, { 700, 500 }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(152, 120, 1, 2, Target(TARGET_POS, { 700, 600 }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(154, 120, 1, 2, Target(TARGET_POS, { 700, 700 }), DEBUFF_GAADO, 8, "blue"));
+
+    mechanics.emplace_back(new Spread(144, 120, 1, 2, Target(TARGET_POS, { 700, 200 }), DEBUFF_HAATO, 8, "purple"));
+    mechanics.emplace_back(new Spread(146, 120, 1, 2, Target(TARGET_POS, { 700, 300 }), DEBUFF_HAATO, 8, "purple"));
+    mechanics.emplace_back(new Spread(148, 120, 1, 2, Target(TARGET_POS, { 700, 400 }), DEBUFF_HAATO, 8, "purple"));
+    mechanics.emplace_back(new Spread(150, 120, 1, 2, Target(TARGET_POS, { 300, 500 }), DEBUFF_HAATO, 8, "purple"));
+    mechanics.emplace_back(new Spread(152, 120, 1, 2, Target(TARGET_POS, { 300, 600 }), DEBUFF_HAATO, 8, "purple"));
+    mechanics.emplace_back(new Spread(154, 120, 1, 2, Target(TARGET_POS, { 300, 700 }), DEBUFF_HAATO, 8, "purple"));
+
+    mechanics.emplace_back(new ApplyDebuff(158.5, Target(TARGET_ENTITY, TARGET_PLAYERS, 0), DEBUFF_EYER, 2));
+    mechanics.emplace_back(new ApplyDebuff(158.5, Target(TARGET_ENTITY, TARGET_PLAYERS, 1), DEBUFF_EYER, 2));
+
+    mechanics.emplace_back(new DisplayImage(159.5, "Beatmaps/239584/sasasasasa.png", 2, Target(TARGET_POS, { 0, 270 })));
+    mechanics.emplace_back(new DisplayImage(159.5, "Beatmaps/239584/saadaiya.png", 1, Target(TARGET_POS, { 0, 425 })));
+
+    mechanics.emplace_back(new ActivateTotem(156, Target(TARGET_ENTITY, TARGET_TOTEMS, 0), false));
+
+
+    song.addCheckpoint(105, 159.7);
+
+    for (int i = 0; i < 6; i++) {
+        mechanics.emplace_back(new ApplyDebuff(162 + 2 * i, Target(TARGET_CLOSEST, TARGET_PLAYERS, 0, new Target(TARGET_ENTITY, TARGET_TOTEMS, 0), TARGET_FOLLOW), DEBUFF_EYE1, 32));
+    }
+
+    mechanics.emplace_back(new ActivateTotem(160, Target(TARGET_ENTITY, TARGET_TOTEMS, 0), true, 0xFFFFFFFF, 15));
+    mechanics.emplace_back(new MoveEntity(160, Target(TARGET_ENTITY, TARGET_TOTEMS, 0), Target(TARGET_POS, { 500, 500 }), 1000, true));
+    mechanics.emplace_back(new TetherIndicator(160, Target(TARGET_ENTITY, TARGET_TOTEMS, 0, TARGET_FOLLOW), Target(TARGET_CLOSEST, TARGET_PLAYERS, 0, new Target(TARGET_ENTITY, TARGET_TOTEMS, 0, TARGET_FOLLOW), TARGET_FOLLOW), 28));
+
+
+    mechanics.emplace_back(new Spread(162, 120, 1, 2, Target(TARGET_POS, { 500 + 250 * std::sin(0 * PI / 6), 500 + 250 * std::cos(0 * PI / 6) }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(166, 120, 1, 2, Target(TARGET_POS, { 500 + 250 * std::sin(2 * PI / 6), 500 + 250 * std::cos(2 * PI / 6) }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(170, 120, 1, 2, Target(TARGET_POS, { 500 + 250 * std::sin(4 * PI / 6), 500 + 250 * std::cos(4 * PI / 6) }), DEBUFF_GAADO, 8, "blue"));
+                                                                                                                                           
+    mechanics.emplace_back(new Spread(164, 120, 1, 2, Target(TARGET_POS, { 500 + 250 * std::sin(1 * PI / 6), 500 + 250 * std::cos(1 * PI / 6) }), DEBUFF_HAATO, 8, "purple"));
+    mechanics.emplace_back(new Spread(168, 120, 1, 2, Target(TARGET_POS, { 500 + 250 * std::sin(3 * PI / 6), 500 + 250 * std::cos(3 * PI / 6) }), DEBUFF_HAATO, 8, "purple"));
+    mechanics.emplace_back(new Spread(172, 120, 1, 2, Target(TARGET_POS, { 500 + 250 * std::sin(5 * PI / 6), 500 + 250 * std::cos(5 * PI / 6) }), DEBUFF_HAATO, 8, "purple"));
+                                                                                                         
+                                                                                                         
+    mechanics.emplace_back(new Spread(162, 120, 1, 2, Target(TARGET_POS, { 500 + 250 * std::sin(0 * PI / 6 + PI), 500 + 250 * std::cos(0 * PI / 6 + PI) }), DEBUFF_HAATO, 8, "purple"));
+    mechanics.emplace_back(new Spread(166, 120, 1, 2, Target(TARGET_POS, { 500 + 250 * std::sin(2 * PI / 6 + PI), 500 + 250 * std::cos(2 * PI / 6 + PI) }), DEBUFF_HAATO, 8, "purple"));
+    mechanics.emplace_back(new Spread(170, 120, 1, 2, Target(TARGET_POS, { 500 + 250 * std::sin(4 * PI / 6 + PI), 500 + 250 * std::cos(4 * PI / 6 + PI) }), DEBUFF_HAATO, 8, "purple"));
+
+    mechanics.emplace_back(new Spread(164, 120, 1, 2, Target(TARGET_POS, { 500 + 250 * std::sin(1 * PI / 6 + PI), 500 + 250 * std::cos(1 * PI / 6 + PI) }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(168, 120, 1, 2, Target(TARGET_POS, { 500 + 250 * std::sin(3 * PI / 6 + PI), 500 + 250 * std::cos(3 * PI / 6 + PI) }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(172, 120, 1, 2, Target(TARGET_POS, { 500 + 250 * std::sin(5 * PI / 6 + PI), 500 + 250 * std::cos(5 * PI / 6 + PI) }), DEBUFF_GAADO, 8, "blue"));
+
+    mechanics.emplace_back(new ApplyDebuff(174.5, Target(TARGET_ENTITY, TARGET_PLAYERS, 0), DEBUFF_EYER, 2));
+    mechanics.emplace_back(new ApplyDebuff(174.5, Target(TARGET_ENTITY, TARGET_PLAYERS, 1), DEBUFF_EYER, 2));
+
+    mechanics.emplace_back(new DisplayImage(175.5, "Beatmaps/239584/sasasasasa.png", 2, Target(TARGET_POS, { 0, 270 })));
+    mechanics.emplace_back(new DisplayImage(175.5, "Beatmaps/239584/saadaiya.png", 1, Target(TARGET_POS, { 0, 425 })));
+
+
+
+
+    for (int i = 0; i < 6; i++) {
+        mechanics.emplace_back(new ApplyDebuff(178 + 2 * i, Target(TARGET_CLOSEST, TARGET_PLAYERS, 0, new Target(TARGET_ENTITY, TARGET_TOTEMS, 0), TARGET_FOLLOW), DEBUFF_EYE1, 32));
+    }
+
+    mechanics.emplace_back(new Spread(178, 120, 1, 2, Target(TARGET_POS, { 500 + 250 * std::sin(0 * PI / 6), 500 + 250 * std::cos(0 * PI / 6) }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(182, 120, 1, 2, Target(TARGET_POS, { 500 + 250 * std::sin(2 * PI / 6), 500 + 250 * std::cos(2 * PI / 6) }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(186, 120, 1, 2, Target(TARGET_POS, { 500 + 250 * std::sin(4 * PI / 6), 500 + 250 * std::cos(4 * PI / 6) }), DEBUFF_GAADO, 8, "blue"));
+                                                                                                                                           
+    mechanics.emplace_back(new Spread(180, 120, 1, 2, Target(TARGET_POS, { 500 + 250 * std::sin(1 * PI / 6), 500 + 250 * std::cos(1 * PI / 6) }), DEBUFF_HAATO, 8, "purple"));
+    mechanics.emplace_back(new Spread(184, 120, 1, 2, Target(TARGET_POS, { 500 + 250 * std::sin(3 * PI / 6), 500 + 250 * std::cos(3 * PI / 6) }), DEBUFF_HAATO, 8, "purple"));
+    mechanics.emplace_back(new Spread(188, 120, 1, 2, Target(TARGET_POS, { 500 + 250 * std::sin(5 * PI / 6), 500 + 250 * std::cos(5 * PI / 6) }), DEBUFF_HAATO, 8, "purple"));
+                                                                                                         
+                                                                                                         
+    mechanics.emplace_back(new Spread(178, 120, 1, 2, Target(TARGET_POS, { 500 + 250 * std::sin(0 * PI / 6 + PI), 500 + 250 * std::cos(0 * PI / 6 + PI) }), DEBUFF_HAATO, 8, "purple"));
+    mechanics.emplace_back(new Spread(182, 120, 1, 2, Target(TARGET_POS, { 500 + 250 * std::sin(2 * PI / 6 + PI), 500 + 250 * std::cos(2 * PI / 6 + PI) }), DEBUFF_HAATO, 8, "purple"));
+    mechanics.emplace_back(new Spread(186, 120, 1, 2, Target(TARGET_POS, { 500 + 250 * std::sin(4 * PI / 6 + PI), 500 + 250 * std::cos(4 * PI / 6 + PI) }), DEBUFF_HAATO, 8, "purple"));
+                                                                                                                                                                          
+    mechanics.emplace_back(new Spread(180, 120, 1, 2, Target(TARGET_POS, { 500 + 250 * std::sin(1 * PI / 6 + PI), 500 + 250 * std::cos(1 * PI / 6 + PI) }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(184, 120, 1, 2, Target(TARGET_POS, { 500 + 250 * std::sin(3 * PI / 6 + PI), 500 + 250 * std::cos(3 * PI / 6 + PI) }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(188, 120, 1, 2, Target(TARGET_POS, { 500 + 250 * std::sin(5 * PI / 6 + PI), 500 + 250 * std::cos(5 * PI / 6 + PI) }), DEBUFF_GAADO, 8, "blue"));
+
+    mechanics.emplace_back(new ApplyDebuff(190.5, Target(TARGET_ENTITY, TARGET_PLAYERS, 0), DEBUFF_EYER, 2));
+    mechanics.emplace_back(new ApplyDebuff(190.5, Target(TARGET_ENTITY, TARGET_PLAYERS, 1), DEBUFF_EYER, 2));
+
+    mechanics.emplace_back(new DisplayImage(191.5, "Beatmaps/239584/sasasasasa.png", 2, Target(TARGET_POS, { 0, 270 })));
+    mechanics.emplace_back(new DisplayImage(191.5, "Beatmaps/239584/saadaiya.png", 1, Target(TARGET_POS, { 0, 425 })));
+    
+    mechanics.emplace_back(new ActivateTotem(190, Target(TARGET_ENTITY, TARGET_TOTEMS, 0), false));
+
+    song.addCheckpoint(139, 207);
+
+    mechanics.emplace_back(new Spread(210, 120, 1, 2, Target(TARGET_POS, { 300, 200 }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(214, 120, 1, 2, Target(TARGET_POS, { 300, 400 }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(218, 120, 1, 2, Target(TARGET_POS, { 300, 600 }), DEBUFF_GAADO, 8, "blue"));
+
+    mechanics.emplace_back(new Spread(212, 120, 1, 2, Target(TARGET_POS, { 300, 300 }), DEBUFF_HAATO, 8, "purple"));
+    mechanics.emplace_back(new Spread(216, 120, 1, 2, Target(TARGET_POS, { 300, 500 }), DEBUFF_HAATO, 8, "purple"));
+    mechanics.emplace_back(new Spread(220, 120, 1, 2, Target(TARGET_POS, { 300, 700 }), DEBUFF_HAATO, 8, "purple"));
+
+    mechanics.emplace_back(new Spread(212, 120, 1, 2, Target(TARGET_POS, { 700, 300 }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(216, 120, 1, 2, Target(TARGET_POS, { 700, 500 }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(220, 120, 1, 2, Target(TARGET_POS, { 700, 700 }), DEBUFF_GAADO, 8, "blue"));
+
+    mechanics.emplace_back(new Spread(210, 120, 1, 2, Target(TARGET_POS, { 700, 200 }), DEBUFF_HAATO, 8, "purple"));
+    mechanics.emplace_back(new Spread(214, 120, 1, 2, Target(TARGET_POS, { 700, 400 }), DEBUFF_HAATO, 8, "purple"));
+    mechanics.emplace_back(new Spread(218, 120, 1, 2, Target(TARGET_POS, { 700, 600 }), DEBUFF_HAATO, 8, "purple"));
+
+
+    int arrayI4[] = { 2, 1, 0, 1, 2, 3, 2 };
+    int arrayJ4[] = { 2, 1, 2, 3, 2, 3, 2 };
+
+    for (int n = 0; n < 7; n++) {
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                if (i == arrayI4[n] && j == arrayJ4[n]) continue;
+                mechanics.emplace_back(new Spread(234 + 2 * n, 180, 0, 2, Target(TARGET_POS, { 125 + 250.f * i, 125 + 250.f * j })));
+            }
+        }
+    }
+
+    mechanics.emplace_back(new ActivateTotem(246, Target(TARGET_ENTITY, TARGET_TOTEMS, 0), true, 0xFFFFFFFF, 15));
+    mechanics.emplace_back(new MoveEntity(246, Target(TARGET_ENTITY, TARGET_TOTEMS, 0), Target(TARGET_POS, { 500, 500 }), 1000, true));
+    mechanics.emplace_back(new TetherIndicator(246, Target(TARGET_ENTITY, TARGET_TOTEMS, 0, TARGET_FOLLOW), Target(TARGET_CLOSEST, TARGET_PLAYERS, 0, new Target(TARGET_ENTITY, TARGET_TOTEMS, 0, TARGET_FOLLOW), TARGET_FOLLOW), 12));
+
+    int arrayI5[] = { 1, 1, 2, 3, 2, 2 };
+    int arrayJ5[] = { 3, 2, 2, 2, 2, 1 };
+
+    int arrayI6[] = { 2, 2, 1, 1, 1, 1 };
+    int arrayJ6[] = { 1, 0, 0, 1, 2, 1 };
+
+    for (int n = 0; n < 6; n++) {
+        mechanics.emplace_back(new ApplyDebuff(248 + 2 * n, Target(TARGET_CLOSEST, TARGET_PLAYERS, 0, new Target(TARGET_ENTITY, TARGET_TOTEMS, 0), TARGET_FOLLOW), DEBUFF_EYE1, 32));
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                if (i == arrayI5[n] && j == arrayJ5[n]) {
+                    if(n%2 == 0)
+                        mechanics.emplace_back(new Spread(248 + 2 * n, 120, 1, 2, Target(TARGET_POS, { 125 + 250.f * i, 125 + 250.f * j }), DEBUFF_GAADO, 8, "blue"));
+                    else
+                        mechanics.emplace_back(new Spread(248 + 2 * n, 120, 1, 2, Target(TARGET_POS, { 125 + 250.f * i, 125 + 250.f * j }), DEBUFF_HAATO, 8, "purple"));
+                }
+                else if (i == arrayI6[n] && j == arrayJ6[n]) {
+                    if (n % 2 == 1)
+                        mechanics.emplace_back(new Spread(248 + 2 * n, 120, 1, 2, Target(TARGET_POS, { 125 + 250.f * i, 125 + 250.f * j }), DEBUFF_GAADO, 8, "blue"));
+                    else
+                        mechanics.emplace_back(new Spread(248 + 2 * n, 120, 1, 2, Target(TARGET_POS, { 125 + 250.f * i, 125 + 250.f * j }), DEBUFF_HAATO, 8, "purple"));
+
+                }
+
+                else
+                    mechanics.emplace_back(new Spread(248 + 2 * n, 180, 0, 2, Target(TARGET_POS, { 125 + 250.f * i, 125 + 250.f * j })));
+            }
+        }
+    }
+
+    mechanics.emplace_back(new ApplyDebuff(262.5, Target(TARGET_ENTITY, TARGET_PLAYERS, 0), DEBUFF_EYER, 2));
+    mechanics.emplace_back(new ApplyDebuff(262.5, Target(TARGET_ENTITY, TARGET_PLAYERS, 1), DEBUFF_EYER, 2));
+
+    mechanics.emplace_back(new DisplayImage(263.5, "Beatmaps/239584/sasasasasa.png", 3, Target(TARGET_POS, { 0, 270 })));
+    mechanics.emplace_back(new DisplayImage(263.5, "Beatmaps/239584/saadaiya.png", 1, Target(TARGET_POS, { 0, 425 })));
+
+    mechanics.emplace_back(new ActivateTotem(258, Target(TARGET_ENTITY, TARGET_TOTEMS, 0), false));
+
+    song.addCheckpoint(175, 264);
+
+    for (int i = 0; i < 6; i++) {
+        mechanics.emplace_back(new ApplyDebuff(266 + 2 * i, Target(TARGET_CLOSEST, TARGET_PLAYERS, 0, new Target(TARGET_ENTITY, TARGET_TOTEMS, 0), TARGET_FOLLOW), DEBUFF_EYE1, 32));
+    }
+
+    mechanics.emplace_back(new ActivateTotem(264, Target(TARGET_ENTITY, TARGET_TOTEMS, 0), true, 0xFFFFFFFF, 15));
+    mechanics.emplace_back(new MoveEntity(264, Target(TARGET_ENTITY, TARGET_TOTEMS, 0), Target(TARGET_POS, { 500, 500 }), 1000, true));
+    mechanics.emplace_back(new TetherIndicator(264, Target(TARGET_ENTITY, TARGET_TOTEMS, 0, TARGET_FOLLOW), Target(TARGET_CLOSEST, TARGET_PLAYERS, 0, new Target(TARGET_ENTITY, TARGET_TOTEMS, 0, TARGET_FOLLOW), TARGET_FOLLOW), 28));
+
+
+    mechanics.emplace_back(new Spread(266, 120, 1, 2, Target(TARGET_POS, { 500 + 250 * std::sin(0 * PI / 6), 500 + 250 * std::cos(0 * PI / 6) }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(268, 120, 1, 2, Target(TARGET_POS, { 500 + 250 * std::sin(1 * PI / 6), 500 + 250 * std::cos(1 * PI / 6) }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(270, 120, 1, 2, Target(TARGET_POS, { 500 + 250 * std::sin(2 * PI / 6), 500 + 250 * std::cos(2 * PI / 6) }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(272, 120, 1, 2, Target(TARGET_POS, { 500 + 250 * std::sin(3 * PI / 6), 500 + 250 * std::cos(3 * PI / 6) }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(274, 120, 1, 2, Target(TARGET_POS, { 500 + 250 * std::sin(4 * PI / 6), 500 + 250 * std::cos(4 * PI / 6) }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(276, 120, 1, 2, Target(TARGET_POS, { 500 + 250 * std::sin(5 * PI / 6), 500 + 250 * std::cos(5 * PI / 6) }), DEBUFF_GAADO, 8, "blue"));
+
+    mechanics.emplace_back(new Spread(266, 120, 1, 2, Target(TARGET_POS, { 500 + 250 * std::sin(0 * PI / 6 + PI), 500 + 250 * std::cos(0 * PI / 6 + PI) }), DEBUFF_HAATO, 8, "purple"));
+    mechanics.emplace_back(new Spread(268, 120, 1, 2, Target(TARGET_POS, { 500 + 250 * std::sin(1 * PI / 6 + PI), 500 + 250 * std::cos(1 * PI / 6 + PI) }), DEBUFF_HAATO, 8, "purple"));
+    mechanics.emplace_back(new Spread(270, 120, 1, 2, Target(TARGET_POS, { 500 + 250 * std::sin(2 * PI / 6 + PI), 500 + 250 * std::cos(2 * PI / 6 + PI) }), DEBUFF_HAATO, 8, "purple"));
+    mechanics.emplace_back(new Spread(272, 120, 1, 2, Target(TARGET_POS, { 500 + 250 * std::sin(3 * PI / 6 + PI), 500 + 250 * std::cos(3 * PI / 6 + PI) }), DEBUFF_HAATO, 8, "purple"));
+    mechanics.emplace_back(new Spread(274, 120, 1, 2, Target(TARGET_POS, { 500 + 250 * std::sin(4 * PI / 6 + PI), 500 + 250 * std::cos(4 * PI / 6 + PI) }), DEBUFF_HAATO, 8, "purple"));
+    mechanics.emplace_back(new Spread(276, 120, 1, 2, Target(TARGET_POS, { 500 + 250 * std::sin(5 * PI / 6 + PI), 500 + 250 * std::cos(5 * PI / 6 + PI) }), DEBUFF_HAATO, 8, "purple"));
+
+    mechanics.emplace_back(new ApplyDebuff(278.5, Target(TARGET_ENTITY, TARGET_PLAYERS, 0), DEBUFF_EYER, 2));
+    mechanics.emplace_back(new ApplyDebuff(278.5, Target(TARGET_ENTITY, TARGET_PLAYERS, 1), DEBUFF_EYER, 2));
+
+    mechanics.emplace_back(new DisplayImage(279.5, "Beatmaps/239584/sasasasasa.png", 2, Target(TARGET_POS, { 0, 270 })));
+    mechanics.emplace_back(new DisplayImage(279.5, "Beatmaps/239584/saadaiya.png", 1, Target(TARGET_POS, { 0, 425 })));
+
+
+    for (int i = 0; i < 6; i++) {
+        mechanics.emplace_back(new ApplyDebuff(282 + 2 * i, Target(TARGET_CLOSEST, TARGET_PLAYERS, 0, new Target(TARGET_ENTITY, TARGET_TOTEMS, 0), TARGET_FOLLOW), DEBUFF_EYE1, 32));
+    }
+
+    mechanics.emplace_back(new Spread(282, 120, 1, 2, Target(TARGET_POS, { 500 + 250 * std::sin(0 * PI / 6), 500 + 250 * std::cos(0 * PI / 6) }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(284, 120, 1, 2, Target(TARGET_POS, { 500 + 250 * std::sin(1 * PI / 6), 500 + 250 * std::cos(1 * PI / 6) }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(286, 120, 1, 2, Target(TARGET_POS, { 500 + 250 * std::sin(2 * PI / 6), 500 + 250 * std::cos(2 * PI / 6) }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(288, 120, 1, 2, Target(TARGET_POS, { 500 + 250 * std::sin(3 * PI / 6), 500 + 250 * std::cos(3 * PI / 6) }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(290, 120, 1, 2, Target(TARGET_POS, { 500 + 250 * std::sin(4 * PI / 6), 500 + 250 * std::cos(4 * PI / 6) }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(292, 120, 1, 2, Target(TARGET_POS, { 500 + 250 * std::sin(5 * PI / 6), 500 + 250 * std::cos(5 * PI / 6) }), DEBUFF_GAADO, 8, "blue"));
+
+    mechanics.emplace_back(new Spread(282, 120, 1, 2, Target(TARGET_POS, { 500 + 250 * std::sin(0 * PI / 6 + PI), 500 + 250 * std::cos(0 * PI / 6 + PI) }), DEBUFF_HAATO, 8, "purple"));
+    mechanics.emplace_back(new Spread(284, 120, 1, 2, Target(TARGET_POS, { 500 + 250 * std::sin(1 * PI / 6 + PI), 500 + 250 * std::cos(1 * PI / 6 + PI) }), DEBUFF_HAATO, 8, "purple"));
+    mechanics.emplace_back(new Spread(286, 120, 1, 2, Target(TARGET_POS, { 500 + 250 * std::sin(2 * PI / 6 + PI), 500 + 250 * std::cos(2 * PI / 6 + PI) }), DEBUFF_HAATO, 8, "purple"));
+    mechanics.emplace_back(new Spread(288, 120, 1, 2, Target(TARGET_POS, { 500 + 250 * std::sin(3 * PI / 6 + PI), 500 + 250 * std::cos(3 * PI / 6 + PI) }), DEBUFF_HAATO, 8, "purple"));
+    mechanics.emplace_back(new Spread(290, 120, 1, 2, Target(TARGET_POS, { 500 + 250 * std::sin(4 * PI / 6 + PI), 500 + 250 * std::cos(4 * PI / 6 + PI) }), DEBUFF_HAATO, 8, "purple"));
+    mechanics.emplace_back(new Spread(292, 120, 1, 2, Target(TARGET_POS, { 500 + 250 * std::sin(5 * PI / 6 + PI), 500 + 250 * std::cos(5 * PI / 6 + PI) }), DEBUFF_HAATO, 8, "purple"));
+
+    mechanics.emplace_back(new ApplyDebuff(294.5, Target(TARGET_ENTITY, TARGET_PLAYERS, 0), DEBUFF_EYER, 2));
+    mechanics.emplace_back(new ApplyDebuff(294.5, Target(TARGET_ENTITY, TARGET_PLAYERS, 1), DEBUFF_EYER, 2));
+
+    mechanics.emplace_back(new DisplayImage(295.5, "Beatmaps/239584/sasasasasa.png", 2, Target(TARGET_POS, { 0, 270 })));
+    mechanics.emplace_back(new DisplayImage(295.5, "Beatmaps/239584/saadaiya.png", 1, Target(TARGET_POS, { 0, 425 })));
+
+    mechanics.emplace_back(new ActivateTotem(292, Target(TARGET_ENTITY, TARGET_TOTEMS, 0), false));
+
+    song.addCheckpoint(198, 296);
+
+    mechanics.emplace_back(new Spread(298, 120, 1, 2, Target(TARGET_POS, { 100, 100 }), DEBUFF_HAATO, 8, "purple"));
+    mechanics.emplace_back(new Spread(300, 120, 1, 2, Target(TARGET_POS, { 229, 212 }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(302, 120, 1, 2, Target(TARGET_POS, { 219, 392 }), DEBUFF_HAATO, 8, "purple"));
+    mechanics.emplace_back(new Spread(304, 120, 1, 2, Target(TARGET_POS, { 231, 553 }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(306, 120, 1, 2, Target(TARGET_POS, { 330, 692 }), DEBUFF_HAATO, 8, "purple"));
+    mechanics.emplace_back(new Spread(308, 120, 1, 2, Target(TARGET_POS, { 500, 686 }), DEBUFF_HAATO, 8, "purple"));
+    mechanics.emplace_back(new Spread(310, 120, 1, 2, Target(TARGET_POS, { 584, 824 }), DEBUFF_GAADO, 8, "blue"));
+
+    mechanics.emplace_back(new Spread(298, 120, 1, 2, Target(TARGET_POS, { 900, 900 }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(300, 120, 1, 2, Target(TARGET_POS, { 771, 787 }), DEBUFF_HAATO, 8, "purple"));
+    mechanics.emplace_back(new Spread(302, 120, 1, 2, Target(TARGET_POS, { 781, 617 }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(304, 120, 1, 2, Target(TARGET_POS, { 769, 447 }), DEBUFF_HAATO, 8, "purple"));
+    mechanics.emplace_back(new Spread(306, 120, 1, 2, Target(TARGET_POS, { 670, 308 }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(308, 120, 1, 2, Target(TARGET_POS, { 500, 165 }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(310, 120, 1, 2, Target(TARGET_POS, { 416, 165 }), DEBUFF_HAATO, 8, "purple"));
+
+
+    mechanics.emplace_back(new ActivateTotem(310, Target(TARGET_ENTITY, TARGET_TOTEMS, 0), true, 0xFFFFFFFF, 15));
+    mechanics.emplace_back(new MoveEntity(310, Target(TARGET_ENTITY, TARGET_TOTEMS, 0), Target(TARGET_POS, { 500, 500 }), 1000, true));
+    mechanics.emplace_back(new TetherIndicator(310, Target(TARGET_ENTITY, TARGET_TOTEMS, 0, TARGET_FOLLOW), Target(TARGET_CLOSEST, TARGET_PLAYERS, 0, new Target(TARGET_ENTITY, TARGET_TOTEMS, 0, TARGET_FOLLOW), TARGET_FOLLOW), 12));
+
+    for (int i = 0; i < 6; i++) {
+        mechanics.emplace_back(new ApplyDebuff(312 + 2 * i, Target(TARGET_CLOSEST, TARGET_PLAYERS, 0, new Target(TARGET_ENTITY, TARGET_TOTEMS, 0), TARGET_FOLLOW), DEBUFF_EYE1, 32));
+    }
+
+    mechanics.emplace_back(new Spread(312, 120, 1, 2, Target(TARGET_POS, { 100, 100 }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(314, 120, 1, 2, Target(TARGET_POS, { 260, 260 }), DEBUFF_HAATO, 8, "purple"));
+    mechanics.emplace_back(new Spread(316, 120, 1, 2, Target(TARGET_POS, { 420, 420 }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(318, 120, 1, 2, Target(TARGET_POS, { 420, 580 }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(320, 120, 1, 2, Target(TARGET_POS, { 260, 740 }), DEBUFF_HAATO, 8, "purple"));
+    mechanics.emplace_back(new Spread(322, 120, 1, 2, Target(TARGET_POS, { 100, 900 }), DEBUFF_GAADO, 8, "blue"));
+
+
+    mechanics.emplace_back(new Spread(312, 120, 1, 2, Target(TARGET_POS, { 900, 900 }), DEBUFF_HAATO, 8, "purple"));
+    mechanics.emplace_back(new Spread(314, 120, 1, 2, Target(TARGET_POS, { 740, 740 }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(316, 120, 1, 2, Target(TARGET_POS, { 580, 580 }), DEBUFF_HAATO, 8, "purple"));
+    mechanics.emplace_back(new Spread(318, 120, 1, 2, Target(TARGET_POS, { 580, 420 }), DEBUFF_HAATO, 8, "purple"));
+    mechanics.emplace_back(new Spread(320, 120, 1, 2, Target(TARGET_POS, { 740, 260 }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(322, 120, 1, 2, Target(TARGET_POS, { 900, 100 }), DEBUFF_HAATO, 8, "purple"));
+
+
+    mechanics.emplace_back(new ApplyDebuff(326.5, Target(TARGET_ENTITY, TARGET_PLAYERS, 0), DEBUFF_EYER, 2));
+    mechanics.emplace_back(new ApplyDebuff(326.5, Target(TARGET_ENTITY, TARGET_PLAYERS, 1), DEBUFF_EYER, 2));
+
+    mechanics.emplace_back(new DisplayImage(327.5, "Beatmaps/239584/sasasasasa.png", 2, Target(TARGET_POS, { 0, 270 })));
+    mechanics.emplace_back(new DisplayImage(327.5, "Beatmaps/239584/saadaiya.png", 1, Target(TARGET_POS, { 0, 425 })));
+
+    mechanics.emplace_back(new ActivateTotem(322, Target(TARGET_ENTITY, TARGET_TOTEMS, 0), false));
+
+    song.addCheckpoint(221, 328);
+
+
+    for (int i = 0; i < 6; i++) {
+        mechanics.emplace_back(new ApplyDebuff(330 + 2 * i, Target(TARGET_CLOSEST, TARGET_PLAYERS, 0, new Target(TARGET_ENTITY, TARGET_TOTEMS, 0), TARGET_FOLLOW), DEBUFF_EYE1, 32));
+    }
+
+    mechanics.emplace_back(new ActivateTotem(328, Target(TARGET_ENTITY, TARGET_TOTEMS, 0), true, 0xFFFFFFFF, 15));
+    mechanics.emplace_back(new MoveEntity(328, Target(TARGET_ENTITY, TARGET_TOTEMS, 0), Target(TARGET_POS, { 500, 500 }), 1000, true));
+    mechanics.emplace_back(new TetherIndicator(328, Target(TARGET_ENTITY, TARGET_TOTEMS, 0, TARGET_FOLLOW), Target(TARGET_CLOSEST, TARGET_PLAYERS, 0, new Target(TARGET_ENTITY, TARGET_TOTEMS, 0, TARGET_FOLLOW), TARGET_FOLLOW), 28));
+
+
+    mechanics.emplace_back(new Spread(330, 120, 1, 2, Target(TARGET_POS, { 500 + 250 * std::sin(0 * PI / 6), 500 + 250 * std::cos(0 * PI / 6) }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(332, 120, 1, 2, Target(TARGET_POS, { 500 + 250 * std::sin(1 * PI / 6), 500 + 250 * std::cos(1 * PI / 6) }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(334, 120, 1, 2, Target(TARGET_POS, { 500 + 250 * std::sin(2 * PI / 6), 500 + 250 * std::cos(2 * PI / 6) }), DEBUFF_HAATO, 8, "purple"));
+    mechanics.emplace_back(new Spread(336, 120, 1, 2, Target(TARGET_POS, { 500 + 250 * std::sin(3 * PI / 6), 500 + 250 * std::cos(3 * PI / 6) }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(338, 120, 1, 2, Target(TARGET_POS, { 500 + 250 * std::sin(4 * PI / 6), 500 + 250 * std::cos(4 * PI / 6) }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(340, 120, 1, 2, Target(TARGET_POS, { 500 + 250 * std::sin(5 * PI / 6), 500 + 250 * std::cos(5 * PI / 6) }), DEBUFF_HAATO, 8, "purple"));
+
+    mechanics.emplace_back(new Spread(330, 120, 1, 2, Target(TARGET_POS, { 500 + 250 * std::sin(0 * PI / 6 + PI), 500 + 250 * std::cos(0 * PI / 6 + PI) }), DEBUFF_HAATO, 8, "purple"));
+    mechanics.emplace_back(new Spread(332, 120, 1, 2, Target(TARGET_POS, { 500 + 250 * std::sin(1 * PI / 6 + PI), 500 + 250 * std::cos(1 * PI / 6 + PI) }), DEBUFF_HAATO, 8, "purple"));
+    mechanics.emplace_back(new Spread(334, 120, 1, 2, Target(TARGET_POS, { 500 + 250 * std::sin(2 * PI / 6 + PI), 500 + 250 * std::cos(2 * PI / 6 + PI) }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(336, 120, 1, 2, Target(TARGET_POS, { 500 + 250 * std::sin(3 * PI / 6 + PI), 500 + 250 * std::cos(3 * PI / 6 + PI) }), DEBUFF_HAATO, 8, "purple"));
+    mechanics.emplace_back(new Spread(338, 120, 1, 2, Target(TARGET_POS, { 500 + 250 * std::sin(4 * PI / 6 + PI), 500 + 250 * std::cos(4 * PI / 6 + PI) }), DEBUFF_HAATO, 8, "purple"));
+    mechanics.emplace_back(new Spread(340, 120, 1, 2, Target(TARGET_POS, { 500 + 250 * std::sin(5 * PI / 6 + PI), 500 + 250 * std::cos(5 * PI / 6 + PI) }), DEBUFF_GAADO, 8, "blue"));
+
+    mechanics.emplace_back(new ApplyDebuff(342.5, Target(TARGET_ENTITY, TARGET_PLAYERS, 0), DEBUFF_EYER, 2));
+    mechanics.emplace_back(new ApplyDebuff(342.5, Target(TARGET_ENTITY, TARGET_PLAYERS, 1), DEBUFF_EYER, 2));
+
+    mechanics.emplace_back(new DisplayImage(343.5, "Beatmaps/239584/sasasasasa.png", 2, Target(TARGET_POS, { 0, 270 })));
+    mechanics.emplace_back(new DisplayImage(343.5, "Beatmaps/239584/saadaiya.png", 1, Target(TARGET_POS, { 0, 425 })));
+
+
+
+    for (int i = 0; i < 6; i++) {
+        mechanics.emplace_back(new ApplyDebuff(346 + 2 * i, Target(TARGET_CLOSEST, TARGET_PLAYERS, 0, new Target(TARGET_ENTITY, TARGET_TOTEMS, 0), TARGET_FOLLOW), DEBUFF_EYE1, 32));
+    }
+
+    mechanics.emplace_back(new Spread(346, 120, 1, 2, Target(TARGET_POS, { 500 + 250 * std::sin(0 * PI / 6), 500 + 250 * std::cos(0 * PI / 6) }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(348, 120, 1, 2, Target(TARGET_POS, { 500 + 250 * std::sin(1 * PI / 6), 500 + 250 * std::cos(1 * PI / 6) }), DEBUFF_HAATO, 8, "purple"));
+    mechanics.emplace_back(new Spread(350, 120, 1, 2, Target(TARGET_POS, { 500 + 250 * std::sin(2 * PI / 6), 500 + 250 * std::cos(2 * PI / 6) }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(352, 120, 1, 2, Target(TARGET_POS, { 500 + 250 * std::sin(3 * PI / 6), 500 + 250 * std::cos(3 * PI / 6) }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(354, 120, 1, 2, Target(TARGET_POS, { 500 + 250 * std::sin(4 * PI / 6), 500 + 250 * std::cos(4 * PI / 6) }), DEBUFF_HAATO, 8, "purple"));
+    mechanics.emplace_back(new Spread(356, 120, 1, 2, Target(TARGET_POS, { 500 + 250 * std::sin(5 * PI / 6), 500 + 250 * std::cos(5 * PI / 6) }), DEBUFF_HAATO, 8, "purple"));
+
+    mechanics.emplace_back(new Spread(346, 120, 1, 2, Target(TARGET_POS, { 500 + 250 * std::sin(0 * PI / 6 + PI), 500 + 250 * std::cos(0 * PI / 6 + PI) }), DEBUFF_HAATO, 8, "purple"));
+    mechanics.emplace_back(new Spread(348, 120, 1, 2, Target(TARGET_POS, { 500 + 250 * std::sin(1 * PI / 6 + PI), 500 + 250 * std::cos(1 * PI / 6 + PI) }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(350, 120, 1, 2, Target(TARGET_POS, { 500 + 250 * std::sin(2 * PI / 6 + PI), 500 + 250 * std::cos(2 * PI / 6 + PI) }), DEBUFF_HAATO, 8, "purple"));
+    mechanics.emplace_back(new Spread(352, 120, 1, 2, Target(TARGET_POS, { 500 + 250 * std::sin(3 * PI / 6 + PI), 500 + 250 * std::cos(3 * PI / 6 + PI) }), DEBUFF_HAATO, 8, "purple"));
+    mechanics.emplace_back(new Spread(354, 120, 1, 2, Target(TARGET_POS, { 500 + 250 * std::sin(4 * PI / 6 + PI), 500 + 250 * std::cos(4 * PI / 6 + PI) }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(356, 120, 1, 2, Target(TARGET_POS, { 500 + 250 * std::sin(5 * PI / 6 + PI), 500 + 250 * std::cos(5 * PI / 6 + PI) }), DEBUFF_GAADO, 8, "blue"));
+
+    mechanics.emplace_back(new ApplyDebuff(358.5, Target(TARGET_ENTITY, TARGET_PLAYERS, 0), DEBUFF_EYER, 2));
+    mechanics.emplace_back(new ApplyDebuff(358.5, Target(TARGET_ENTITY, TARGET_PLAYERS, 1), DEBUFF_EYER, 2));
+
+    mechanics.emplace_back(new DisplayImage(359.5, "Beatmaps/239584/sasasasasa.png", 2, Target(TARGET_POS, { 0, 270 })));
+    mechanics.emplace_back(new DisplayImage(359.5, "Beatmaps/239584/saadaiya.png", 1, Target(TARGET_POS, { 0, 425 })));
+
+    mechanics.emplace_back(new ActivateTotem(356, Target(TARGET_ENTITY, TARGET_TOTEMS, 0), false));
+
+
+    mechanics.emplace_back(new Spread(362, 120, 1, 2, Target(TARGET_POS, { 300, 100 }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(364, 120, 1, 2, Target(TARGET_POS, { 300, 260 }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(366, 120, 1, 2, Target(TARGET_POS, { 300, 420 }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(368, 120, 1, 2, Target(TARGET_POS, { 300, 580 }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(370, 120, 1, 2, Target(TARGET_POS, { 300, 740 }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(372, 120, 1, 2, Target(TARGET_POS, { 300, 900 }), DEBUFF_GAADO, 8, "blue"));
+
+
+    mechanics.emplace_back(new Spread(362, 120, 1, 2, Target(TARGET_POS, { 700, 100 }), DEBUFF_HAATO, 8, "purple"));
+    mechanics.emplace_back(new Spread(364, 120, 1, 2, Target(TARGET_POS, { 700, 260 }), DEBUFF_HAATO, 8, "purple"));
+    mechanics.emplace_back(new Spread(366, 120, 1, 2, Target(TARGET_POS, { 700, 420 }), DEBUFF_HAATO, 8, "purple"));
+    mechanics.emplace_back(new Spread(368, 120, 1, 2, Target(TARGET_POS, { 700, 580 }), DEBUFF_HAATO, 8, "purple"));
+    mechanics.emplace_back(new Spread(370, 120, 1, 2, Target(TARGET_POS, { 700, 740 }), DEBUFF_HAATO, 8, "purple"));
+    mechanics.emplace_back(new Spread(372, 120, 1, 2, Target(TARGET_POS, { 700, 900 }), DEBUFF_HAATO, 8, "purple"));
+
+
+    for (int i = 0; i < 6; i++) {
+        mechanics.emplace_back(new ApplyDebuff(376 + 2 * i, Target(TARGET_CLOSEST, TARGET_PLAYERS, 0, new Target(TARGET_ENTITY, TARGET_TOTEMS, 0), TARGET_FOLLOW), DEBUFF_EYE1, 32));
+    }
+
+    mechanics.emplace_back(new ActivateTotem(374, Target(TARGET_ENTITY, TARGET_TOTEMS, 0), true, 0xFFFFFFFF, 15));
+    mechanics.emplace_back(new MoveEntity(374, Target(TARGET_ENTITY, TARGET_TOTEMS, 0), Target(TARGET_POS, { 500, 500 }), 1000, true));
+    mechanics.emplace_back(new TetherIndicator(374, Target(TARGET_ENTITY, TARGET_TOTEMS, 0, TARGET_FOLLOW), Target(TARGET_CLOSEST, TARGET_PLAYERS, 0, new Target(TARGET_ENTITY, TARGET_TOTEMS, 0, TARGET_FOLLOW), TARGET_FOLLOW), 12));
+
+
+    mechanics.emplace_back(new Spread(376, 120, 1, 2, Target(TARGET_POS, { 300, 100 }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(378, 120, 1, 2, Target(TARGET_POS, { 300, 260 }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(380, 120, 1, 2, Target(TARGET_POS, { 300, 420 }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(382, 120, 1, 2, Target(TARGET_POS, { 300, 580 }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(384, 120, 1, 2, Target(TARGET_POS, { 300, 740 }), DEBUFF_GAADO, 8, "blue"));
+    mechanics.emplace_back(new Spread(386, 120, 1, 2, Target(TARGET_POS, { 300, 900 }), DEBUFF_GAADO, 8, "blue"));
+
+
+    mechanics.emplace_back(new Spread(376, 120, 1, 2, Target(TARGET_POS, { 700, 100 }), DEBUFF_HAATO, 8, "purple"));
+    mechanics.emplace_back(new Spread(378, 120, 1, 2, Target(TARGET_POS, { 700, 260 }), DEBUFF_HAATO, 8, "purple"));
+    mechanics.emplace_back(new Spread(380, 120, 1, 2, Target(TARGET_POS, { 700, 420 }), DEBUFF_HAATO, 8, "purple"));
+    mechanics.emplace_back(new Spread(382, 120, 1, 2, Target(TARGET_POS, { 700, 580 }), DEBUFF_HAATO, 8, "purple"));
+    mechanics.emplace_back(new Spread(384, 120, 1, 2, Target(TARGET_POS, { 700, 740 }), DEBUFF_HAATO, 8, "purple"));
+    mechanics.emplace_back(new Spread(386, 120, 1, 2, Target(TARGET_POS, { 700, 900 }), DEBUFF_HAATO, 8, "purple"));
+
+
+    mechanics.emplace_back(new ApplyDebuff(390.5, Target(TARGET_ENTITY, TARGET_PLAYERS, 0), DEBUFF_EYER, 2));
+    mechanics.emplace_back(new ApplyDebuff(390.5, Target(TARGET_ENTITY, TARGET_PLAYERS, 1), DEBUFF_EYER, 2));
+
+    mechanics.emplace_back(new DisplayImage(399.5, "Beatmaps/239584/sasasasasa.png", 10, Target(TARGET_POS, { 0, 270 })));
+    mechanics.emplace_back(new DisplayImage(399.5, "Beatmaps/239584/saadaiya.png", 9, Target(TARGET_POS, { 0, 425 })));
+
+    mechanics.emplace_back(new ActivateTotem(386, Target(TARGET_ENTITY, TARGET_TOTEMS, 0), false));
+
+
+
+    mechanics.emplace_back(new EndMap(424));
+
 }

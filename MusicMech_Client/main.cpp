@@ -40,8 +40,9 @@ void mainLoop(Client& c) {
 
     sf::ContextSettings settings;
     settings.antialiasingLevel = 8;
-    sf::RenderWindow mainWindow(sf::VideoMode(WIDOW_WIDTH, WIDOW_HEIGHT), "Sychrobeat", sf::Style::Fullscreen, settings);
+    sf::RenderWindow mainWindow(sf::VideoMode(WIDOW_WIDTH, WIDOW_HEIGHT), "Synchrobeat", sf::Style::Fullscreen, settings);
     mainWindow.setFramerateLimit(60);
+    mainWindow.setMouseCursorVisible(false);
     int val;
     bool isCreator = false;
     bool beatmapChanged = false;
@@ -199,7 +200,7 @@ void game()
 
 int main() {
     GOD_MODE = true;
-    console();
-    //game();
+    //console();
+    game();
     return 0;
 }

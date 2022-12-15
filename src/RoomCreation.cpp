@@ -137,6 +137,8 @@ int RoomCreation::run(sf::RenderWindow& window, BackgroundAnimation& bg, Client*
 		beatmapFond.setFillColor(sf::Color(0xa5c882ff));
 	else if(songs.getCurentNbPlayers() == "8")
 		beatmapFond.setFillColor(sf::Color(0x5ab1bbff));
+	else if (songs.getCurentNbPlayers() == "1")
+		beatmapFond.setFillColor(sf::Color(0xF7DD72ff));
 
 	beatmapFond.setPosition(vignette.getGlobalBounds().left + vignette.getGlobalBounds().width, vignette.getGlobalBounds().top);
 
@@ -246,6 +248,8 @@ int RoomCreation::run(sf::RenderWindow& window, BackgroundAnimation& bg, Client*
 
 			}
 		}
+
+		client->keepAlive();
 
 		if (roomName.empty())
 			cursor.setPosition(100 + nameText.getGlobalBounds().width + 220 + 5 , 320);

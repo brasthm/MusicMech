@@ -8,7 +8,7 @@
 #include <cmath>
 #include <iostream>
 
-Spread::Spread(float beat, float radius, int nbShare, float active, const Target &target, DebuffType debuffToApply, float debuffTimer) :
+Spread::Spread(float beat, float radius, int nbShare, float active, const Target &target, DebuffType debuffToApply, float debuffTimer, const std::string& colorScheme) :
         target_(target),
         approachCircle_({}, radius + 10, 20, 0),
         playerIndicator_({}, sf::Vector2f(0, radius*0.6f), nbShare,
@@ -27,6 +27,8 @@ Spread::Spread(float beat, float radius, int nbShare, float active, const Target
 
     debuffToApply_ = debuffToApply;
     debuffTimer_ = debuffTimer;
+
+    colorScheme_ = colorScheme;
 
     setColor();
 
@@ -198,36 +200,53 @@ void Spread::setTargetPos(std::vector<sf::Vector2f>& pos)
 void Spread::setColor() {
     sf::Uint32 outlineColor=0, fillColorPlayerIndicator=0, fillColor=0, fillColorFailed=0, approachColor=0;
 
-    if(isShare_) {
-        if(target_.timing == TARGET_FOLLOW && nbShare_ == 1 && target_.team == TARGET_PLAYERS) {
+    if (colorScheme_ == "default") {
+        if (isShare_) {
+            if (target_.timing == TARGET_FOLLOW && nbShare_ == 1 && target_.team == TARGET_PLAYERS) {
+                outlineColor = 0xFFD5CBFF;
+                fillColor = 0xB64F3860;
+                fillColorFailed = 0x781F0B60;
+                fillColorPlayerIndicator = 0xFFD5CB00;
+                approachColor = 0xD35227FF;
+            }
+            else if (target_.type == TARGET_POS) {
+                outlineColor = 0xDAFB93FF;
+                fillColor = 0x89C17EBB;
+                fillColorFailed = 0x427538BB;
+                fillColorPlayerIndicator = 0xDAFB9300;
+                approachColor = 0x79CE1BFF;
+            }
+            else {
+                outlineColor = 0xDAFB93FF;
+                fillColor = 0x89C17E60;
+                fillColorFailed = 0x42753860;
+                fillColorPlayerIndicator = 0xDAFB9300;
+                approachColor = 0x79CE1BFF;
+            }
+        }
+        else {
             outlineColor = 0xFFD5CBFF;
-            fillColor = 0xB64F3860;
-            fillColorFailed = 0x781F0B60;
+            fillColor = 0xB64F38BB;
+            fillColorFailed = 0x781F0BBB;
             fillColorPlayerIndicator = 0xFFD5CB00;
             approachColor = 0xD35227FF;
         }
-        else if (target_.type == TARGET_POS) {
-            outlineColor = 0xDAFB93FF;
-            fillColor = 0x89C17EBB;
-            fillColorFailed = 0x427538BB;
-            fillColorPlayerIndicator = 0xDAFB9300;
-            approachColor = 0x79CE1BFF;
-        }
-        else {
-            outlineColor = 0xDAFB93FF;
-            fillColor = 0x89C17E60;
-            fillColorFailed = 0x42753860;
-            fillColorPlayerIndicator = 0xDAFB9300;
-            approachColor = 0x79CE1BFF;
-        }
     }
-    else {
-        outlineColor = 0xFFD5CBFF;
-        fillColor = 0xB64F38BB;
-        fillColorFailed = 0x781F0BBB;
-        fillColorPlayerIndicator = 0xFFD5CB00;
-        approachColor = 0xD35227FF;
+    else if (colorScheme_ == "blue") {
+        outlineColor = 0xbae6f7FF;
+        fillColor = 0x0082b5BB;
+        fillColorFailed = 0x004e7fBB;
+        fillColorPlayerIndicator = 0xbae6f700;
+        approachColor = 0x0093e2FF;
     }
+    else if (colorScheme_ == "purple") {
+        outlineColor = 0xffdcffFF;
+        fillColor = 0xdf9ddeBB;
+        fillColorFailed = 0x8e5590BB;
+        fillColorPlayerIndicator = 0xffdcff00;
+        approachColor = 0xf290ffFF;
+    }
+    
 
     backColor_.setSpeed({0.1, 0.1, 0.1, 0.5});
 

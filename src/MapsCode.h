@@ -39,6 +39,8 @@ void doggyGodStreet(std::vector<Mechanic*>& mechanics, Song& song, sf::Music& mu
 void intoYou(std::vector<Mechanic*>& mechanics, Song& song, sf::Music& music, EntityManager& em);
 void itte(std::vector<Mechanic*>& mechanics, Song& song, sf::Music& music, EntityManager& em);
 void furachi(std::vector<Mechanic*>& mechanics, Song& song, sf::Music& music, EntityManager& em);
+void lazySong(std::vector<Mechanic*>& mechanics, Song& song, sf::Music& music, EntityManager& em);
+void thirdeye(std::vector<Mechanic*>& mechanics, Song& song, sf::Music& music, EntityManager& em);
 
 
 

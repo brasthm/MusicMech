@@ -20,6 +20,10 @@ private:
         std::uniform_real_distribution<> dis(lower, upper);
         return dis(gen);
     }
+    inline sf::Uint32 genurand(int lower = 0, int upper = UINT32_MAX) {
+        std::uniform_real_distribution<> dis(lower, upper);
+        return dis(gen);
+    }
     template<typename T>
     inline void shuffle_(std::vector<T> &v) {
         std::shuffle(v.begin(), v.end(), gen);
@@ -48,6 +52,10 @@ public:
     inline static int randint(int lower, int upper) {
         return getInstance().genrand(lower, upper);
     }
+    inline static sf::Uint32 randuint() {
+        return getInstance().genrand();
+    }
+
 
     template<typename T>
     inline static void shuffle(std::vector<T> &v) {

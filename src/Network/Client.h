@@ -20,6 +20,7 @@ private:
     UDP_Port udpSocket_;
     sf::TcpSocket tcpSocket_;
     sf::Int32 clientSeed_, challengeResponse_, index_;
+    sf::Uint32 playerID_;
     sf::Uint16 packetID_;
     std::vector<Lobby> lobbyList_;
     std::string lobbyIndex_;
@@ -29,6 +30,7 @@ private:
     std::vector<sf::Int64> ping_;
     float serverBeat_, position_;
     bool godMode_;
+    sf::Clock keepAliveTimer_;
 public:
     Client(std::string name = "");
     ~Client();
@@ -73,6 +75,8 @@ public:
     float getPosition();
     unsigned short getUdpPort();
     bool getGodMode();
+
+    bool keepAlive();
 
 };
 

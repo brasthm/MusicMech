@@ -92,6 +92,34 @@ bool Client::getGodMode()
     return godMode_;
 }
 
+bool Client::keepAlive()
+{
+    if (keepAliveTimer_.getElapsedTime() > sf::seconds(KEEP_ALIVE_TIMER)) {
+        keepAliveTimer_.restart();
+        sf::Packet p_tcp, p_udp;
+        sf::Uint8 stateTCP = 19, stateUDP = 19;
+
+        sf::Socket::Status status;
+
+        p_tcp << stateTCP;
+        p_udp << playerID_ << challengeResponse_ << stateUDP;
+
+        status =  tcpSocket_.send(p_tcp);
+        if (status != sf::Socket::Done) {
+            std::cout << "keepAlive : Unable to reach the server (tcp)" << std::endl;
+            return false;
+        }
+
+        bool val = udpSocket_.send(p_udp, SERVER_IP, SERVER_GAME_PORT);
+        if (!val) {
+            std::cout << "keepAlive : Unable to reach the server (udp)" << std::endl;
+            return false;
+        }
+    }
+
+    return true;
+}
+
 void Client::changeName(const std::string& name)
 {
     name_ = name;
@@ -200,8 +228,16 @@ bool Client::connectToServer() {
         std::cout << "connectToServer : Unexpected packet recieved (" << (int)state << ")" << std::endl;
         return false;
     }
+    sf::Uint32 playerID;
+    p >> rep >> playerID;
 
-    p >> rep;
+    if (!p) {
+        std::cout << "connectToServer : Data corrupted (playerID)" << std::endl;
+        return false;
+    }
+
+    playerID_ = playerID;
+    
 
     p.clear();
     //std::cout << clientSeed_ << std::endl;
@@ -249,7 +285,7 @@ void Client::sendCommand(const std::string& cmd) {
 void Client::sendPlayerData(sf::Int32 x, sf::Int32 y) {
     sf::Packet packet;
     sf::Uint8 state = 0;
-    packet << challengeResponse_ << state << packetID_ << x << y;
+    packet << playerID_ << challengeResponse_ << state << packetID_ << x << y;
     udpSocket_.send(packet, SERVER_IP, SERVER_GAME_PORT);
     packetID_++;
 }
@@ -1156,7 +1192,7 @@ bool Client::requestPing()
     sf::Uint64 send = std::chrono::steady_clock::now().time_since_epoch() / std::chrono::milliseconds(1);
     sf::Uint8 state = 1;
 
-    packet << challengeResponse_ << state << send;
+    packet << playerID_ << challengeResponse_ << state << send;
 
     udpSocket_.send(packet, SERVER_IP, SERVER_GAME_PORT);
 

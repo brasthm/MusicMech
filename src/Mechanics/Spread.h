@@ -26,13 +26,14 @@ class Spread : public Mechanic {
     bool highlight_;
     DebuffType debuffToApply_;
     float debuffTimer_;
+    std::string colorScheme_;
 
     void updatePosition(EntityManager &entityManager);
     void setColor();
 
 
 public:
-    Spread(float beat, float radius, int nbShare, float active, const Target &target, DebuffType debuffToApply = DEBUFF_NONE, float debuffTimer = 0);
+    Spread(float beat, float radius, int nbShare, float active, const Target &target, DebuffType debuffToApply = DEBUFF_NONE, float debuffTimer = 0, const std::string &colorScheme = "default");
     void onDraw(const sf::Time &elapsed, sf::RenderTarget &window) override;
     void onCheck(const sf::Time &elapsed, float currentBeat, float cuurentPart, EntityManager &entities) override;
     void onApproach(const sf::Time &elapsed, float currentBeat, float cuurentPart, EntityManager &entities) override;

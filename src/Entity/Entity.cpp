@@ -30,8 +30,7 @@ void Entity::getCurrentDebuffs(std::vector<DebuffType>& debuffs)
 {
     debuffs.clear();
     for (int i = 0; i < debuffs_.size(); i++) {
-        if (debuffs_[i].type() != DEBUFF_NONE)
-            debuffs.emplace_back(debuffs_[i].type());
+        debuffs.emplace_back(debuffs_[i].type());
     }
 }
 
@@ -57,6 +56,11 @@ void Entity::getDebuffs(std::vector<DebuffInfo>& debuffsInfo)
         }
             
     }
+}
+
+void Entity::changeDebuff(int index, DebuffType type, float end)
+{
+    debuffs_[index].set(type, end);
 }
 
 void Entity::setRadius(float radius)

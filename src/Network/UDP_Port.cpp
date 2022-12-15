@@ -144,7 +144,7 @@ sf::Packet &UDP_Port::getRecievedPacket() {
     return recievedPacket_;
 }
 
-void UDP_Port::send(sf::Packet &packet, sf::IpAddress address, unsigned short port) {
+bool UDP_Port::send(sf::Packet &packet, sf::IpAddress address, unsigned short port) {
 
     sf::Packet sendPacket;
 
@@ -162,7 +162,10 @@ void UDP_Port::send(sf::Packet &packet, sf::IpAddress address, unsigned short po
         if(verbose_)
             std::cout << "Port " << name_ << "  : Packet of size " <<
                       len << " count not be sent to " << address << "(" << port << ")" << std::endl;
+        return false;
     }
+
+    return true;
 }
 
 bool UDP_Port::valid()

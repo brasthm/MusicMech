@@ -19,6 +19,7 @@ public:
     void onPassed(const sf::Time &elapsed, float currentBeat, float currentPart, EntityManager &entities) override;
     Mechanic* clone() override;
     std::string toString() override;
+    void reset(float beat) override;
 };
 
 

@@ -236,6 +236,8 @@ int LobbySelection::run(sf::RenderWindow& window, BackgroundAnimation& bg, Clien
 			}
 		}
 
+		client->keepAlive();
+
 		if (refreshList.valid() && refreshList.wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
 			listname.clear();
 			listplayer.clear();
@@ -254,9 +256,11 @@ int LobbySelection::run(sf::RenderWindow& window, BackgroundAnimation& bg, Clien
 		}
 
 		if (joinRoom.valid() && joinRoom.wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
-			songs.setSelectedById(client->getCurrentLobby().beatmap);
 			loading.stop();
-			return joinRoom.get() ? 2:-1;
+			if (joinRoom.get()) {
+				songs.setSelectedById(client->getCurrentLobby().beatmap);
+				return 2;
+			}
 		}
 
 		bg.update(elapsedTime);

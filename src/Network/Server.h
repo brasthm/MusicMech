@@ -51,6 +51,7 @@ protected:
     int findUDPConnected(sf::IpAddress address, sf::Uint32 port);
     int findFistAvailableConnected();
     int findLobbyContainingPlayer(sf::IpAddress address, unsigned short port);
+    int findConnectedById(sf::Uint32 id);
 
     void sendRoomLobbyNotif(int index, sf::Uint8 state, sf::Uint8 param, sf::Uint64 timestamp = 0);
 

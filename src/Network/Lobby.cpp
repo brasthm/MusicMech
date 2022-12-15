@@ -17,7 +17,7 @@ int findFirstAvailableLobby(const std::vector<Lobby> &lobbyList) {
 }
 
 int findFirstAvailablePlayerSpot(const std::vector<Lobby> &lobbyList, int indLobby) {
-    for(int i = 0; i< NB_MAX_JOUEURS; i++) {
+    for(int i = 0; i< lobbyList[indLobby].limit; i++) {
         if(lobbyList[indLobby].players[i] == nullptr)
             return i;
     }

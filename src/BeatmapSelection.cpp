@@ -226,6 +226,8 @@ void BeatmapSelection::run(sf::RenderWindow& window, BackgroundAnimation& bg, Cl
 			finalImage.setTexture(texture2.getTexture());
 		}
 
+		client->keepAlive();
+
 		bg.update(elapsedTime);
 		saucisse.update(elapsedTime);
 		//saucisse2.update(elapsedTime);
