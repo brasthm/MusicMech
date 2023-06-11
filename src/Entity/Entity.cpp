@@ -54,7 +54,6 @@ void Entity::getDebuffs(std::vector<DebuffInfo>& debuffsInfo)
             info.end = debuffs_[i].getEnd();
             debuffsInfo.emplace_back(info);
         }
-            
     }
 }
 
@@ -78,3 +77,14 @@ void Entity::setServerPosition(float x, float y)
     serv_pos_.x = x;
     serv_pos_.y = y;
 }
+
+void Entity::setIndex(int ind)
+{
+    index_ = ind;
+}
+
+int Entity::getIndex()
+{
+    return index_;
+}
+

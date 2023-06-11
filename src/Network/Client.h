@@ -9,6 +9,7 @@
 #include "../Entity/Joueur.h"
 #include "../RoomStatus.h"
 #include "../Entity/EntityManager.h"
+#include "../System/Profile.h"
 #include "Lobby.h"
 #include <vector>
 
@@ -24,7 +25,7 @@ private:
     sf::Uint16 packetID_;
     std::vector<Lobby> lobbyList_;
     std::string lobbyIndex_;
-    int lobbyInd_, playerIndex_, pingIndex_;
+    int lobbyInd_, playerIndex_, pingIndex_, bannerId_, titleId_;
     sf::Int64 offset_;
     sf::Uint64 startTime_;
     std::vector<sf::Int64> ping_;
@@ -42,6 +43,7 @@ public:
     int updateFromServerPlayerPosition(std::vector<Joueur> &joueurs, std::pair<float, float> &checkpoint, EntityManager& em);
 
     void changeName(const std::string& name);
+    void setProfile(const Profile&profile);
 
     bool requestLobbyCreation(const std::string& name, const std::string& beatmap, const std::string& mode);
     bool requestLobbyJoin(const std::string& lobbyIndex);

@@ -26,6 +26,32 @@ RoomMenu::RoomMenu()
 {
 }
 
+sf::Vector2f RoomMenu::getPositionInLayout(int nb, int index)
+{
+	float x, y;
+
+	if (nb > 4) {
+		if (index < 4) {
+			y = 500;
+		}
+		else {
+			y = 800;
+		}
+	}
+	else {
+		y = 600;
+	}
+
+	if (nb == 2) {
+		x = (index + 1) * WIDOW_WIDTH / 3;
+	}
+	else {
+		x = WIDOW_WIDTH / 8 + (index%4) * WIDOW_WIDTH / 4;
+	}
+
+	return sf::Vector2f(x, y);
+}
+
 int RoomMenu::run(sf::RenderWindow& window, BackgroundAnimation& bg, Client* client, SongDatabase* songs, Game* game, bool creator, bool beatmapChanged)
 {
 	sf::Clock fps;
@@ -39,7 +65,7 @@ int RoomMenu::run(sf::RenderWindow& window, BackgroundAnimation& bg, Client* cli
 	if (!songs->isPlaying())
 		songs->play();
 
-	sf::Sprite img(RessourceLoader::getTexture(song.image));
+	sf::Sprite img(RessourceLoader::getTexture(song.image)), vignettebanner(RessourceLoader::getTexture(song.vignette));
 	sf::Shader hblur, vblur;
 
 	float radius = 1.5;
@@ -64,6 +90,11 @@ int RoomMenu::run(sf::RenderWindow& window, BackgroundAnimation& bg, Client* cli
 	finalImage.setColor(sf::Color(0xFFFFFF44));
 
 
+
+	vignettebanner.setScale(0.3, 0.3);
+	float hpos = 200, height = vignettebanner.getGlobalBounds().height;
+	vignettebanner.setPosition(height, hpos);
+
 	if (WIDOW_WIDTH - img.getGlobalBounds().width > WIDOW_HEIGHT - img.getGlobalBounds().height)
 		finalImage.setScale(WIDOW_WIDTH / (float)img.getGlobalBounds().width, WIDOW_WIDTH / (float)img.getGlobalBounds().width);
 	else if (WIDOW_WIDTH - img.getGlobalBounds().width < WIDOW_HEIGHT - img.getGlobalBounds().height)
@@ -80,18 +111,18 @@ int RoomMenu::run(sf::RenderWindow& window, BackgroundAnimation& bg, Client* cli
 
 	ButtonGroup buttons;
 	if (creator) {
-		buttons.addButton(Button("BACK", "Back", 0xff6392ff, 100, 970, 250, 70));
-		buttons.addButton(Button("COLOR", "Choose Color", 0xf7dd72ff, 400, 970, 350, 70));
-		buttons.addButton(Button("BEATMAP", "Change Beatmap", 0x5ab1bbff, 800, 970, 400, 70));
-		buttons.addButton(Button("READY", "Ready", 0xf7dd72ff, 1250, 970, 250, 70));
-		buttons.addButton(Button("START", "Start", 0xa5c882ff, 1550, 970, 320, 70));
+		buttons.addButton(Button("BACK", "Back", COLOR_RED, 100, 970, 250, 70));
+		buttons.addButton(Button("COLOR", "Choose Color", COLOR_YELLOW, 400, 970, 350, 70));
+		buttons.addButton(Button("BEATMAP", "Change Beatmap", COLOR_BLUE, 800, 970, 400, 70));
+		buttons.addButton(Button("READY", "Ready", COLOR_YELLOW, 1250, 970, 250, 70));
+		buttons.addButton(Button("START", "Start", COLOR_GREEN, 1550, 970, 320, 70));
 		buttons.setCurrent(3);
 	}
 	else {
 		
-		buttons.addButton(Button("BACK", "Back", 0xff6392ff, 850, 970, 250, 70));
-		buttons.addButton(Button("COLOR", "Choose Color", 0xf7dd72ff, 1150, 970, 350, 70));
-		buttons.addButton(Button("READY", "Ready", 0xa5c882ff, 1550, 970, 320, 70));
+		buttons.addButton(Button("BACK", "Back", COLOR_RED, 850, 970, 250, 70));
+		buttons.addButton(Button("COLOR", "Choose Color", COLOR_YELLOW, 1150, 970, 350, 70));
+		buttons.addButton(Button("READY", "Ready", COLOR_GREEN, 1550, 970, 320, 70));
 		buttons.setCurrent(2);
 	}
 
@@ -100,69 +131,32 @@ int RoomMenu::run(sf::RenderWindow& window, BackgroundAnimation& bg, Client* cli
 
 	sf::RectangleShape header;
 	header.setSize({ WIDOW_WIDTH, 150 });
-	header.setFillColor(sf::Color(0xf7dd72ff));
+	header.setFillColor(sf::Color(COLOR_YELLOW));
 
-	sf::RectangleShape playerRect;
-	playerRect.setSize({ WIDOW_WIDTH * 0.5, 100 });
-	playerRect.setFillColor(sf::Color(0xff6392ff));
-	playerRect.setPosition(0, 230);
+	sf::RectangleShape difficultyRect;
+	difficultyRect.setSize({ height, height });
+	difficultyRect.setFillColor(sf::Color(COLOR_GREEN));
+	difficultyRect.setPosition(0, hpos);
 
-	sf::RectangleShape beatmapRect;
-	beatmapRect.setSize({ WIDOW_WIDTH * 0.5, 630 });
-	beatmapRect.setFillColor(sf::Color(0xa5c882ff));
-	beatmapRect.setPosition(WIDOW_WIDTH * 0.5, 230);
-
-
-	sf::Text playerText;
-	playerText.setFont(RessourceLoader::getFont("Font/Roboto-Bold.ttf"));
-	playerText.setString("Players");
-	playerText.setCharacterSize(70);
-	playerText.setPosition(20, 240);
-	playerText.setFillColor(sf::Color::Black);
-
-	sf::Text titleText, artistText, difficultyText;
-
-	titleText.setFont(RessourceLoader::getFont("Font/Roboto-Bold.ttf"));
-	titleText.setCharacterSize(52);
-	titleText.setFillColor(sf::Color::Black);
-	titleText.setPosition(WIDOW_WIDTH * 0.5 + 30, 230 + 20);
-	
+	sf::Text artistText, difficultyText;	
 
 	artistText.setFont(RessourceLoader::getFont("Font/Roboto-Bold.ttf"));
-	artistText.setCharacterSize(36);
+	artistText.setCharacterSize(50);
 	artistText.setFillColor(sf::Color::Black);
-	artistText.setPosition(WIDOW_WIDTH * 0.5 + 70, 230 + 90);
+	artistText.setPosition(height + vignettebanner.getGlobalBounds().width + 10, hpos + 10);
 
 	difficultyText.setFont(RessourceLoader::getFont("Font/Roboto-Bold.ttf"));
-	difficultyText.setCharacterSize(36);
+	difficultyText.setCharacterSize(50);
 	difficultyText.setFillColor(sf::Color::Black);
-	difficultyText.setPosition(WIDOW_WIDTH * 0.5 + 30, 230 + 570);
 
-	sf::Sprite vignette;
+	sf::RectangleShape artistRect;
+	artistRect.setFillColor(sf::Color(COLOR_RED));
+	artistRect.setPosition(height + vignettebanner.getGlobalBounds().width, hpos);
 
-	vignette.setTexture(RessourceLoader::getTexture(songs->getSelectedSong().image));
-	vignette.setScale(350.f / (float)vignette.getGlobalBounds().height,
-		350.f / (float)vignette.getGlobalBounds().height);
-	vignette.setPosition(WIDOW_WIDTH * 0.5 + WIDOW_WIDTH * 0.5 / 2 - vignette.getGlobalBounds().width / 2, 230 + 180);
-
-	std::vector<sf::RectangleShape> playersRect;
-	std::vector<sf::Text> playersText;
 
 	int nbMax = client->getCurrentLobby().limit;
 
 	std::vector<bool> ready(NB_MAX_JOUEURS);
-
-	for (int i = 0; i < NB_MAX_JOUEURS; i++) {
-		playersRect.emplace_back();
-		playersText.emplace_back();
-		playersRect.back().setSize({ WIDOW_WIDTH * 0.5, 60 });
-		playersRect.back().setFillColor(sf::Color(i % 2 == 0 ? 0xf7dd72ff : 0x5ab1bbff));
-		playersRect.back().setPosition(0, 330 + 60 * i);
-		playersText.back().setFont(RessourceLoader::getFont("Font/Roboto-Bold.ttf"));
-		playersText.back().setCharacterSize(40);
-		playersText.back().setPosition(70, 340 + 60 * i);
-		playersText.back().setFillColor(sf::Color::Black);
-	}
 
 	std::vector<sf::Uint32> colors;
 
@@ -177,37 +171,38 @@ int RoomMenu::run(sf::RenderWindow& window, BackgroundAnimation& bg, Client* cli
 	colors.emplace_back(0x65E2CDFF);
 
 	std::vector<sf::CircleShape> circles;
+	std::vector<Profile> profiles(NB_MAX_JOUEURS);
 
 	for (int i = 0; i < NB_MAX_JOUEURS; i++) {
-		circles.emplace_back(20.f, 500);
+		circles.emplace_back(50.f, 500);
 	}
 	
 
 	for (int i = 0; i < circles.size(); i++) {
 		circles[i].setOutlineThickness(3);
 		circles[i].setOutlineColor(sf::Color::Black);
-		circles[i].setFillColor(sf::Color::Black);
-		circles[i].setPosition(WIDOW_WIDTH * 0.5 - 100, 340 + 60 * i);
+		circles[i].setFillColor(sf::Color(colors[i]));
+		//circles[i].setPosition(WIDOW_WIDTH * 0.5 - 100, 340 + 60 * i);
 	}
 
 
-	sf::CircleShape rightArrow(20.f, 3);
-	rightArrow.setOrigin(20, 20);
+	sf::CircleShape rightArrow(25.f, 3);
+	rightArrow.setOrigin(25, 25);
 	rightArrow.setRotation(90);
 	rightArrow.setOutlineColor(sf::Color::Black);
 	rightArrow.setOutlineThickness(3);
-	rightArrow.setPosition(WIDOW_WIDTH * 0.5 - 50 + 20, 20 + 340 + 60 * client->getPlayerIndex());
 
-	sf::CircleShape leftArrow(20.f, 3);
-	leftArrow.setOrigin(20, 20);
+
+	sf::CircleShape leftArrow(25.f, 3);
+	leftArrow.setOrigin(25, 25);
 	leftArrow.setRotation(-90);
 	leftArrow.setOutlineColor(sf::Color::Black);
 	leftArrow.setOutlineThickness(3);
-	leftArrow.setPosition(WIDOW_WIDTH * 0.5 - 150 + 20, 20 + 340 + 60 * client->getPlayerIndex());
 
-	titleText.setString(songs->getSelectedSong().name);
 	artistText.setString(songs->getSelectedSong().artist);
-	difficultyText.setString("Difficulty: " + songs->getSelectedSong().difficulty);
+	difficultyText.setString(songs->getSelectedSong().difficulty);
+	difficultyText.setPosition(height / 2 - difficultyText.getGlobalBounds().width / 2, hpos + 10);
+	artistRect.setSize({ artistText.getGlobalBounds().width + 100, height });
 
 	sf::Sprite check(RessourceLoader::getTexture("Images/check.png"));
 
@@ -223,7 +218,7 @@ int RoomMenu::run(sf::RenderWindow& window, BackgroundAnimation& bg, Client* cli
 
 
 	for (int i = 0; i < nbMax; i++) {
-		playersText[i].setString(client->getCurrentLobby().players[i]->name);
+		profiles[i].setProfile(client->getCurrentLobby().players[i]->name, client->getCurrentLobby().players[i]->bannerID, client->getCurrentLobby().players[i]->titleID);
 		ready[i] = client->getCurrentLobby().players[i]->status == PlayerStatus::PLAYER_READY;
 		if (ready[i])
 			circles[i].setFillColor(sf::Color(client->getCurrentLobby().players[i]->color));
@@ -251,7 +246,7 @@ int RoomMenu::run(sf::RenderWindow& window, BackgroundAnimation& bg, Client* cli
 		{
 			if (!loading.getActive()) {
 				if (event.type == sf::Event::Closed)
-					return -1;
+					return -100;
 
 				if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape ||
 					event.type == sf::Event::JoystickButtonPressed && event.joystickButton.button == 1) {
@@ -379,14 +374,11 @@ int RoomMenu::run(sf::RenderWindow& window, BackgroundAnimation& bg, Client* cli
 			nbMax = client->getCurrentLobby().limit;
 			if (songs->getSelectedSong().id != client->getCurrentLobby().beatmap) {
 				songs->setSelectedById(client->getCurrentLobby().beatmap);
-				titleText.setString(songs->getSelectedSong().name);
+				vignettebanner.setTexture(RessourceLoader::getTexture(song.vignette));
 				artistText.setString(songs->getSelectedSong().artist);
-				difficultyText.setString("Difficulty: " + songs->getSelectedSong().difficulty);
-
-				vignette = sf::Sprite(RessourceLoader::getTexture(songs->getSelectedSong().image));
-				vignette.setScale(350.f / (float)vignette.getGlobalBounds().height,
-					350.f / (float)vignette.getGlobalBounds().height);
-				vignette.setPosition(WIDOW_WIDTH * 0.5 + WIDOW_WIDTH * 0.5 / 2 - vignette.getGlobalBounds().width / 2, 230 + 180);
+				difficultyText.setString(songs->getSelectedSong().difficulty);
+				artistRect.setSize({ artistText.getGlobalBounds().width + 100, height });
+				difficultyText.setPosition(height / 2 - difficultyText.getGlobalBounds().width / 2, hpos - difficultyText.getGlobalBounds().height / 2);
 
 
 				img = sf::Sprite(RessourceLoader::getTexture(songs->getSelectedSong().image));
@@ -418,7 +410,7 @@ int RoomMenu::run(sf::RenderWindow& window, BackgroundAnimation& bg, Client* cli
 			}
 
 			for (int i = 0; i < nbMax; i++) {
-				playersText[i].setString(client->getCurrentLobby().players[i]->name);
+				profiles[i].setProfile(client->getCurrentLobby().players[i]->name, client->getCurrentLobby().players[i]->bannerID, client->getCurrentLobby().players[i]->titleID);
 				ready[i] = client->getCurrentLobby().players[i]->status == PlayerStatus::PLAYER_READY;
 				if (ready[i])
 					circles[i].setFillColor(sf::Color(client->getCurrentLobby().players[i]->color));
@@ -430,7 +422,6 @@ int RoomMenu::run(sf::RenderWindow& window, BackgroundAnimation& bg, Client* cli
 							selectedColorIndex = j;
 							prevColorIndex = j;
 						}
-							
 					}
 
 					if (!ready[i]) {
@@ -484,7 +475,7 @@ int RoomMenu::run(sf::RenderWindow& window, BackgroundAnimation& bg, Client* cli
 			loading.stop();
 		}
 
-		
+		client->keepAlive();
 
 		state = 0;
 		if(!disconnect.valid() && !refresh.valid() && !beatmap.valid() && !setReady.valid() && !launchGame.valid() && !waiting.valid())
@@ -519,25 +510,34 @@ int RoomMenu::run(sf::RenderWindow& window, BackgroundAnimation& bg, Client* cli
 		bg.draw(window);
 		window.draw(header);
 		window.draw(headerText);
-		window.draw(playerRect);
-		window.draw(playerText);
-		window.draw(beatmapRect);
+		window.draw(vignettebanner);
+		window.draw(difficultyRect);
+		window.draw(artistRect);
 
-		window.draw(titleText);
 		window.draw(artistText);
 		window.draw(difficultyText);
-		window.draw(vignette);
 
 		
 
 		for (int i = 0; i < nbMax; i++) {
-			window.draw(playersRect[i]);
-			window.draw(playersText[i]);
+			sf::Vector2f pos = getPositionInLayout(nbMax, i);
+
+			sf::Sprite spr(profiles[i].getProfileCard().getTexture());
+			spr.setPosition(pos.x - 200, pos.y - 100);
+			window.draw(spr);
+
+			if (i == playerIndex) {
+				rightArrow.setPosition(pos.x - 120 , pos.y - 100);
+				leftArrow.setPosition(pos.x - 280, pos.y - 100);
+			}
+
+
 			if (i == playerIndex || ready[i]) {
+				circles[i].setPosition(pos.x - 250, pos.y - 150);
 				window.draw(circles[i]);
 			}
 			if (ready[i]) {
-				check.setPosition(10, 340 + 60 * i);
+				check.setPosition(pos.x - 200 - check.getGlobalBounds().width/2, pos.y - 100 - check.getGlobalBounds().height / 2);
 				window.draw(check);
 			}
 		}

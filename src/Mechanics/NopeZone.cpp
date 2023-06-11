@@ -1,6 +1,9 @@
 #include "NopeZone.h"
 
 #include "../System/Random.h"
+#include "../System/StatisticCounter.h"
+#include "../main.h"
+
 
 void NopeZone::updatePosition(EntityManager& entityManager)
 {
@@ -111,6 +114,7 @@ void NopeZone::onCheck(const sf::Time& elapsed, float currentBeat, float cuurent
 
         if (good) {
             nbIn_++;
+            StatisticCounter::add(STATISTIC_GREED, i, elapsed.asSeconds());
         }
     }
 

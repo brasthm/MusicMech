@@ -3,13 +3,17 @@
 EndMap::EndMap(float beat)
 {
 	beat_ = beat;
-	passed_ = true;
 	Mechanic::setSoundName("Sound/mixkit-notification.wav");
 }
 
 void EndMap::onPassed(const sf::Time& elapsed, float currentBeat, float currentPart, EntityManager& entities)
 {
 	entities.startEndAnim();
+}
+
+void EndMap::onCheck(const sf::Time& elapsed, float currentBeat, float currentPart, EntityManager& entities)
+{
+	passed_ = true;
 }
 
 std::string EndMap::toString()

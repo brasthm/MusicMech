@@ -3,6 +3,8 @@
 #include "../System/Utils.h"
 #include <cmath>
 #include <iostream>
+#include "../System/StatisticCounter.h"
+#include "../main.h"
 
 void Donut::updatePosition(EntityManager& entityManager)
 {
@@ -119,6 +121,7 @@ void Donut::onCheck(const sf::Time& elapsed, float currentBeat, float cuurentPar
 {
     nbIn_ = 0;
 
+    allIns_.clear();
     //std::cout << entities.getSizePlayers() << std::endl;
     for (int i = 0; i < entities.getSizePlayers(); i++) {
         Target t(TARGET_ENTITY, TARGET_PLAYERS, i);
@@ -131,10 +134,17 @@ void Donut::onCheck(const sf::Time& elapsed, float currentBeat, float cuurentPar
 
         if (good) {
             nbIn_++;
+            allIns_.push_back(i);
         }
     }
 
     passed_ = nbIn_ == nbShare_;
+
+    
+    if (!passed_) {
+        for (int i = 0; i < allIns_.size(); i++)
+            StatisticCounter::add(STATISTIC_GREED, allIns_[i], elapsed.asSeconds());
+    }
 
     //if (isShare_) {
         if (passed_ || earlypassed_) {
@@ -173,6 +183,15 @@ void Donut::onApproach(const sf::Time& elapsed, float currentBeat, float current
 
 void Donut::onPassed(const sf::Time& elapsed, float currentBeat, float currentPart, EntityManager& entities)
 {
+    if (nbShare_ > 1) {
+        for (int i = 0; i < allIns_.size(); i++)
+            StatisticCounter::add(STATISTIC_INSHARE, allIns_[i], 1);
+    }
+
+    if (target_.type != TARGET_POS && target_.team == TARGET_PLAYERS) {
+        StatisticCounter::add(STATISTIC_TARGET, entities.getIndex(target_), 1);
+    }
+
     if (target_.timing == TARGET_ONBEAT) {
         updatePosition(entities);
     }
@@ -189,6 +208,17 @@ void Donut::onPassed(const sf::Time& elapsed, float currentBeat, float currentPa
         if (good) {
             entities.applyDebuff(currentBeat, t, debuffToApply_, debuffTimer_);
         }
+    }
+}
+
+void Donut::onFailed(const sf::Time& elapsed, float currentBeat, float currentPart, EntityManager& entities) {
+    if (target_.type != TARGET_POS && target_.team == TARGET_PLAYERS) {
+        StatisticCounter::add(STATISTIC_TARGET, entities.getIndex(target_), 1);
+    }
+
+    if (nbShare_ == 0) {
+        for (int i = 0; i < allIns_.size(); i++)
+            StatisticCounter::add(STATISTIC_FAILED, allIns_[i], 1);
     }
 }
 

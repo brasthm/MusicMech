@@ -572,11 +572,11 @@ void Server::monitorClient(int i)
     // CONNCETION REQUEST
     if (state == 100) {
         sf::String name;
-        sf::Int32 seed;
+        sf::Int32 seed, banner, title;
         sf::Uint8 response = 0;
         sf::Packet responsePacket;
 
-        packet >> name >> seed;
+        packet >> name >> banner >> title >> seed;
 
         if (!packet) {
             std::cout << "100 TCP_SOCKET (" << i << ") : Invalid packet (100)." << std::endl;
@@ -600,6 +600,8 @@ void Server::monitorClient(int i)
         players_[index].status = PlayerStatus::PLAYER_IDLE;
         players_[index].packetID = 0;
         players_[index].socket = clients_[i];
+        players_[index].bannerID = banner;
+        players_[index].titleID = title;
         do {
             players_[index].id = Random::randuint();
         } while (findConnectedById(players_[index].id) == -1);
@@ -1325,6 +1327,7 @@ void Server::monitorClient(int i)
         return;
     }
 
+    // GET LOBBY CONTENT
     if (state == 41) {
         sf::Uint8 response = 0;
         sf::Packet responsePacket;
@@ -1364,10 +1367,11 @@ void Server::monitorClient(int i)
 
         for (int i = 0; i < NB_MAX_JOUEURS; i++) {
             if (lobbies_[lobbyIndex].players[i] == nullptr)
-                responsePacket << (sf::Uint8)PlayerStatus::PLAYER_DISCONNECTED << sf::String("") << sf::Uint32(0);
+                responsePacket << (sf::Uint8)PlayerStatus::PLAYER_DISCONNECTED << sf::String("") << sf::Uint32(0) << sf::Int32(0) << sf::Int32(0);
             else
                 responsePacket << (sf::Uint8)lobbies_[lobbyIndex].players[i]->status << sf::String(lobbies_[lobbyIndex].players[i]->name)
-                << lobbies_[lobbyIndex].players[i]->color;
+                << lobbies_[lobbyIndex].players[i]->color << lobbies_[lobbyIndex].players[i]->bannerID
+                << lobbies_[lobbyIndex].players[i]->titleID;
         }
 
         clients_[i]->send(responsePacket);

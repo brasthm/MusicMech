@@ -26,6 +26,7 @@ protected:
     bool active_=false;
     std::vector<Debuff> debuffs_;
     sf::Uint32 color_;
+    int index_;
 
 public:
     Entity() = default;
@@ -51,6 +52,9 @@ public:
     void changeDebuff(int index, DebuffType type, float end);
 
     void setRadius(float radius);
+    void setIndex(int ind);
+    int getIndex();
+
 };
 
 

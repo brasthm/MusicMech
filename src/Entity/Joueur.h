@@ -22,6 +22,7 @@ private:
 
     bool drawPlate_;
     float plateOpacity_;
+    
 
     
 public:

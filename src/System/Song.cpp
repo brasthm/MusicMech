@@ -541,7 +541,7 @@ void Song::drawProgress(sf::RenderWindow& window, float beat, int section)
 
     float d1 = WIDOW_WIDTH * 0.1f, d2 = WIDOW_WIDTH * 0.9f;
 
-    line.setFillColor(sf::Color(0xf7dd72ff));
+    line.setFillColor(sf::Color(COLOR_YELLOW));
     line.setPosition(d1, y - 3);
     line.setSize(sf::Vector2f(d2 - d1, 7));
 
@@ -566,7 +566,7 @@ void Song::drawProgress(sf::RenderWindow& window, float beat, int section)
         if (beat >= checkpoints_[i].second)
             shape.setFillColor(sf::Color(0xf93943ff));
         else
-            shape.setFillColor(sf::Color(0xf7dd72ff));
+            shape.setFillColor(sf::Color(COLOR_YELLOW));
 
         shape.setPosition((d2 - d1) * checkpoints_[i].second / endBeat_ + d1 - 15, y - 15);
 
@@ -575,7 +575,7 @@ void Song::drawProgress(sf::RenderWindow& window, float beat, int section)
     if (beat >= endBeat_)
         shape.setFillColor(sf::Color(0xf93943ff));
     else
-        shape.setFillColor(sf::Color(0xf7dd72ff));
+        shape.setFillColor(sf::Color(COLOR_YELLOW));
     shape.setPosition(d2 - 15, y - 15);
     window.draw(shape);
     
@@ -593,7 +593,7 @@ void Song::drawSection(sf::RenderWindow& window, float beat, int section)
 
     float d1 = WIDOW_WIDTH * 0.3f, d2 = WIDOW_WIDTH * 0.7f;
 
-    line.setFillColor(sf::Color(0xf7dd72ff));
+    line.setFillColor(sf::Color(COLOR_YELLOW));
     line.setPosition(d1, y - 6);
     line.setSize(sf::Vector2f(d2 - d1, 13));
 
@@ -630,7 +630,7 @@ void Song::drawSection(sf::RenderWindow& window, float beat, int section)
     window.draw(shape);
     
 
-    shape.setFillColor(sf::Color(0xf7dd72ff));
+    shape.setFillColor(sf::Color(COLOR_YELLOW));
     shape.setPosition(d2 - 30, y - 30);
 
     window.draw(shape);

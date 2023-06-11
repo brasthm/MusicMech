@@ -32,6 +32,7 @@ public:
     void onCheck(const sf::Time &elapsed, float currentBeat, float cuurentPart, EntityManager &em) override;
     void onApproach(const sf::Time &elapsed, float currentBeat, float cuurentPart, EntityManager &em) override;
     void onPassed(const sf::Time &elapsed, float currentBeat, float currentPart, EntityManager &em) override;
+    void onFailed(const sf::Time& elapsed, float currentBeat, float currentPart, EntityManager& entities) override;
     void onFade(const sf::Time &elapsed, float currentBeat, float currentPart, EntityManager &em) override;
     void reset(float beat) override;
     void getTargetPos(std::vector<sf::Vector2f>& pos) override;

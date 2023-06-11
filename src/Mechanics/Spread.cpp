@@ -4,6 +4,7 @@
 
 #include "Spread.h"
 #include "../System/Utils.h"
+#include "../System/StatisticCounter.h"
 
 #include <cmath>
 #include <iostream>
@@ -68,6 +69,10 @@ void Spread::onDraw(const sf::Time &elapsed, sf::RenderTarget &window) {
 void Spread::onCheck(const sf::Time &elapsed, float currentBeat, float cuurentPart, EntityManager &entities) {
     nbIn_ = 0;
 
+
+
+    allIns_.clear();
+
     //std::cout << entities.getSizePlayers() << std::endl;
     for(int  i = 0; i < entities.getSizePlayers(); i++) {
         Target t(TARGET_ENTITY, TARGET_PLAYERS, i);
@@ -78,10 +83,16 @@ void Spread::onCheck(const sf::Time &elapsed, float currentBeat, float cuurentPa
 
         if(good) {
             nbIn_++;
+            allIns_.push_back(i);
         }
     }
 
     passed_ = nbIn_ == nbShare_;
+
+    if (!passed_) {
+        for (int i = 0; i < allIns_.size(); i++)
+            StatisticCounter::add(STATISTIC_GREED, allIns_[i], elapsed.asSeconds());
+    }
 
     //if(isShare_) {
         if(passed_ || earlypassed_) {
@@ -122,6 +133,15 @@ void Spread::onPassed(const sf::Time &elapsed, float currentBeat, float currentP
         updatePosition(entities);
     }
 
+    if (nbShare_ > 1) {
+        for (int i = 0; i < allIns_.size(); i++)
+            StatisticCounter::add(STATISTIC_INSHARE, allIns_[i], 1);
+    }
+
+    if (target_.type != TARGET_POS && target_.team == TARGET_PLAYERS) {
+        StatisticCounter::add(STATISTIC_TARGET, entities.getIndex(target_), 1);
+    }
+
     if (debuffToApply_ != DEBUFF_NONE) {
         for (int i = 0; i < entities.getSizePlayers(); i++) {
             Target t(TARGET_ENTITY, TARGET_PLAYERS, i);
@@ -134,6 +154,17 @@ void Spread::onPassed(const sf::Time &elapsed, float currentBeat, float currentP
                 entities.applyDebuff(currentBeat, t, debuffToApply_, currentBeat + debuffTimer_);
             }
         }
+    }
+}
+
+void Spread::onFailed(const sf::Time& elapsed, float currentBeat, float currentPart, EntityManager& entities) {
+    if (target_.type != TARGET_POS && target_.team == TARGET_PLAYERS) {
+        StatisticCounter::add(STATISTIC_TARGET, entities.getIndex(target_), 1);
+    }
+
+    if (nbShare_ == 0) {
+        for (int i = 0; i < allIns_.size(); i++)
+            StatisticCounter::add(STATISTIC_FAILED, allIns_[i], 1);
     }
 }
 

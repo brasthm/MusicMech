@@ -125,6 +125,13 @@ void Client::changeName(const std::string& name)
     name_ = name;
 }
 
+void Client::setProfile(const Profile& profile)
+{
+    name_ = profile.getName();
+    bannerId_ = profile.getBannerId();
+    titleId_ = profile.getTitleId();
+}
+
 sf::Socket::Status receiveWithTimeout(sf::TcpSocket& socket, sf::Packet& packet, sf::Time timeout)
 {
     sf::SocketSelector selector;
@@ -148,10 +155,13 @@ bool Client::connectToServer() {
 
     sf::Packet p;
     sf::Uint8 state = 100, rep = 1;
-    sf::Int32 serverSeed;
+    sf::Int32 serverSeed, bannerID, titleID;
+
+    bannerID = bannerId_;
+    titleID = titleId_;
 
 
-    p << state << sf::String(name_) << clientSeed_;
+    p << state << sf::String(name_) << bannerID << titleID << clientSeed_;
     status = tcpSocket_.send(p);
     if (status != sf::Socket::Done) {
         std::cout << "connectToServer : Unable to reach the server (send 100)" << std::endl;
@@ -650,6 +660,7 @@ bool Client::requestLobbyInfo(const std::string& lobbyIndex) {
     sf::Uint8 nbIn, limit, playerstatus;
     sf::Uint32 color;
     sf::String lobyname, playername, beatmap;
+    sf::Int32 banner, title;
 
     p >> lobyname >> nbIn >> limit >> beatmap;
 
@@ -664,7 +675,7 @@ bool Client::requestLobbyInfo(const std::string& lobbyIndex) {
     lobbyList_[id].beatmap = beatmap;
 
     for (int i = 0; i < NB_MAX_JOUEURS; i++) {
-        p >> playerstatus >> playername >> color;
+        p >> playerstatus >> playername >> color >> banner >> title;
 
         if (!p) {
             std::cout << "requestLobbyInfo : Data corrupted (" << i << ")" << std::endl;
@@ -673,6 +684,8 @@ bool Client::requestLobbyInfo(const std::string& lobbyIndex) {
         lobbyList_[id].players[i]->name = playername;
         lobbyList_[id].players[i]->color = color;
         lobbyList_[id].players[i]->status = (PlayerStatus)playerstatus;
+        lobbyList_[id].players[i]->bannerID = banner;
+        lobbyList_[id].players[i]->titleID = title;
     }
 
     return true;

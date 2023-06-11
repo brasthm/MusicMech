@@ -9,25 +9,35 @@
 #include "../src/Game.h"
 #include "../src/LobbySelection.h"
 #include "../src/Title.h"
+#include "../src/MainMenu.h"
 #include "../src/LobbyMenu.h"
 #include "../src/RoomCreation.h"
 #include "../src/BeatmapSelection.h"
 #include "../src/RoomMenu.h"
+#include "../src/MenuProfile.h"
+#include "../src/MenuCustomizeProfile.h"
+#include "../src/TestShadder.h"
+#include "../src/EndScreen.h"
 
 #include "../src/System/Song.h"
 #include "../src/System/SongData.h"
 #include "../src/System/RessourceLoader.h"
 #include "../src/Network/Client.h"
 #include "../src/Graphics/BackgoundAnimation.h"
+#include "../src/System/Profile.h"
 
 void mainLoop(Client& c) {
     Title t;
+    MainMenu mm;
     LobbyMenu lm;
     LobbySelection ls;
     SongDatabase sd;
     RoomCreation rc;
     BeatmapSelection bs;
     RoomMenu rm;
+    MenuProfile mp;
+    RoomCustomizeProfile rcp;
+    EndScreen es;
 
     Game g;
 
@@ -43,16 +53,51 @@ void mainLoop(Client& c) {
     sf::RenderWindow mainWindow(sf::VideoMode(WIDOW_WIDTH, WIDOW_HEIGHT), "Synchrobeat", sf::Style::Fullscreen, settings);
     mainWindow.setFramerateLimit(60);
     mainWindow.setMouseCursorVisible(false);
-    int val;
+    int val, selectedProfile;
     bool isCreator = false;
     bool beatmapChanged = false;
     std::string roomName;
 
+    std::vector<Profile> profiles(NUMBER_PROFILE);
+
+
+    for (int i = 0; i < NUMBER_PROFILE; i++) {
+        profiles[i].load(i);
+    }
+
+    TestShadder ts;
+
+    //ts.run(mainWindow, bg);
+    //return;
 
 TITLE_SCREEN:
     title.play();
+
     val = t.run(mainWindow, bg, &c);
     if (val == -1) return;
+
+    val = mp.run(mainWindow, bg, profiles);
+    if (val == -100) goto FULL_EXIT;
+    if (val == -2) goto TITLE_SCREEN;
+    selectedProfile = val;
+
+MAIN_MENU:
+    val = mm.run(mainWindow, bg, &c, profiles[selectedProfile]);
+    if (val == -100) goto FULL_EXIT;
+    if (val == -1) goto TITLE_SCREEN;
+    if (val == 1) std::cout << "SOLO" << std::endl;
+    if (val == 2) goto LOBBY_SELECTION;
+    if (val == 3) std::cout << "ACHIEVEMENT" << std::endl;
+    if (val == 4) goto CHANGE_PROFILE;
+    if (val == 5) std::cout << "SETTINGS" << std::endl;
+
+    goto MAIN_MENU;
+
+
+CHANGE_PROFILE:
+    val = rcp.run(mainWindow, bg, profiles[selectedProfile]);
+    if (val == -100) goto FULL_EXIT;
+    goto MAIN_MENU;
 
 LOBBY_SELECTION:
     if (title.getStatus() == sf::SoundSource::Status::Paused) title.play();
@@ -64,6 +109,7 @@ LOBBY_SELECTION:
     if (val == 1)  goto LOBBY_CREATION;
     if (val == 2)  goto LOBBY_ROOM;
     if (val == -1) goto EXIT;
+    if (val == -100) goto FULL_EXIT;
 
     goto LOBBY_SELECTION;
 
@@ -74,6 +120,7 @@ LOBBY_CREATION:
     if (val == -1) goto LOBBY_SELECTION;
     if (val == 1) bs.run(mainWindow, bg, &c, &sd, &beatmapChanged);
     if (val == 2) goto LOBBY_ROOM;
+    if (val == -100) goto FULL_EXIT;
 
     goto LOBBY_CREATION;
 
@@ -82,17 +129,25 @@ LOBBY_ROOM:
     if (val == 1)  bs.run(mainWindow, bg, &c, &sd, &beatmapChanged);
     if (val == 2)  goto GAME_SCREEN;
     if (val == -1) goto LOBBY_SELECTION;
+    if (val == -100) goto FULL_EXIT;
 
     goto LOBBY_ROOM;
 
 GAME_SCREEN:
 
-    g.run(mainWindow, &c, isCreator);
+    val = g.run(mainWindow, &c, isCreator);
+    if (val == -100) goto FULL_EXIT;
+    if(val == 100) val = es.run(mainWindow, bg, &c, sd);
+    if (val == -100) goto FULL_EXIT;
     goto LOBBY_ROOM;
 
 EXIT:
     c.disconectToServer();
-    goto TITLE_SCREEN;
+    goto MAIN_MENU;
+
+FULL_EXIT:
+    c.disconectToServer();
+    return;
 }
 
 int console() {

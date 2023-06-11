@@ -4,6 +4,7 @@
 #include "System/RessourceLoader.h"
 #include "Graphics/ButtonGroup.h"
 
+
 #include <future>
 
 bool RoomCreation::request(Client* client, std::string name, std::string beatmap, std::string mode)
@@ -97,13 +98,13 @@ int RoomCreation::run(sf::RenderWindow& window, BackgroundAnimation& bg, Client*
 
 
 	ButtonGroup buttons;
-	buttons.addButton(Button("CANCEL", "Cancel", 0xff6392ff, 1250, 970, 250, 70));
-	buttons.addButton(Button("CREATE", "Create room", 0xa5c882ff, 1550, 970, 320, 70));
+	buttons.addButton(Button("CANCEL", "Cancel", COLOR_RED, 1250, 970, 250, 70));
+	buttons.addButton(Button("CREATE", "Create room", COLOR_GREEN, 1550, 970, 320, 70));
 
 
 	sf::RectangleShape header;
 	header.setSize({ WIDOW_WIDTH, 150 });
-	header.setFillColor(sf::Color(0x5ab1bbff));
+	header.setFillColor(sf::Color(COLOR_BLUE));
 
 
 	sf::RectangleShape cursor;
@@ -112,16 +113,16 @@ int RoomCreation::run(sf::RenderWindow& window, BackgroundAnimation& bg, Client*
 
 	sf::RectangleShape nameRect, nameFond;
 	nameRect.setSize({ nameText.getGlobalBounds().width + 100 , 90 });
-	nameRect.setFillColor(sf::Color(0xf7dd72ff));
+	nameRect.setFillColor(sf::Color(COLOR_YELLOW));
 	nameRect.setPosition(100, 300);
 
 	nameFond.setSize({ WIDOW_WIDTH * 0.6, 60 });
-	nameFond.setFillColor(sf::Color(0xf7dd7288));
+	nameFond.setFillColor(sf::Color(COLOR_SEMI_YELLOW));
 	nameFond.setPosition(100 + nameText.getGlobalBounds().width + 200, 315);
 
 	sf::RectangleShape beatmapRect, beatmapFond;
 	beatmapRect.setSize({ beatmapText.getGlobalBounds().width + 100, 90 });
-	beatmapRect.setFillColor(sf::Color(0xa5c882ff));
+	beatmapRect.setFillColor(sf::Color(COLOR_GREEN));
 	beatmapRect.setPosition(150, 600);
 
 	sf::Sprite vignette(RessourceLoader::getTexture(song.vignette));
@@ -132,13 +133,13 @@ int RoomCreation::run(sf::RenderWindow& window, BackgroundAnimation& bg, Client*
 		- vignette.getGlobalBounds().left - vignette.getGlobalBounds().width,
 		vignette.getGlobalBounds().height});
 	if(songs.getCurentNbPlayers() == "4")
-		beatmapFond.setFillColor(sf::Color(0xff6392ff));
+		beatmapFond.setFillColor(sf::Color(COLOR_RED));
 	else if(songs.getCurentNbPlayers() == "2")
-		beatmapFond.setFillColor(sf::Color(0xa5c882ff));
+		beatmapFond.setFillColor(sf::Color(COLOR_GREEN));
 	else if(songs.getCurentNbPlayers() == "8")
-		beatmapFond.setFillColor(sf::Color(0x5ab1bbff));
+		beatmapFond.setFillColor(sf::Color(COLOR_BLUE));
 	else if (songs.getCurentNbPlayers() == "1")
-		beatmapFond.setFillColor(sf::Color(0xF7DD72ff));
+		beatmapFond.setFillColor(sf::Color(COLOR_YELLOW));
 
 	beatmapFond.setPosition(vignette.getGlobalBounds().left + vignette.getGlobalBounds().width, vignette.getGlobalBounds().top);
 
@@ -162,7 +163,7 @@ int RoomCreation::run(sf::RenderWindow& window, BackgroundAnimation& bg, Client*
 		{
 			if (!loading.getActive()) {
 				if (event.type == sf::Event::Closed)
-					return -1;
+					return -100;
 				if (focus && event.type == sf::Event::TextEntered)
 				{
 					if (event.text.unicode == '\b') {

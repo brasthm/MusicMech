@@ -32,8 +32,11 @@ public:
         color = 0;
         socket = nullptr;
 
+        bannerID = 1;
+        titleID = 0;
+
     }
-    inline PlayerInfo(sf::IpAddress a, unsigned short p, sf::Int32 s, std::string n) {
+    inline PlayerInfo(sf::IpAddress a, unsigned short p, sf::Int32 s, std::string n, sf::Int32 b, sf::Int32 t) {
         address = a;
         port = p;
         seed = s;
@@ -48,6 +51,9 @@ public:
         state = 0;
         color = 0;
         socket = nullptr;
+
+        bannerID = b;
+        titleID = t;
     };
     inline void clear() {
         address = sf::IpAddress::None;
@@ -61,11 +67,13 @@ public:
         state = 0;
         color = 0;
         socket = nullptr;
+        bannerID = 1;
+        titleID = 0;
     };
 
     sf::IpAddress address;
     unsigned short port;
-    sf::Int32 seed, x, y;
+    sf::Int32 seed, x, y, bannerID, titleID;
     unsigned short udpPort;
     sf::Uint16 packetID;
     sf::Uint8 state;

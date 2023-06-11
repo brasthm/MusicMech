@@ -63,13 +63,13 @@ void BeatmapSelection::run(sf::RenderWindow& window, BackgroundAnimation& bg, Cl
 	Caroussel saucisse2(false, 1270, 0, 650, 150, 150, 500);
 	FlexRectangle rect(100, 100, 100, 100);
 
-	saucisse.addColor(0xff6392ff);
-	saucisse.addColor(0x5ab1bbff);
-	saucisse.addColor(0xa5c882ff);
-	saucisse.addColor(0xf7dd72ff);
+	saucisse.addColor(COLOR_RED);
+	saucisse.addColor(COLOR_BLUE);
+	saucisse.addColor(COLOR_GREEN);
+	saucisse.addColor(COLOR_YELLOW);
 
-	saucisse2.addColor(0xa5c882ff);
-	saucisse2.addColor(0xff6392ff);
+	saucisse2.addColor(COLOR_GREEN);
+	saucisse2.addColor(COLOR_RED);
 
 	saucisse2.addData("2P", "2 Players");
 	saucisse2.addData("4P", "4 Players");
@@ -79,7 +79,7 @@ void BeatmapSelection::run(sf::RenderWindow& window, BackgroundAnimation& bg, Cl
 
 	sf::RectangleShape header;
 	header.setSize({ WIDOW_WIDTH, 150 });
-	header.setFillColor(sf::Color(0x5ab1bbff));
+	header.setFillColor(sf::Color(COLOR_BLUE));
 
 	RingShape placeholder({ 450, 315 }, 30, 5, 0xFFFFFFFF);
 

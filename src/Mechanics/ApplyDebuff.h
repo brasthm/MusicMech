@@ -17,6 +17,7 @@ class ApplyDebuff : public Mechanic{
 public:
     ApplyDebuff(float beat, const Target& target, DebuffType type, float duration);
     void onPassed(const sf::Time &elapsed, float currentBeat, float currentPart, EntityManager &entities) override;
+    void onFailed(const sf::Time& elapsed, float currentBeat, float currentPart, EntityManager& entities) override;
     Mechanic* clone() override;
     std::string toString() override;
     void reset(float beat) override;

@@ -27,6 +27,7 @@ class Spread : public Mechanic {
     DebuffType debuffToApply_;
     float debuffTimer_;
     std::string colorScheme_;
+    std::vector<int> allIns_;
 
     void updatePosition(EntityManager &entityManager);
     void setColor();
@@ -38,6 +39,7 @@ public:
     void onCheck(const sf::Time &elapsed, float currentBeat, float cuurentPart, EntityManager &entities) override;
     void onApproach(const sf::Time &elapsed, float currentBeat, float cuurentPart, EntityManager &entities) override;
     void onPassed(const sf::Time &elapsed, float currentBeat, float currentPart, EntityManager &entities) override;
+    void onFailed(const sf::Time& elapsed, float currentBeat, float currentPart, EntityManager& entities) override;
     void onFade(const sf::Time &elapsed, float currentBeat, float currentPart, EntityManager &entities) override;
     void onInit(const sf::Time &elapsed, float currentBeat, float currentPart, EntityManager &entities) override;
     void reset(float beat) override;

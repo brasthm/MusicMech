@@ -16,6 +16,16 @@
 #include "System/Song.h"
 #include "System/Arena.h"
 
+
+class DebugWindow {
+private:
+    std::vector<std::pair<std::string, void*>> data_;
+public:
+    void draw(sf::RenderWindow& window);
+    void track(std::string key, void* val);
+
+};
+
 class Game {
 private:
     sf::Music music_;
@@ -26,10 +36,11 @@ private:
     std::vector<Mechanic*> mechanicList_;
     Song song_;
     Arena arena_;
+    int numberPlayers_;
 public:
     explicit Game();
     ~Game();
-    void run(sf::RenderWindow &window, Client* client, bool creator);
+    int run(sf::RenderWindow &window, Client* client, bool creator);
     void load();
     void loadFromFile(const std::string &path);
     void loadFromCode(const std::string &id, const std::string& path);
