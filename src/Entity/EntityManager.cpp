@@ -410,6 +410,11 @@ void EntityManager::setPacketRandomSequence(sf::Packet& packet)
     }
 }
 
+int EntityManager::getIndex(Target& target)
+{
+    return getEntity(target)->getIndex();
+}
+
 RandomSequence::RandomSequence(int size)
 {
     size_ = size;

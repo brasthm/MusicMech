@@ -18,10 +18,10 @@ LoadingScreen::LoadingScreen() : angle_(45)
 	animRect_.setOrigin(20, 20);
 	animRect_.setPosition(connectionText_.getGlobalBounds().width + 80, WIDOW_HEIGHT - 45);
 
-	color_.addTarget("0", 0x5ab1bbff);
-	color_.addTarget("1", 0xa5c882ff);
-	color_.addTarget("2", 0xf7dd72ff);
-	color_.addTarget("3", 0xff6392ff);
+	color_.addTarget("0", COLOR_BLUE);
+	color_.addTarget("1", COLOR_GREEN);
+	color_.addTarget("2", COLOR_YELLOW);
+	color_.addTarget("3", COLOR_RED);
 	color_.initCurrent("0");
 	color_.setSpeed({ 1, 1, 1, 1 });
 

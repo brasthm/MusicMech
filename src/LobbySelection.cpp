@@ -94,40 +94,40 @@ int LobbySelection::run(sf::RenderWindow& window, BackgroundAnimation& bg, Clien
 
 
 	ButtonGroup buttons;
-	buttons.addButton(Button("REFRESH", "Refresh", 0xf7dd72ff, 1250, 970, 250, 70));
-	buttons.addButton(Button("CREATE", "Create room", 0xa5c882ff, 1550, 970, 320, 70));
+	buttons.addButton(Button("REFRESH", "Refresh", COLOR_YELLOW, 1250, 970, 250, 70));
+	buttons.addButton(Button("CREATE", "Create room", COLOR_GREEN, 1550, 970, 320, 70));
 
 
 	sf::RectangleShape header;
 	header.setSize({ WIDOW_WIDTH, 150 });
-	header.setFillColor(sf::Color(0xff6392ff));
+	header.setFillColor(sf::Color(COLOR_RED));
 
 
 	sf::RectangleShape nameRect, nameFond;
 	nameRect.setSize({ WIDOW_WIDTH *0.6, 100 });
-	nameRect.setFillColor(sf::Color(0x5ab1bbff));
+	nameRect.setFillColor(sf::Color(COLOR_BLUE));
 	nameRect.setPosition(0, 230);
 
 	nameFond.setSize({ WIDOW_WIDTH * 0.6, 610 });
-	nameFond.setFillColor(sf::Color(0x5ab1bb88));
+	nameFond.setFillColor(sf::Color(COLOR_SEMI_BLUE));
 	nameFond.setPosition(0, 330);
 
 	sf::RectangleShape playerRect, playerFond;
 	playerRect.setSize({ WIDOW_WIDTH * 0.3, 100 });
-	playerRect.setFillColor(sf::Color(0xa5c882ff));
+	playerRect.setFillColor(sf::Color(COLOR_GREEN));
 	playerRect.setPosition(WIDOW_WIDTH * 0.6, 230);
 
 	playerFond.setSize({ WIDOW_WIDTH * 0.3, 610 });
-	playerFond.setFillColor(sf::Color(0xa5c88288));
+	playerFond.setFillColor(sf::Color(COLOR_SEMI_GREEN));
 	playerFond.setPosition(WIDOW_WIDTH * 0.6, 330);
 
 	sf::RectangleShape nbRect, nbFond;
 	nbRect.setSize({ WIDOW_WIDTH * 0.1, 100 });
-	nbRect.setFillColor(sf::Color(0xf7dd72ff));
+	nbRect.setFillColor(sf::Color(COLOR_YELLOW));
 	nbRect.setPosition(WIDOW_WIDTH * 0.9, 230);
 
 	nbFond.setSize({ WIDOW_WIDTH * 0.1, 610 });
-	nbFond.setFillColor(sf::Color(0xf7dd7288));
+	nbFond.setFillColor(sf::Color(COLOR_SEMI_YELLOW));
 	nbFond.setPosition(WIDOW_WIDTH * 0.9, 330);
 
 
@@ -150,7 +150,7 @@ int LobbySelection::run(sf::RenderWindow& window, BackgroundAnimation& bg, Clien
 		{
 			if (!loading.getActive()) {
 				if (event.type == sf::Event::Closed)
-					exit = true;
+					return -100;
 
 				if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape ||
 					event.type == sf::Event::JoystickButtonPressed && event.joystickButton.button == 1)

@@ -114,6 +114,7 @@ public:
     void initRandomSequence(int nb);
     void setRandomSequenceVal(int i, int j, int val);
     void setPacketRandomSequence(sf::Packet& packet);
+    int getIndex(Target& target);
 
     void startEndAnim();
     bool getCleared();

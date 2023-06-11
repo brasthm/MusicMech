@@ -7,7 +7,6 @@
 #include "Graphics/BackgoundAnimation.h"
 #include "Network/Client.h"
 
-bool connect(Client* client, std::string name);
 
 class Title {
 private:

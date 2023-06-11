@@ -3,6 +3,8 @@
 #include "../System/Utils.h"
 #include <cmath>
 #include <iostream>
+#include "../System/StatisticCounter.h"
+#include "../main.h"
 
 void Cone::updatePosition(EntityManager& entityManager)
 {
@@ -141,6 +143,7 @@ void Cone::onCheck(const sf::Time& elapsed, float currentBeat, float cuurentPart
     nbIn_ = 0;
 
     //std::cout << entities.getSizePlayers() << std::endl;
+    allIns_.clear();
     for (int i = 0; i < entities.getSizePlayers(); i++) {
         Target t(TARGET_ENTITY, TARGET_PLAYERS, i);
         if (!entities.getActive(t))
@@ -150,10 +153,16 @@ void Cone::onCheck(const sf::Time& elapsed, float currentBeat, float cuurentPart
 
         if (good) {
             nbIn_++;
+            allIns_.push_back(i);
         }
     }
 
     passed_ = nbIn_ == nbShare_;
+
+    if (!passed_) {
+        for (int i = 0; i < allIns_.size(); i++)
+            StatisticCounter::add(STATISTIC_GREED, allIns_[i], elapsed.asSeconds());
+    }
 
     if (passed_ || earlypassed_) {
         backColor_.setCurrentTarget("good");
@@ -190,6 +199,18 @@ void Cone::onApproach(const sf::Time& elapsed, float currentBeat, float currentP
 
 void Cone::onPassed(const sf::Time& elapsed, float currentBeat, float currentPart, EntityManager& entities)
 {
+    if (center_.type != TARGET_POS && center_.team == TARGET_PLAYERS) {
+        StatisticCounter::add(STATISTIC_TARGET, entities.getIndex(center_), 1);
+    }
+    if (anchor_.type != TARGET_POS && anchor_.team == TARGET_PLAYERS) {
+        StatisticCounter::add(STATISTIC_TARGET, entities.getIndex(anchor_), 1);
+    }
+
+    if (nbShare_ > 1) {
+        for (int i = 0; i < allIns_.size(); i++)
+            StatisticCounter::add(STATISTIC_INSHARE, allIns_[i], 1);
+    }
+
     if (anchor_.timing == TARGET_ONBEAT || center_.timing == TARGET_ONBEAT) {
         updatePosition(entities);
     }
@@ -204,6 +225,21 @@ void Cone::onPassed(const sf::Time& elapsed, float currentBeat, float currentPar
         if (good) {
             entities.applyDebuff(currentBeat, t, debuffToApply_, currentBeat + debuffTimer_);
         }
+    }
+}
+
+void Cone::onFailed(const sf::Time& elapsed, float currentBeat, float currentPart, EntityManager& entities)
+{
+    if (center_.type != TARGET_POS && center_.team == TARGET_PLAYERS) {
+        StatisticCounter::add(STATISTIC_TARGET, entities.getIndex(center_), 1);
+    }
+    if (anchor_.type != TARGET_POS && anchor_.team == TARGET_PLAYERS) {
+        StatisticCounter::add(STATISTIC_TARGET, entities.getIndex(anchor_), 1);
+    }
+
+    if (nbShare_ == 0) {
+        for (int i = 0; i < allIns_.size(); i++)
+            StatisticCounter::add(STATISTIC_FAILED, allIns_[i], 1);
     }
 }
 

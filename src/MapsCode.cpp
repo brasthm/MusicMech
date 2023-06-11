@@ -3962,7 +3962,7 @@ void furachi(std::vector<Mechanic*>& mechanics, Song& song, sf::Music& music, En
     //music.setPlayingOffset(sf::seconds(99));
 }
 
-void lazySong(std::vector<Mechanic*>& mechanics, Song& song, sf::Music& music, EntityManager& em)
+/*void lazySong(std::vector<Mechanic*>& mechanics, Song& song, sf::Music& music, EntityManager& em)
 {
     song.addCheckpoint(0, 0);
 
@@ -4077,6 +4077,17 @@ void lazySong(std::vector<Mechanic*>& mechanics, Song& song, sf::Music& music, E
 
     
     mechanics.emplace_back(new EndMap(274));
+
+
+    //music.setPlayingOffset(sf::seconds(52));
+}
+*/
+
+void lazySong(std::vector<Mechanic*>& mechanics, Song& song, sf::Music& music, EntityManager& em)
+{
+    song.addCheckpoint(0, 0);
+
+    mechanics.emplace_back(new EndMap(4));
 
 
     //music.setPlayingOffset(sf::seconds(52));

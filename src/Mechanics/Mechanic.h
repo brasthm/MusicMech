@@ -19,6 +19,7 @@ protected:
     bool pause_;
     bool draw_;
     bool init_;
+    bool lock_;
     bool activate_;
     float active_;
     int drawPriority_;

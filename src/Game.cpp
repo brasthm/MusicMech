@@ -23,6 +23,8 @@
 
 #include "MapsCode.h"
 
+#include "System/StatisticCounter.h"
+
 
 #include <cmath>
 #include <future>
@@ -31,9 +33,10 @@ Game::Game() {
     online_ = false;
 }
 
-void Game::run(sf::RenderWindow &window, Client* client, bool creator) {
+int Game::run(sf::RenderWindow &window, Client* client, bool creator) {
     totems_.clear();
     em_.clear();
+
 
     for(int i = 0; i < NB_MAX_TOTEM; i++) {
         totems_.emplace_back();
@@ -55,6 +58,8 @@ void Game::run(sf::RenderWindow &window, Client* client, bool creator) {
     std::vector<sf::Text> namesText;
 
     for (int i = 0; i < joueurs_.size(); i++) {
+        joueurs_[i].setIndex(i);
+
         namesText.emplace_back();
         namesInfo.emplace_back();
 
@@ -71,53 +76,47 @@ void Game::run(sf::RenderWindow &window, Client* client, bool creator) {
         namesInfo.back().setPosition(0, WIDOW_HEIGHT - 50 - (joueurs_.size() - i) * (60));
     }
 
+    std::cout << "Number of players : " << numberPlayers_ << std::endl;
+    StatisticCounter::reset(joueurs_.size());
 
-    sf::Clock fps, send, ping;
+
+    sf::Clock fps, send, ping, hack;
 
     int current = client->getPlayerIndex();
 
-    sf::Text fps_text, beat_text, beat_serv_text, ping_text ,godmode_text, position_text, position_serv_text, section_text, death_text;
+    sf::Text death_text;
 
-    fps_text.setFont(RessourceLoader::getFont("Font/Roboto-Regular.ttf"));
-    fps_text.setCharacterSize(18);
 
-    beat_text.setFont(RessourceLoader::getFont("Font/Roboto-Regular.ttf"));
-    beat_text.setCharacterSize(18);
-    beat_text.setPosition(0, 20);
+    float fps_tracker, ping_tracker, godmode_tracker, position_tracker, 
+        distance_tracker, still_tracker, targeted_tracker, failed_tracker, greed_tracker, inshare_tracker;
 
-    beat_serv_text.setFont(RessourceLoader::getFont("Font/Roboto-Regular.ttf"));
-    beat_serv_text.setCharacterSize(18);
-    beat_serv_text.setPosition(0,20*2);
+    DebugWindow debugwindow;
+    float currentBeat_float, currentSection;
+    float serverbeat;
+    float off;
+    float serverpos;
+    float offpos;
 
-    beat_serv_text.setString("Server beat: 0 (+0)");
 
-    position_text.setFont(RessourceLoader::getFont("Font/Roboto-Regular.ttf"));
-    position_text.setCharacterSize(18);
-    position_text.setPosition(0, 20 * 3);
-
-    position_text.setString("Position: 0");
-
-    position_serv_text.setFont(RessourceLoader::getFont("Font/Roboto-Regular.ttf"));
-    position_serv_text.setCharacterSize(18);
-    position_serv_text.setPosition(0, 20 * 4);
-
-    position_serv_text.setString("Server position: 0 (+0)");
-
-    ping_text.setFont(RessourceLoader::getFont("Font/Roboto-Regular.ttf"));
-    ping_text.setCharacterSize(18);
-    ping_text.setPosition(0, 20 * 5);
-
-    ping_text.setString("Ping: 0");
-
-    godmode_text.setFont(RessourceLoader::getFont("Font/Roboto-Regular.ttf"));
-    godmode_text.setCharacterSize(18);
-    godmode_text.setPosition(0, 20 * 6);
-    godmode_text.setString(GOD_MODE ? "Godmode: true" : "Godmode : false");
-
-   section_text.setFont(RessourceLoader::getFont("Font/Roboto-Regular.ttf"));
-   section_text.setCharacterSize(18);
-   section_text.setPosition(0, 20 * 7);
-
+    debugwindow.track("FPS", &fps_tracker);
+    debugwindow.track("Ping", &ping_tracker);
+    debugwindow.track("Section", &currentSection);
+    debugwindow.track("Godmode", &godmode_tracker);
+    debugwindow.track("----------------------", nullptr);
+    debugwindow.track("Beat", &currentBeat_float);
+    debugwindow.track("Server Beat", &serverbeat);
+    debugwindow.track("Beat offset", &off);
+    debugwindow.track("----------------------", nullptr);
+    debugwindow.track("Position", &position_tracker);
+    debugwindow.track("Server position", &serverpos);
+    debugwindow.track("Position offset", &offpos);    
+    debugwindow.track("----------------------", nullptr);
+    debugwindow.track("Distance", &distance_tracker);
+    debugwindow.track("Time being still", &still_tracker);
+    debugwindow.track("Targeted", &targeted_tracker);
+    debugwindow.track("Steped in danger", &failed_tracker);
+    debugwindow.track("Time greeding", &greed_tracker);
+    debugwindow.track("In share counter", &inshare_tracker);
 
 
 
@@ -142,6 +141,7 @@ void Game::run(sf::RenderWindow &window, Client* client, bool creator) {
 
     bool exit = false, interupted = false, sent = false, failed = false, resume = false, paused = false, refreshPing = false, restartSent = false;
     bool drawDebug = false, gameOver = false;
+    bool wait_hack = false;
     std::pair<float, float> checkpoint;
 
 
@@ -151,17 +151,17 @@ void Game::run(sf::RenderWindow &window, Client* client, bool creator) {
 
     ButtonGroup pauseButtons, gameOverButtons;
 
-    pauseButtons.addButton(Button("RESUME", "Resume", 0xa5c882ff, WIDOW_WIDTH / 2.f - 125, 450, 250, 70));
-    pauseButtons.addButton(Button("QUIT", "Quit", 0xff6392ff, WIDOW_WIDTH / 2.f - 75, 580, 150, 70));
+    pauseButtons.addButton(Button("RESUME", "Resume", COLOR_GREEN, WIDOW_WIDTH / 2.f - 125, 450, 250, 70));
+    pauseButtons.addButton(Button("QUIT", "Quit", COLOR_RED, WIDOW_WIDTH / 2.f - 75, 580, 150, 70));
 
     if (creator) {
-        gameOverButtons.addButton(Button("RETRY", "Retry", 0xa5c882ff, WIDOW_WIDTH / 2.f - 125, 580, 250, 70));
-        gameOverButtons.addButton(Button("RECAP", "Death recap", 0xf7dd72ff, WIDOW_WIDTH / 2.f - 150, 710, 300, 70));
-        gameOverButtons.addButton(Button("QUIT", "Quit", 0xff6392ff, WIDOW_WIDTH / 2.f - 75, 840, 150, 70));
+        gameOverButtons.addButton(Button("RETRY", "Retry", COLOR_GREEN, WIDOW_WIDTH / 2.f - 125, 580, 250, 70));
+        gameOverButtons.addButton(Button("RECAP", "Death recap", COLOR_YELLOW, WIDOW_WIDTH / 2.f - 150, 710, 300, 70));
+        gameOverButtons.addButton(Button("QUIT", "Quit", COLOR_RED, WIDOW_WIDTH / 2.f - 75, 840, 150, 70));
     }
     else {
-        gameOverButtons.addButton(Button("RECAP", "Death recap", 0xf7dd72ff, WIDOW_WIDTH / 2.f - 150, 580, 300, 70));
-        gameOverButtons.addButton(Button("QUIT", "Quit", 0xff6392ff, WIDOW_WIDTH / 2.f - 75, 710, 150, 70));
+        gameOverButtons.addButton(Button("RECAP", "Death recap", COLOR_YELLOW, WIDOW_WIDTH / 2.f - 150, 580, 300, 70));
+        gameOverButtons.addButton(Button("QUIT", "Quit", COLOR_RED, WIDOW_WIDTH / 2.f - 75, 710, 150, 70));
     }
     
 
@@ -213,8 +213,8 @@ void Game::run(sf::RenderWindow &window, Client* client, bool creator) {
     {
         int res = -1;
         sf::Time currentPos = music_.getPlayingOffset();
-        float currentBeat_float = song_.getCumulativeNBeats(currentPos.asMilliseconds());
-        float currentSection = song_.getCheckpoint(currentBeat_float);
+        currentBeat_float = song_.getCumulativeNBeats(currentPos.asMilliseconds());
+        currentSection = song_.getCheckpoint(currentBeat_float);
         
 
         sf::Time elapsedTime = fps.getElapsedTime();
@@ -224,8 +224,7 @@ void Game::run(sf::RenderWindow &window, Client* client, bool creator) {
         while (window.pollEvent(event))
         {
             if (event.type == sf::Event::Closed && !interupted) {
-                client->sendEndGame();
-                interupted = true;
+                return -100;
             }
             
             if (!loading.getActive()) {
@@ -336,11 +335,15 @@ void Game::run(sf::RenderWindow &window, Client* client, bool creator) {
 
 
         
+        fps_tracker = 1.f / elapsedTime.asSeconds();
+        position_tracker = currentPos.asSeconds();
+        distance_tracker = StatisticCounter::get(STATISTIC_DISTANCE, 0);
+        still_tracker =  StatisticCounter::get(STATISTIC_STILL, 0);
+        targeted_tracker = StatisticCounter::get(STATISTIC_TARGET, 0);
+        greed_tracker = StatisticCounter::get(STATISTIC_GREED, 0);
+        inshare_tracker = StatisticCounter::get(STATISTIC_INSHARE, 0);
+        failed_tracker = StatisticCounter::get(STATISTIC_FAILED, 0);
 
-        fps_text.setString("FPS: " + std::to_string(1.f / elapsedTime.asSeconds()));
-        beat_text.setString("Beat: " + std::to_string(currentBeat_float));
-        position_text.setString("Position: " + std::to_string(currentPos.asSeconds()));
-        section_text.setString("Section : " + std::to_string(currentSection));
 
         loading.update(elapsedTime);
 
@@ -380,6 +383,7 @@ void Game::run(sf::RenderWindow &window, Client* client, bool creator) {
                 for (auto& joueur : joueurs_) {
                     joueur.update(elapsedTime, &arena_, currentBeat_float, window.hasFocus() && !paused);
                 }
+
 
                 for (auto& totem : totems_) {
                     totem.update(elapsedTime, &arena_, currentBeat_float);
@@ -432,16 +436,13 @@ void Game::run(sf::RenderWindow &window, Client* client, bool creator) {
             if (refreshPing) {
                 refreshPing = false;
 
-                float serverbeat = client->getServerBeat();
-                float off = currentBeat_float - serverbeat;
-                float serverpos = client->getPosition();
-                float offpos = (currentPos.asSeconds() - serverpos) * 1000;
+                serverbeat = client->getServerBeat();
+                off = currentBeat_float - serverbeat;
+                serverpos = client->getPosition();
+                offpos = (currentPos.asSeconds() - serverpos) * 1000;
 
-                ping_text.setString("Ping: " + std::to_string(client->getPing()));
-                beat_serv_text.setString("Server beat: " + std::to_string(serverbeat) + " (" + std::to_string(off) + ")");
-                godmode_text.setString(client->getGodMode() ? "Godmode: true" : "Godmode : false");
-                position_serv_text.setString("Server position: " + std::to_string(serverpos) + "(" + std::to_string((int)offpos) + "ms)");
-            }
+                ping_tracker =  client->getPing();
+           }
 
             // RESTART RECIEVED
             if (resume) {
@@ -524,7 +525,18 @@ void Game::run(sf::RenderWindow &window, Client* client, bool creator) {
         }
 
         // FAILED
-        if(!failed) failed = !godmode && newfailed;
+        if (!failed) {
+            if (!godmode && newfailed) {
+                if (!wait_hack) {
+                    hack.restart();
+                    wait_hack = true;
+                }
+            }
+            if (wait_hack && hack.getElapsedTime().asMilliseconds() >= 500) {
+                failed = true;
+                wait_hack = false;
+            }
+        }
         if(failed) {
             // FIRST FRAME
             if(!sent) {
@@ -554,6 +566,28 @@ void Game::run(sf::RenderWindow &window, Client* client, bool creator) {
                 death++;
                 death_text.setString("Death counter: " + std::to_string(death));
 
+                StatisticCounter::addTimestamp(TIMESTAMPS_FAILED, currentBeat_float);
+
+
+                std::cout << "DEATH TIMER" << std::endl;
+                for (int i = 0; i < StatisticCounter::getTimestampSize(TIMESTAMPS_FAILED); i++) {
+                    std::cout << "     " << StatisticCounter::getTimestamp(TIMESTAMPS_FAILED, i) << std::endl;
+                }
+
+
+                std::cout << "STATS TIMER" << std::endl;
+                for (int j = 0; j < STATISTIC_INSHARE + 1; j++) {
+                    std::cout << "- " << j << std::endl;
+                    std::cout << "  ";
+                    for (int i = 0; i < numberPlayers_; i++) {
+                        std::cout << StatisticCounter::get(j, i) << " ";
+                    }
+                    std::cout << std::endl;
+                    auto res1 = StatisticCounter::getOutlier(j, true);
+                    auto res2 = StatisticCounter::getOutlier(j, false);
+                    std::cout << "=> " << res1.first <<  "(" << res1.second << ")"
+                        << " / " << res2.first << " (" << res2.second << ")" << std::endl;
+                }
             }
 
             /*if (!restartSent && !exit && !interupted) {
@@ -586,20 +620,17 @@ void Game::run(sf::RenderWindow &window, Client* client, bool creator) {
 
         // DRAW LOADING
         if (drawDebug) {
-            window.draw(fps_text);
-            window.draw(beat_text);
-            window.draw(godmode_text);
-            window.draw(beat_serv_text);
-            window.draw(ping_text);
-            window.draw(position_serv_text);
-            window.draw(position_text);
-            window.draw(section_text);
+            debugwindow.draw(window);
         }
 
         window.display();
     }
 
     music_.stop();
+
+    if (cleared) return 100;
+
+    return 0;
 }
 
 void Game::load() {
@@ -706,6 +737,7 @@ void Game::reset(float beat) {
 void Game::clearPlayer()
 {
     joueurs_.clear();
+    numberPlayers_ = 0;
 }
 
 void Game::addPlayer(std::string name ,sf::Uint32 color)
@@ -716,6 +748,7 @@ void Game::addPlayer(std::string name ,sf::Uint32 color)
         joueurs_.back().setColor(color);
     }
     joueurs_.back().computePlate();
+    numberPlayers_++;
 }
 
 EntityManager& Game::getEntityManager()
@@ -727,6 +760,27 @@ void Game::save(const std::string &filename) {
     song_.save(filename, mechanicList_, arena_);
 }
 
+void DebugWindow::draw(sf::RenderWindow& window)
+{
+    int i = 0;
+    for (auto &key:data_) {
+        sf::Text t;
+        t.setFont(RessourceLoader::getFont("Font/Roboto-Regular.ttf"));
+        t.setCharacterSize(18);
+        t.setPosition(0, i*20);
+
+        if(key.second != nullptr)
+            t.setString(key.first + ": " + std::to_string(*(float*)key.second));
+        else 
+            t.setString(key.first);
 
 
+        window.draw(t);
+        i++;
+    }
+}
 
+void DebugWindow::track(std::string key, void* val)
+{
+    data_.emplace_back(key, val);
+}

@@ -6,6 +6,7 @@
 #include "../main.h"
 #include "../System/Utils.h"
 #include "../System/RessourceLoader.h"
+#include "../System/StatisticCounter.h"
 
 #include <array>
 #include <cmath>
@@ -107,6 +108,11 @@ bool Joueur::update(sf::Time elapsed, Arena* arena, float beat, bool hasFocus) {
 
         float length = std::sqrt(vecDep.x * vecDep.x + vecDep.y * vecDep.y);
 
+        
+        
+        if (length == 0)
+            StatisticCounter::add(STATISTIC_STILL, index_, elapsed.asSeconds());
+
         if(length != 0) {
             if (length > 1)
                 vecDep = vecDep/length;
@@ -116,11 +122,20 @@ bool Joueur::update(sf::Time elapsed, Arena* arena, float beat, bool hasFocus) {
                 diffX = vecDep.x;
                 diffY = vecDep.y;
             }
+            float dist = length * speed_ / 1000 * elapsed.asSeconds();
+            
 
             pos_ += vecDep*speed_*elapsed.asSeconds();
 
             if (!arena->contains(pos_)) {
-                pos_ = arena->getClosest(pos_);
+                auto newpos = arena->getClosest(pos_);
+
+                vecDep = newpos - pos_;
+
+                pos_ = newpos;
+
+                length = std::sqrt(vecDep.x * vecDep.x + vecDep.y * vecDep.y);
+                dist = length * speed_ / 1000 * elapsed.asSeconds();
             }
 
             if(!controlledByPlayer_) {
@@ -128,11 +143,25 @@ bool Joueur::update(sf::Time elapsed, Arena* arena, float beat, bool hasFocus) {
                 newDiffX = serv_pos_.x - pos_.x;
                 newDiffY = serv_pos_.y - pos_.y;
 
-                if(!Utils::sameSign(newDiffX, diffX))
+                if (!Utils::sameSign(newDiffX, diffX)) {
                     pos_.x = serv_pos_.x;
-                if(!Utils::sameSign(newDiffY, diffY))
+                    vecDep.x = 0;
+                }
+                    
+                if (!Utils::sameSign(newDiffY, diffY)) {
                     pos_.y = serv_pos_.y;
+                    vecDep.y = 0;
+                }
+
+
+                length = std::sqrt(vecDep.x * vecDep.x + vecDep.y * vecDep.y);
+                dist = length * speed_ / 1000 * elapsed.asSeconds();
             }
+
+            if(dist == 0)
+                StatisticCounter::add(STATISTIC_STILL, index_, elapsed.asSeconds());
+            else
+                StatisticCounter::add(STATISTIC_DISTANCE, index_, dist);
         }
     }
 
@@ -204,6 +233,8 @@ void Joueur::setDataFromServer(sf::Packet &packet)  {
     active_ = active;
     serv_pos_.x = x;
     serv_pos_.y = y;
+
+    StatisticCounter::setActive(index_, active_);
 }
 
 void Joueur::reset() {
@@ -235,6 +266,7 @@ void Joueur::computePlate()
     auto size = nameText_.getGlobalBounds();
     namePlate_.setSize(sf::Vector2f(size.width + 15, size.height + 15));
 }
+
 
 
 

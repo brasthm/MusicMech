@@ -92,11 +92,11 @@ int RoomStatus::run(sf::RenderWindow& window, Client* client, EntityManager &em)
 
     ButtonGroup menuButtons;
 
-    menuButtons.addButton(Button("SHOWALL",    "Show all notes",    0xa5c882ff, 0, 100, 225, 50));
-    menuButtons.addButton(Button("SHOWFAILED", "Show failed notes", 0xa5c882ff, 0, 170, 263, 50));
-    menuButtons.addButton(Button("HIDE",       "Hide future notes", 0xa5c882ff, 0, 240, 257, 50));
-    menuButtons.addButton(Button("DEBUFF",     "Inspect debuffs",   0xf7dd72ff, 0, 310, 230, 50));
-    menuButtons.addButton(Button("QUIT",        "Back",             0xff6392ff, 0, 380, 90, 50));
+    menuButtons.addButton(Button("SHOWALL",    "Show all notes",    COLOR_GREEN, 0, 100, 225, 50));
+    menuButtons.addButton(Button("SHOWFAILED", "Show failed notes", COLOR_GREEN, 0, 170, 263, 50));
+    menuButtons.addButton(Button("HIDE",       "Hide future notes", COLOR_GREEN, 0, 240, 257, 50));
+    menuButtons.addButton(Button("DEBUFF",     "Inspect debuffs",   COLOR_YELLOW, 0, 310, 230, 50));
+    menuButtons.addButton(Button("QUIT",        "Back",             COLOR_RED, 0, 380, 90, 50));
 
 
     sf::RectangleShape debuffInfo;

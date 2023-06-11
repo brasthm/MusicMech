@@ -15,6 +15,7 @@ class RoomMenu {
 	bool requestStart(Client* client, Game* game);
 public:
 	RoomMenu();
+	sf::Vector2f getPositionInLayout(int nb, int index);
 	int run(sf::RenderWindow& window, BackgroundAnimation& bg, Client* client, SongDatabase* songs, Game *game, bool creator, bool beatmapChanged);
 };
 

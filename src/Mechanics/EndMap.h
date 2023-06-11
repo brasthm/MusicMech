@@ -8,6 +8,7 @@ class EndMap : public Mechanic {
 public:
     EndMap(float beat);
     void onPassed(const sf::Time& elapsed, float currentBeat, float currentPart, EntityManager& entities) override;
+    void onCheck(const sf::Time& elapsed, float currentBeat, float currentPart, EntityManager& entities) override;
     std::string toString() override;
     Mechanic* clone() override;
 };

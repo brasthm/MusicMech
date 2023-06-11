@@ -6,6 +6,7 @@
 
 #include "../System/Utils.h"
 #include "../System/Random.h"
+#include "../System/StatisticCounter.h"
 #include "../main.h"
 #include <cmath>
 #include <iostream>
@@ -98,15 +99,28 @@ void Tether::onCheck(const sf::Time &elapsed, float currentBeat, float currentPa
     else if(!pause_){
         if(continu_) {
             float mercy =  active_ > 4 ? 2 : 0;
+
             if(currentBeat > beat_ - active_ + mercy)
                 timer_ += elapsed;
-            if(timer_ >= sf::seconds(2))
+            if (timer_ >= sf::seconds(2)) {
+                onFailed(elapsed, currentBeat, currentPart, em);
                 checked_ = true;
+            }
+                
             if (timer_ >= sf::seconds(1)) {
                 vibrate_ += elapsed;
             }
         }
         passed_ = false;
+
+        if (!passed_) {
+            if (anchor1_.type != TARGET_POS) {
+                if (anchor1_.team == TARGET_PLAYERS)
+                    StatisticCounter::add(STATISTIC_GREED, em.getIndex(anchor1_), elapsed.asSeconds());
+                if (anchor2_.team == TARGET_PLAYERS)
+                    StatisticCounter::add(STATISTIC_GREED, em.getIndex(anchor2_), elapsed.asSeconds());
+            }
+        }
         
         borderColor_.setCurrentTarget("failed");
         backColor_.setCurrentTarget("failed");
@@ -244,6 +258,17 @@ void Tether::onApproach(const sf::Time &elapsed, float currentBeat, float curren
 }
 
 void Tether::onPassed(const sf::Time &elapsed, float currentBeat, float currentPart, EntityManager &em) {
+    if (anchor1_.team == TARGET_PLAYERS)
+        StatisticCounter::add(STATISTIC_TARGET, em.getIndex(anchor1_), 1);
+    if (anchor2_.team == TARGET_PLAYERS)
+        StatisticCounter::add(STATISTIC_TARGET, em.getIndex(anchor2_), 1);
+}
+
+void Tether::onFailed(const sf::Time& elapsed, float currentBeat, float currentPart, EntityManager& entities){
+    if (anchor1_.team == TARGET_PLAYERS)
+        StatisticCounter::add(STATISTIC_TARGET, entities.getIndex(anchor1_), 1);
+    if (anchor2_.team == TARGET_PLAYERS)
+        StatisticCounter::add(STATISTIC_TARGET, entities.getIndex(anchor2_), 1);
 }
 
 void Tether::onFade(const sf::Time &elapsed, float currentBeat, float currentPart, EntityManager &em) {
