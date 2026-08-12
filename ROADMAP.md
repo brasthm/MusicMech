@@ -12,11 +12,9 @@ chacune en deux difficultés (classique / expert), diffusable sans restriction.
 
 ## Où en est le projet
 
-Dernier commit de code : `ac7209b` « I'M BACK », 11 juin 2023 — un gros push après six
-mois d'interruption, qui ajoutait le menu principal, l'écran de fin, les profils, les
-bannières et les shaders. Le commit suivant (`4847f57`) ne fait que nettoyer des fichiers
-mal committés. Le commit `a59f560` (12 août 2026) ajoute les présents README et ROADMAP.
-**Le projet s'est arrêté en plein milieu du chantier « méta-progression ».**
+Les **étapes 0 et 1 sont terminées** (août 2026) : le projet compile sous Windows
+(MSVC 2019 + SFML 2.6) et les 13 chorégraphies sont désormais des fichiers `.mm`
+chargés au runtime. Plus aucune chorégraphie n'est codée en dur.
 
 L'arbre de travail est propre et tout est poussé sur `origin/main`. Rien n'est perdu.
 
@@ -30,7 +28,7 @@ L'arbre de travail est propre et tout est poussé sur `origin/main`. Rien n'est 
   synchronisation d'horloge, ping, keepalive, RNG seedé partagé.
   **Le serveur est autoritatif** : il rejoue la chorégraphie et décide de l'échec.
 - **Rendu** — formes géométriques custom, 10 shaders GLSL, carrousels, transitions.
-- **Contenu** — 13 chorégraphies dans `MapsCode.cpp` (33 à 1074 lignes), dont 11
+- **Contenu** — 13 chorégraphies dans des fichiers `.mm` (33 à 1074 lignes), dont 11
   substantielles, un stub (`intoYou`, 33 lignes) et un doublon (`lazySong`).
 - **Menus** — la chaîne complète existe, du titre à l'écran de fin.
 
@@ -38,7 +36,6 @@ L'arbre de travail est propre et tout est poussé sur `origin/main`. Rien n'est 
 
 | Manque | Impact |
 |---|---|
-| Chorégraphies codées en dur (`MapsCode.cpp`, 4661 lignes) | 🔴 Bloquant : toute map impose un recompilation + redéploiement des deux binaires |
 | Aucun mode solo | 🔴 Bloquant : le jeu est injouable sans serveur |
 | Aucun système de variantes (1 musique = 1 chorégraphie) | 🔴 Bloquant pour classique/expert |
 | Écran de fin partiel (objectifs, morts, checkpoints affichés ; pas de score ni titres) | 🟡 Manque le score détaillé et l'attribution de titres |
@@ -69,40 +66,17 @@ programme.
 
 ## Plan
 
-### Étape 0 — Rétablir la boucle de compilation · ~1 j
+### Étape 0 — Rétablir la boucle de compilation · ✅ Terminé
 
-Installer CMake et **SFML 2.6** (pas la 3.x, voir [README](README.md)), faire compiler
-les deux cibles, corriger les éventuelles régressions de compilateur depuis 2023.
-Sans ça, rien n'est vérifiable.
+MSVC 2019 (Win32) + SFML 2.6 installés, les deux cibles compilent sans erreur.
+`RessourceLoader` et `DJ.h` (supprimés à tort) ont été restaurés.
 
-### Étape 1 — Sortir les chorégraphies du code · 2-3 j 🔴
+### Étape 1 — Sortir les chorégraphies du code · ✅ Terminé
 
-**L'étape la plus importante du plan.** Écrire six chorégraphies avec un cycle
-*éditer → recompiler 22 000 lignes → relancer client et serveur* est intenable.
-
-Toute l'infrastructure existe déjà et fonctionne :
-
-| Brique | État |
-|---|---|
-| Parseur `.mm` (19 types d'objets) | ✅ `src/System/Song.cpp:178-423` |
-| `toString()` sur chaque mécanique | ✅ les 19 classes |
-| `Song::save()` | ✅ `src/System/Song.cpp:644` |
-| `Game::loadFromFile()` | ✅ écrit, mais **jamais appelé** |
-| Bascule dans le jeu | ❌ `src/RoomMenu.cpp:13`, ligne commentée |
-
-**Marche à suivre :**
-
-1. Corriger les deux bugs de sérialisation (annexe ci-dessous) — sinon l'export est
-   corrompu ou plante au rechargement.
-2. Faire écrire à `Song::save()` l'en-tête de métadonnées, qu'il omet actuellement.
-3. Pour chaque map : charger via `loadFromCode`, exporter via `save()`, recharger via
-   `loadFromFile`, vérifier que la partie est identique.
-4. Basculer `RoomMenu.cpp:12-13` sur `loadFromFile`, côté client **et** côté serveur
-   (`src/Network/Lobby.cpp:304`).
-5. Supprimer `MapsCode.cpp` — **seulement une fois les 13 exports validés**.
-
-> Garder les anciennes maps comme corpus de test, même celles qu'on ne pourra pas
-> diffuser : ce sont les seuls cas réels couvrant les 19 types de mécaniques.
+Les 13 chorégraphies sont exportées en `.mm`, chargées par `Game::loadFromFile` (client)
+et `Lobby::load` (serveur), et `MapsCode.cpp` est supprimé. Le format `.mm` a gagné deux
+sections au passage : `[RandomSequences]` (séquences aléatoires) et le champ optionnel
+`colorScheme` des `SPREAD`.
 
 ### Étape 2 — Variantes classique / expert · 1-2 j
 
@@ -125,9 +99,9 @@ Développer le solo, c'est déjà produire du contenu.
 ### Étape 4 — Boucle d'itération pour le charting · 1-2 j
 
 Rechargement à chaud du `.mm` et saut direct à un beat donné. Les
-`//music.setPlayingOffset(sf::seconds(99));` commentés un peu partout dans
-`MapsCode.cpp` racontent exactement la douleur à supprimer : éditer un nombre,
-recompiler, relancer, pour revoir quatre mesures.
+`//music.setPlayingOffset(sf::seconds(99));` commentés qui traînaient dans les anciennes
+chorégraphies codées en dur racontent exactement la douleur à supprimer : éditer un
+nombre, relancer, pour revoir quatre mesures.
 
 Sans cette étape, écrire une chorégraphie de 500 lignes reste un supplice.
 
@@ -176,60 +150,35 @@ un dépôt sain et publiable, avant de recommencer à committer du contenu. À f
 ## Annexe — Bugs identifiés à l'analyse
 
 Aucun `TODO` ni `FIXME` n'existe dans les 22 000 lignes du projet : cette annexe tient
-lieu de liste. Les trois premiers sont sur le chemin critique de l'étape 1.
+lieu de liste. Les trois premiers ont été corrigés pendant l'étape 1.
 
-### 1. 🔴 `TEXTINDICATOR` : le parseur lit sa cible deux fois
+### 1. ✅ `TEXTINDICATOR` : le parseur lit sa cible deux fois — corrigé
 
 `src/System/Song.cpp:239-240`
 
-```cpp
-int off = t.parse(5, words);
-t.parse(off, words);          // ← relit au-delà de la fin de ligne
-```
+La seconde ligne a été supprimée lors de l'export. Bug fermé.
 
-`TEXTINDICATOR` n'a qu'une seule cible, mais elle est parsée deux fois. Le second appel
-lit `words[off]` alors que `off` pointe après la fin de la ligne → **accès hors bornes**.
-Comparer avec `TETHERINDICATOR` (lignes 222-223) qui, lui, a bien deux cibles distinctes.
-
-`TextIndicator` est utilisé **36 fois** dans les chorégraphies : ce bug plantera dès le
-premier rechargement. Correctif : supprimer la seconde ligne.
-
-### 2. 🟠 `Song::save()` n'écrit pas l'en-tête de métadonnées
+### 2. ✅ `Song::save()` n'écrit pas l'en-tête de métadonnées — corrigé
 
 `src/System/Song.cpp:644-667`
 
-La fonction n'émet que `[Arena]`, `[TimingPoints]`, `[Checkpoints]` et `[Objects]`. Tout
-l'en-tête (`AudioFilename`, `BackgroundImage`, `VignetteImage`, `PreviewTime`, `Title`,
-`Artist`, `Difficulty`, `Players`) est perdu — le fichier `output.txt` à la racine du
-dépôt en est la preuve, il commence directement par `[Arena]`.
+L'en-tête (`AudioFilename`, `PreviewTime`, `Title`, `Artist`, `BackgroundImage`,
+`VignetteImage`, `Difficulty`, `Players`) est désormais écrit. Bug fermé.
 
-Or `SongDatabase` a besoin de cet en-tête pour peupler la sélection de musiques. Sans
-correctif, chaque export devra être recomplété à la main.
-
-### 3. 🟡 `MOVEARENA` : virgule manquante avant la cible
+### 3. ✅ `MOVEARENA` : virgule manquante avant la cible — corrigé
 
 `src/Mechanics/MoveArena.cpp:18-20`
 
-```cpp
-std::string res = "MOVEARENA," + std::to_string(beat_) + "," + std::to_string(speed_);
-res += target_.to_string();   // ← pas de virgule séparatrice
-```
+La virgule séparatrice a été ajoutée. Bug fermé.
 
-La vitesse et le premier champ de la cible sont collés (`500.000000` + `0` →
-`500.0000000`), ce qui décale d'un cran tous les champs suivants et corrompt la cible
-au rechargement.
-
-**Latent aujourd'hui** : `MoveArena` n'est utilisé dans aucune chorégraphie. À corriger
-avant de s'en servir.
-
-### 4. 🟠 Fuite mémoire côté serveur
+### 4. 🟠 Fuite mémoire côté serveur (partiellement corrigé)
 
 `src/Network/Lobby.cpp:67` et `:296-303`
 
-`Lobby::~Lobby()` est vide alors que `mechanics_` est un `std::vector<Mechanic*>` de
-pointeurs bruts. Pire, `Lobby::load()` fait `mechanics_.clear()` sans `delete` avant de
-réallouer. **Chaque changement de beatmap fuit toute la liste de mécaniques**, ce qui
-s'accumule sur un serveur de longue durée.
+`Lobby::~Lobby()` est encore vide alors que `mechanics_` est un `std::vector<Mechanic*>`
+de pointeurs bruts. La fuite à chaque `Lobby::load()` a disparu (plus de
+`mechanics_.clear()` sans `delete` — `Song::load` supprime les mécaniques avant de
+recharger), mais le destructeur reste à compléter.
 
 Corollaire : `Lobby` a un constructeur de copie `= default` tout en possédant des
 pointeurs bruts. Non déclenché aujourd'hui (les 50 lobbies sont pré-alloués une seule

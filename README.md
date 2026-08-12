@@ -8,9 +8,9 @@ Le projet s'appelle `MusicMech` dans le dépôt et l'arborescence, mais **Synchr
 dans le jeu lui-même (titre de la fenêtre, nom de la cible CMake du client, protocole
 serveur `SYNCHROBEATSERV`).
 
-> **État : en sommeil depuis juin 2023, en cours de reprise.**
-> Le moteur, le réseau et 11 chorégraphies sont fonctionnels. Voir [ROADMAP.md](ROADMAP.md)
-> pour l'état détaillé et le plan de reprise.
+> **État : reprise en cours.** Les étapes 0 (compilation) et 1 (chorégraphies dans des
+> fichiers `.mm`) sont terminées. Le moteur, le réseau et 13 chorégraphies sont
+> fonctionnels. Voir [ROADMAP.md](ROADMAP.md) pour l'état détaillé et le plan.
 
 ---
 
@@ -79,9 +79,8 @@ cmake -S MusicMech_Client -B build/client -DCMAKE_BUILD_TYPE=Release && cmake --
 cmake -S MusicMech_Server -B build/server -DCMAKE_BUILD_TYPE=Release && cmake --build build/server -j
 ```
 
-> Ces commandes sont reconstituées à partir des `CMakeLists.txt` et **n'ont pas été
-> vérifiées sur une machine disposant de la toolchain**. Si le build échoue, c'est
-> l'étape 0 de la [feuille de route](ROADMAP.md).
+> Vérifié sous Windows avec **Visual Studio 2019** (Win32) et **SFML 2.6** : les deux
+> cibles compilent sans erreur. Sous Linux/macOS, adapter le générateur CMake.
 
 ---
 
@@ -115,9 +114,10 @@ Le client démarre **en plein écran 1920×1080** et se connecte à l'IP inscrit
 **et recompiler** avant de lancer.
 
 Une console de débogage existe dans `MusicMech_Client/main.cpp` (fonction `console()`,
-désactivée par défaut au profit de `game()`). Elle offre `connect`, `ip <adresse>`,
-`name <nom>`, `lc <lobby>`, `run`, `save`, `port`. La commande `save` exporte la
-chorégraphie chargée au format `.mm` — voir [mm-format.md](mm-format.md).
+désactivée par défaut au profit de `game()`). Elle offre `connect`, `disconnect`,
+`ip <adresse>`, `name <nom>`, `lc <lobby>`, `run`, `save`, `limit`, `port`, `shader`.
+La commande `save` écrit la chorégraphie chargée dans `output.txt` au format `.mm` —
+voir [mm-format.md](mm-format.md).
 
 ### Contrôles
 
@@ -135,13 +135,12 @@ src/                    Code partagé client + serveur (~22 000 lignes)
 ├── Mechanics/          Les 19 mécaniques de jeu + leur classe de base
 ├── Network/            Client, serveur, lobbies, sockets TCP/UDP
 ├── System/             Chanson, timing, arène, debuffs, profils, statistiques
-├── MapsCode.cpp        ⚠️ Les chorégraphies, codées en dur (4661 lignes)
 ├── main.h              Constantes globales, IP serveur, couleurs, titres
 └── *.cpp               Un fichier par écran (menus, jeu, écran de fin)
 
 MusicMech_Client/       Cible client (main.cpp + CMakeLists)
 MusicMech_Server/       Cible serveur (main.cpp + CMakeLists)
-rc/                     Ressources : beatmaps, musiques, images, polices, shaders
+rc/                     Ressources : beatmaps (`.mm`), musiques, images, polices, shaders
 refs/                   Références de conception : maquettes, palettes, storyboards
 scripts/                Utilitaires (calcul de paramètres de flou)
 ```
@@ -152,11 +151,10 @@ scripts/                Utilitaires (calcul de paramètres de flou)
 
 Détail complet et plan de résolution dans [ROADMAP.md](ROADMAP.md).
 
-- **Les chorégraphies sont codées en dur** dans `src/MapsCode.cpp`. Les fichiers `.mm`
-  de `rc/Beatmaps/` ont tous une section `[Objects]` vide. Ajouter ou modifier une map
-  impose de **recompiler et redéployer le client et le serveur**.
+- **Pas de rechargement à chaud** des `.mm` : modifier une chorégraphie nécessite de
+  relancer client et serveur (plus de recompilation, mais pas de hot reload).
 - **L'adresse IP du serveur est en dur** dans `src/main.h` — aucun fichier de
-  configuration.
+  configuration (mais modifiable au runtime via le menu Réglages).
 - **Le mode Solo ne fait rien.** Les entrées Succès (écran d'achievements) et
   Réglages (changement d'IP serveur) sont fonctionnelles. Le multijoueur reste le
   seul mode de jeu, ce qui rend le jeu inutilisable sans serveur.
