@@ -531,6 +531,7 @@ int Server::findConnectedById(sf::Uint32 id)
         if (players_[i].status != PlayerStatus::PLAYER_DISCONNECTED && players_[i].id == id)
             return i;
     }
+    return -1;
 }
 
 int Server::findConnected(sf::IpAddress address, unsigned short port) {

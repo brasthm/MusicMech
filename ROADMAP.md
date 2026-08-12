@@ -12,10 +12,11 @@ chacune en deux difficultés (classique / expert), diffusable sans restriction.
 
 ## Où en est le projet
 
-Dernier commit de fond : `ac7209b` « I'M BACK », 11 juin 2023 — un gros push après six
+Dernier commit de code : `ac7209b` « I'M BACK », 11 juin 2023 — un gros push après six
 mois d'interruption, qui ajoutait le menu principal, l'écran de fin, les profils, les
-bannières et les shaders. Le commit suivant ne fait que nettoyer des fichiers mal
-committés. **Le projet s'est arrêté en plein milieu du chantier « méta-progression ».**
+bannières et les shaders. Le commit suivant (`4847f57`) ne fait que nettoyer des fichiers
+mal committés. Le commit `a59f560` (12 août 2026) ajoute les présents README et ROADMAP.
+**Le projet s'est arrêté en plein milieu du chantier « méta-progression ».**
 
 L'arbre de travail est propre et tout est poussé sur `origin/main`. Rien n'est perdu.
 
@@ -29,7 +30,8 @@ L'arbre de travail est propre et tout est poussé sur `origin/main`. Rien n'est 
   synchronisation d'horloge, ping, keepalive, RNG seedé partagé.
   **Le serveur est autoritatif** : il rejoue la chorégraphie et décide de l'échec.
 - **Rendu** — formes géométriques custom, 10 shaders GLSL, carrousels, transitions.
-- **Contenu** — 11 chorégraphies substantielles (107 à 1072 lignes chacune).
+- **Contenu** — 13 chorégraphies dans `MapsCode.cpp` (33 à 1074 lignes), dont 11
+  substantielles, un stub (`intoYou`, 33 lignes) et un doublon (`lazySong`).
 - **Menus** — la chaîne complète existe, du titre à l'écran de fin.
 
 ### Ce qui manque
@@ -39,9 +41,9 @@ L'arbre de travail est propre et tout est poussé sur `origin/main`. Rien n'est 
 | Chorégraphies codées en dur (`MapsCode.cpp`, 4661 lignes) | 🔴 Bloquant : toute map impose un recompilation + redéploiement des deux binaires |
 | Aucun mode solo | 🔴 Bloquant : le jeu est injouable sans serveur |
 | Aucun système de variantes (1 musique = 1 chorégraphie) | 🔴 Bloquant pour classique/expert |
-| Écran de fin sans score ni statistiques | 🟠 Le jeu n'a pas de conclusion |
+| Écran de fin partiel (objectifs, morts, checkpoints affichés ; pas de score ni titres) | 🟡 Manque le score détaillé et l'attribution de titres |
 | Titres jamais attribués | 🟠 Progression morte |
-| IP serveur en dur, aucune option | 🟠 Non déployable |
+| IP serveur modifiable dans le menu, mais pas de fichier de config | 🟡 Reste à externaliser résolution, volume, plein écran |
 | Musiques sous droits | ⚫ Résolu par le changement de musiques |
 
 ---
@@ -133,22 +135,25 @@ Sans cette étape, écrire une chorégraphie de 500 lignes reste un supplice.
 
 Le cœur du projet, et l'essentiel du temps. 3 musiques × 2 difficultés.
 
-### Étape 6 — Écran de fin et titres · 3-4 j
+### Étape 6 — Écran de fin et titres · 2-3 j
 
-Tout est déjà instrumenté et il ne manque que le dernier maillon. Les statistiques
-sont collectées dans toutes les mécaniques (distance, temps immobile, ciblages,
-dégâts pris, temps passé à *greed*, participation aux partages) et
-`StatisticCounter::getOutlier()` sait désigner le joueur extrême sur chaque critère.
-Aujourd'hui ces données partent dans un `std::cout` (`src/Game.cpp:578-590`).
+Le commit de reprise a déjà bien avancé le chantier : l'écran de fin affiche désormais
+les 3 objectifs (clear / no-hit / no-retry), le compteur de retries, les marqueurs de
+mort sur la timeline et les checkpoints. Les statistiques sont collectées dans toutes
+les mécaniques (distance, temps immobile, ciblages, dégâts pris, temps passé à *greed*,
+participation aux partages) et `StatisticCounter::getOutlier()` sait désigner le joueur
+extrême sur chaque critère. Ces données partent encore dans un `std::cout`
+(`src/Game.cpp:578-590`) au lieu d'être affichées.
 
 Reste à brancher : statistiques → attribution de titre → affichage dans l'écran de fin
-→ sauvegarde dans le profil. Les 12 titres sont définis dans `src/main.h:117`.
+→ sauvegarde dans le profil. Les 27 titres sont définis dans `src/main.h:121`.
 
 *Volontairement après la démo : c'est du confort, pas du jouable.*
 
 ### Étape 7 — Configuration et hygiène · 1-2 j
 
-- Sortir l'IP serveur de `src/main.h` vers un fichier de configuration.
+- ~~Sortir l'IP serveur de `src/main.h`~~ → déjà fait : modifiable via le menu Réglages.
+  Reste à en faire un vrai fichier de configuration.
 - Options de résolution, de volume, de plein écran.
 - Corriger la fuite mémoire de `Lobby` (annexe).
 - Supprimer le code mort : `LobbyMenu` (232 lignes, instancié mais jamais appelé),
@@ -243,10 +248,10 @@ Le serveur diffuse bien son état en UDP (`src/Network/Server.cpp:411-413`) et l
 le stocke, mais la valeur renvoyée par `Client::getGodMode()` **n'est consommée nulle
 part**. La variable locale `godmode` de `Game::run` (`src/Game.cpp:55`) est initialisée
 à `false` et jamais mise à jour, tandis que le client force `GOD_MODE = true` au
-démarrage (`MusicMech_Client/main.cpp:257`).
+démarrage (`MusicMech_Client/main.cpp:287`).
 
 ### 7. 🟡 Champs textuels non échappés
 
 Le format `.mm` étant séparé par des virgules, une virgule dans un champ texte
 (`TEXTINDICATOR`) ou dans un chemin d'image (`DISPLAYIMAGE`) casse le parsing. Aucun
-échappement n'est prévu. Voir [docs/mm-format.md](docs/mm-format.md).
+échappement n'est prévu. Voir [mm-format.md](mm-format.md).

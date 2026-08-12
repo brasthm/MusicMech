@@ -117,7 +117,7 @@ Le client démarre **en plein écran 1920×1080** et se connecte à l'IP inscrit
 Une console de débogage existe dans `MusicMech_Client/main.cpp` (fonction `console()`,
 désactivée par défaut au profit de `game()`). Elle offre `connect`, `ip <adresse>`,
 `name <nom>`, `lc <lobby>`, `run`, `save`, `port`. La commande `save` exporte la
-chorégraphie chargée au format `.mm` — voir [docs/mm-format.md](docs/mm-format.md).
+chorégraphie chargée au format `.mm` — voir [mm-format.md](mm-format.md).
 
 ### Contrôles
 
@@ -144,7 +144,6 @@ MusicMech_Server/       Cible serveur (main.cpp + CMakeLists)
 rc/                     Ressources : beatmaps, musiques, images, polices, shaders
 refs/                   Références de conception : maquettes, palettes, storyboards
 scripts/                Utilitaires (calcul de paramètres de flou)
-docs/                   Documentation technique
 ```
 
 ---
@@ -158,11 +157,14 @@ Détail complet et plan de résolution dans [ROADMAP.md](ROADMAP.md).
   impose de **recompiler et redéployer le client et le serveur**.
 - **L'adresse IP du serveur est en dur** dans `src/main.h` — aucun fichier de
   configuration.
-- **Trois entrées du menu principal ne font rien** : Solo, Succès, Réglages. Seul le
-  multijoueur est jouable, ce qui rend le jeu inutilisable sans serveur.
-- **L'écran de fin n'affiche ni score ni statistiques**, alors que tout le système de
-  collecte de statistiques est en place.
-- **Aucune option** : résolution, volume et plein écran sont figés dans le code.
+- **Le mode Solo ne fait rien.** Les entrées Succès (écran d'achievements) et
+  Réglages (changement d'IP serveur) sont fonctionnelles. Le multijoueur reste le
+  seul mode de jeu, ce qui rend le jeu inutilisable sans serveur.
+- **L'écran de fin est partiel** : il affiche les objectifs, le compteur de retries,
+  les checkpoints et les marqueurs de mort, mais pas encore de score détaillé ni
+  d'attribution de titres, alors que les statistiques sont collectées.
+- **Options limitées** : l'IP serveur est modifiable via le menu Réglages, mais la
+  résolution, le volume et le plein écran restent figés dans le code.
 - **Les mécaniques de partage ne s'adaptent pas à l'effectif.** Le nombre de joueurs
   attendu dans une zone est une constante inscrite dans chaque mécanique : une
   chorégraphie écrite pour 4 joueurs est infaisable à 2 ou à 8.

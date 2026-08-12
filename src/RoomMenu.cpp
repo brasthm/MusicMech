@@ -551,4 +551,5 @@ int RoomMenu::run(sf::RenderWindow& window, BackgroundAnimation& bg, Client* cli
 		loading.draw(window);
 		window.display();
 	}
+	return exit;
 }

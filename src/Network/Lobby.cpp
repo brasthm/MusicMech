@@ -4,6 +4,7 @@
 
 #include "Lobby.h"
 #include "../MapsCode.h"
+#include "../System/StatisticCounter.h"
 
 #include <iostream>
 
@@ -91,6 +92,7 @@ void Lobby::startGame() {
     for(auto & i : mechanics_) {
         i->reset(currentBeat_);
     }
+    StatisticCounter::reset(NB_MAX_JOUEURS);
     for(auto & totem:totems_) {
         totem.setActive(false);
     }
@@ -98,8 +100,10 @@ void Lobby::startGame() {
         joueur.reset();
     }
     for(int i = 0; i < players.size(); i++) {
-        if(players[i] != nullptr)
+        if (players[i] != nullptr) {
             joueurs_[i].setActive(true);
+            joueurs_[i].setIndex(i);
+        }
     }
 }
 
@@ -149,7 +153,7 @@ std::pair<float, float> Lobby::getCheckpoint() {
     auto ind = song_.getCheckpoint(currentBeat_ - TRANSITION_DELAY);
 
     if (ind == -1)
-        return std::pair<float, float>(0, 0);
+        return std::pair<float, float>(0.0f, 0.0f);
 
     if (ind < currentSection_) {
         return song_.getIndexCheckpoint(currentSection_);

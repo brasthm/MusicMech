@@ -456,7 +456,7 @@ std::pair<float, float> Song::getCurrentCheckpoint(float time) {
     int res = getCheckpoint(time);
 
     if(res == -1)
-        return {0,0};
+        return {0.0f, 0.0f};
 
     return checkpoints_[res];
 }
@@ -465,7 +465,7 @@ std::pair<float, float> Song::getPreviousCheckpoint(float time) {
     int res = getCheckpoint(time);
 
     if(res == -1)
-        return {0,0};
+        return {0.0f, 0.0f};
 
     if(res == 0)
         return checkpoints_[0];
@@ -477,7 +477,7 @@ std::pair<float, float> Song::getNextCheckpoint(float time) {
     int res = getCheckpoint(time);
 
     if(res == -1)
-        return {0,0};
+        return {0.0f, 0.0f};
 
     if(res == checkpoints_.size() - 1)
         return checkpoints_[checkpoints_.size() - 1];

@@ -74,6 +74,8 @@ int RoomStatus::run(sf::RenderWindow& window, Client* client, EntityManager &em)
     std::vector<sf::Text> namesText;
 
     for (int i = 0; i < joueurs_.size(); i++) {
+        joueurs_[i].setIndex(i);
+
         namesText.emplace_back();
         namesInfo.emplace_back();
 
