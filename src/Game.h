@@ -43,12 +43,10 @@ public:
     int run(sf::RenderWindow &window, Client* client, bool creator);
     void load();
     void loadFromFile(const std::string &path);
-    void loadFromCode(const std::string &id, const std::string& path);
     void save(const std::string &filename);
     void reset(float beat);
     void clearPlayer();
     void addPlayer(std::string name, sf::Uint32 color);
-    int getNbMechanics();
     Song* getSong();
     EntityManager& getEntityManager();
 };

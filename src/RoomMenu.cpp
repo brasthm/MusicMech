@@ -9,7 +9,6 @@
 bool RoomMenu::requestReady(Client* client, Game* game, SongDatabase* songs, sf::Uint32 color, bool load)
 {
 	if(load)
-		//game->loadFromCode(songs->getCurrentId(), songs->getSelectedPath());
 		game->loadFromFile(songs->getSelectedPath());
 
 	bool ok = client->sendReady(color);

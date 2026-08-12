@@ -20,8 +20,6 @@
 #include "../src/EndScreen.h"
 #include "../src/AchievementScreen.h"
 
-#include "../src/MapsCode.h"
-
 #include "../src/System/Song.h"
 #include "../src/System/SongData.h"
 #include "../src/System/RessourceLoader.h"
@@ -84,8 +82,6 @@ void mainLoop(Client& c, int args=0) {
         EntityManager em;
 
         std::vector<Mechanic*> mechs;
-
-        //getMechsFromCode(sd.getCurrentId(), mechs, song, music, em);
 
         //es.run(mainWindow, bg, &c, sd, &song);
 
@@ -275,38 +271,6 @@ int console() {
             std::cout << c.getUdpPort() << std::endl;
         }
         
-        else if (cmd == "export") {
-            SongDatabase sd;
-            Game g;
-            std::cout << "Exporting songs:" << std::endl;
-            for (int i = 0; i < sd.size(); i++) {
-                SongData data = sd.getSong(i);
-                
-                std::string filepath = "Beatmaps/" + data.id + "/" + data.mmpath;
-
-                g.loadFromCode(data.id, filepath);
-                g.getSong()->setSongData(data);
-
-
-                g.save(filepath);
-
-                int nbMechsFromCode = g.getNbMechanics();
-
-                g.loadFromFile(filepath);
-
-                int nbMechsFromFile = g.getNbMechanics();
-
-                std::cout << "---- " << i+1 << "/" << sd.size() << ": " << data.name << " " << nbMechsFromCode << "/" << nbMechsFromFile;
-                
-                if (nbMechsFromCode == nbMechsFromFile)
-                    std::cout << " => OK!" << std::endl;
-                else {
-                    std::cout << " => ABORT!" << std::endl;
-                    break;
-                }
-            }
-
-        }
         else if (cmd == "shader") {
             mainLoop(c, 1);
         }
