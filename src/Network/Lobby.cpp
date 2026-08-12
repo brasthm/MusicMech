@@ -302,6 +302,9 @@ void Lobby::load(const std::string &filename) {
                nullptr,
                mechanics_, &arena_);
 
+    for (int size : song_.getRandomSequences())
+        manager_.initRandomSequence(size);
+
     std::cout << "Arena : " << arena_.getNbRects() << std::endl;
     std::cout << "Mechanics number : " << mechanics_.size() << std::endl;
 

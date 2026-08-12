@@ -15,7 +15,7 @@ Spécification du format de chorégraphie de Synchrobeat, reconstituée depuis l
 
 ## Vue d'ensemble
 
-Un fichier `.mm` est un fichier texte composé d'un en-tête `clé:valeur`, puis de quatre
+Un fichier `.mm` est un fichier texte composé d'un en-tête `clé:valeur`, puis de cinq
 sections entre crochets. Les valeurs des sections sont **séparées par des virgules**.
 
 ```
@@ -34,6 +34,9 @@ Players:2
 [Checkpoints]
 0,0
 18,48
+[RandomSequences]
+8
+8
 [Objects]
 SPREAD,4.000000,1,120.000000,8.000000,0,0.000000,0,0,0,300.000000,200.000000,0,NULL
 ENDMAP,274.000000
@@ -44,7 +47,7 @@ ENDMAP,274.000000
 `Song::load` avance dans une liste séquentielle et **ne revient jamais en arrière** :
 
 ```
-AudioFilename:  →  [Arena]  →  [TimingPoints]  →  [Checkpoints]  →  [Objects]
+AudioFilename:  →  [Arena]  →  [TimingPoints]  →  [Checkpoints]  →  [RandomSequences]  →  [Objects]
 ```
 
 Une section placée hors de cet ordre est **silencieusement ignorée**, sans erreur. Les
@@ -138,6 +141,29 @@ laisser au joueur une mesure de reprise avant que les mécaniques redémarrent.
 
 Le nombre de checkpoints détermine le nombre de phases affichées à l'écran d'échec
 (« FAIL - Phase 3/7 »).
+
+---
+
+## `[RandomSequences]`
+
+Tailles des séquences aléatoires partagées, utilisées par les cibles
+`TARGET_RANDOMSEQUENCE`. Une séquence par ligne :
+
+```
+size
+```
+
+| Champ | Type | Description |
+|---|---|---|
+| `size` | entier | Nombre d'éléments de la séquence (indices 0 à size-1) |
+
+La section peut être vide (aucune ligne) pour les maps qui n'utilisent pas de
+séquences aléatoires. L'ordre des lignes détermine l'index de la séquence
+(`pos.x` dans une cible `TARGET_RANDOMSEQUENCE`).
+
+Côté serveur, ces tailles sont lues par `Song::load` puis initialisées dans
+`Lobby::load` (`manager_.initRandomSequence(size)`), mélangées par
+`computeSequences()`, et envoyées aux clients.
 
 ---
 

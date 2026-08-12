@@ -100,6 +100,7 @@ void Song::load(const std::string& osuFile, sf::Music *music, std::vector<Mechan
 
     timingPoints_.clear();
     checkpoints_.clear();
+    randomSequences_.clear();
     for(auto &mech:mechs)
         delete mech;
     mechs.clear();
@@ -114,6 +115,7 @@ void Song::load(const std::string& osuFile, sf::Music *music, std::vector<Mechan
     toParse.emplace_back("[Arena]");
     toParse.emplace_back("[TimingPoints]");
     toParse.emplace_back("[Checkpoints]");
+    toParse.emplace_back("[RandomSequences]");
     toParse.emplace_back("[Objects]");
     auto parsing = toParse.begin();
 
@@ -141,7 +143,7 @@ void Song::load(const std::string& osuFile, sf::Music *music, std::vector<Mechan
                 }
             }
             else if (*parsing == "[Arena]" || *parsing == "[TimingPoints]" || *parsing == "[Objects]" 
-                || *parsing == "[Checkpoints]") {
+                || *parsing == "[Checkpoints]" || *parsing == "[RandomSequences]") {
                 readnow = true;
                 continue;
             }
@@ -173,6 +175,9 @@ void Song::load(const std::string& osuFile, sf::Music *music, std::vector<Mechan
                     float beat = std::stof(words[1]);
 
                     checkpoints_.emplace_back(timestamp, beat);
+                }
+                else if (*parsing == "[RandomSequences]") {
+                    randomSequences_.push_back(std::stoi(words[0]));
                 }
                 else if (*parsing == "[Objects]") {
                     if(words[0] == "SPREAD") {
@@ -669,6 +674,10 @@ void Song::save(const std::string& filename, const std::vector<Mechanic *> &mech
     file << "[Checkpoints]" << std::endl;
     for(auto &checkpoint:checkpoints_) {
         file << checkpoint.first << "," << checkpoint.second << std::endl;
+    }
+    file << "[RandomSequences]" << std::endl;
+    for(auto &size : randomSequences_) {
+        file << size << std::endl;
     }
     file << "[Objects]" << std::endl;
     for(auto &mech:mechs)

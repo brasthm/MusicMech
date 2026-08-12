@@ -18,6 +18,7 @@ private:
     std::vector<std::pair<float, float>> timingPoints_;
 	std::vector<std::pair<float, float>>::iterator currentTimingPoint_;
 	std::vector<std::pair<float, float>> checkpoints_;
+	std::vector<int> randomSequences_;
     std::string audioFile_;
 
 	float endBeat_;
@@ -45,6 +46,7 @@ public:
 
 	void addCheckpoint(float time, float beat);
 	void resetCheckpoints();
+	const std::vector<int>& getRandomSequences() const { return randomSequences_; }
 	std::pair<float, float> getCurrentCheckpoint(float beat);
     std::pair<float, float> getPreviousCheckpoint(float beat);
     std::pair<float, float> getNextCheckpoint(float beat);
