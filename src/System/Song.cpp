@@ -193,8 +193,11 @@ void Song::load(const std::string& osuFile, sf::Music *music, std::vector<Mechan
 
                         Target t;
 
-                        t.parse(7, words);
-                        mechs.emplace_back(new Spread(beat, radius, nbShare, active, t, (DebuffType)debuff, duration));
+                        int off = t.parse(7, words);
+                        std::string colorScheme = "default";
+                        if (off < (int)words.size())
+                            colorScheme = words[off];
+                        mechs.emplace_back(new Spread(beat, radius, nbShare, active, t, (DebuffType)debuff, duration, colorScheme));
                     }
                     else if(words[0] == "TETHER") {
                         float beat, minDist, active;

@@ -201,7 +201,7 @@ complète. `<cible>` désigne un bloc de 7 champs ou plus, décrit à la section
 
 | Type | Champs |
 |---|---|
-| `SPREAD` | `beat, nbShare, radius, active, debuff, debuffDuration, <cible>` |
+| `SPREAD` | `beat, nbShare, radius, active, debuff, debuffDuration, <cible>[, colorScheme]` |
 | `DONUT` | `beat, nbShare, distMin, distMax, active, debuff, debuffDuration, <cible>` |
 | `CONE` | `beat, nbShare, width, distance, active, debuff, debuffDuration, <centre>, <ancre>` |
 | `NOPEZONE` | `beat, nbShare, width, height, active, <cible>` |
@@ -209,6 +209,9 @@ complète. `<cible>` désigne un bloc de 7 champs ou plus, décrit à la section
 `SPREAD` est un disque de rayon `radius`. `DONUT` est une couronne entre `distMin` et
 `distMax`. `CONE` est un secteur d'angle `width` et de portée `distance`, orienté du
 `<centre>` vers l'`<ancre>`. `NOPEZONE` est un rectangle.
+
+`SPREAD` accepte un champ optionnel `colorScheme` (`default`, `blue` ou `purple`) qui
+contrôle sa palette de couleurs. Absent = `default`.
 
 #### Liens
 

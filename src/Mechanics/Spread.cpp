@@ -301,6 +301,7 @@ std::string Spread::toString() {
             std::to_string(debuffToApply_) + "," + std::to_string(debuffTimer_) + ",";
 
     res += target_.to_string();
+    res += "," + colorScheme_;
 
     return res;
 }
