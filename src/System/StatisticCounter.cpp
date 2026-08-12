@@ -24,6 +24,7 @@ void StatisticCounter::_reset(int nbPlayers)
 	stats_[STATISTIC_FAILED] = std::make_unique<std::vector<float>>(players_);
 	stats_[STATISTIC_GREED] = std::make_unique<std::vector<float>>(players_);
 	stats_[STATISTIC_INSHARE] = std::make_unique<std::vector<float>>(players_);
+	stats_[STATISTIC_DEATHCOUNTER] = std::make_unique<std::vector<float>>(1);
 
 	active_ = std::make_unique<std::vector<bool>>(players_);
 
@@ -45,6 +46,16 @@ void StatisticCounter::_setActive(int ind, bool val)
 	active_->at(ind) = val;
 }
 
+int StatisticCounter::_getPlayerNumber()
+{
+	return players_;
+}
+
+void StatisticCounter::_sortTimestamp(int key)
+{
+	std::sort(timestamps_[key].begin(), timestamps_[key].end());
+}
+
 std::pair<int, float> StatisticCounter::_getOutlier(int key, bool first)
 {
 	std::vector<std::pair<int, float>> distances;
@@ -58,7 +69,7 @@ std::pair<int, float> StatisticCounter::_getOutlier(int key, bool first)
 	std::sort(values.begin(), values.end());
 
 	float median = 0;
-	median = stats_[key]->at(values.size() / 2);
+	median = values[values.size() / 2];
 
 	for (int i = 0; i < values.size(); i++) {
 		if(median == 0)
@@ -131,4 +142,14 @@ void StatisticCounter::setActive(int ind, bool val)
 std::pair<int, float> StatisticCounter::getOutlier(int key, bool first)
 {
 	return getInstance()._getOutlier(key, first);
+}
+
+int StatisticCounter::getPlayerNumber()
+{
+	return getInstance()._getPlayerNumber();
+}
+
+void StatisticCounter::sortTimestamp(int key)
+{
+	getInstance()._sortTimestamp(key);
 }

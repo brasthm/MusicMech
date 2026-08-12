@@ -115,9 +115,9 @@ void Tether::onCheck(const sf::Time &elapsed, float currentBeat, float currentPa
 
         if (!passed_) {
             if (anchor1_.type != TARGET_POS) {
-                if (anchor1_.team == TARGET_PLAYERS)
+                if (anchor1_.team == TARGET_PLAYERS && anchor1_.type != TARGET_POS)
                     StatisticCounter::add(STATISTIC_GREED, em.getIndex(anchor1_), elapsed.asSeconds());
-                if (anchor2_.team == TARGET_PLAYERS)
+                if (anchor2_.team == TARGET_PLAYERS && anchor2_.type != TARGET_POS)
                     StatisticCounter::add(STATISTIC_GREED, em.getIndex(anchor2_), elapsed.asSeconds());
             }
         }
@@ -258,16 +258,16 @@ void Tether::onApproach(const sf::Time &elapsed, float currentBeat, float curren
 }
 
 void Tether::onPassed(const sf::Time &elapsed, float currentBeat, float currentPart, EntityManager &em) {
-    if (anchor1_.team == TARGET_PLAYERS)
+    if (anchor1_.team == TARGET_PLAYERS && anchor1_.type != TARGET_POS)
         StatisticCounter::add(STATISTIC_TARGET, em.getIndex(anchor1_), 1);
-    if (anchor2_.team == TARGET_PLAYERS)
+    if (anchor2_.team == TARGET_PLAYERS && anchor2_.type != TARGET_POS)
         StatisticCounter::add(STATISTIC_TARGET, em.getIndex(anchor2_), 1);
 }
 
 void Tether::onFailed(const sf::Time& elapsed, float currentBeat, float currentPart, EntityManager& entities){
-    if (anchor1_.team == TARGET_PLAYERS)
+    if (anchor1_.team == TARGET_PLAYERS && anchor1_.type != TARGET_POS)
         StatisticCounter::add(STATISTIC_TARGET, entities.getIndex(anchor1_), 1);
-    if (anchor2_.team == TARGET_PLAYERS)
+    if (anchor2_.team == TARGET_PLAYERS && anchor2_.type != TARGET_POS)
         StatisticCounter::add(STATISTIC_TARGET, entities.getIndex(anchor2_), 1);
 }
 

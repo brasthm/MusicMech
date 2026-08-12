@@ -4,9 +4,11 @@
 #include "Graphics/FlexRectangle.h"
 #include "Graphics/ButtonGroup.h"
 
+
 MenuProfile::MenuProfile()
 {
 }
+
 
 int MenuProfile::run(sf::RenderWindow& window, BackgroundAnimation& bg, std::vector<Profile>& profiles)
 {
@@ -14,7 +16,7 @@ int MenuProfile::run(sf::RenderWindow& window, BackgroundAnimation& bg, std::vec
 	int exit = -1;
 
 	sf::RectangleShape header;
-	header.setSize({ WIDOW_WIDTH, 150 });
+	header.setSize({ WINDOW_WIDTH, 150 });
 	header.setFillColor(sf::Color(COLOR_RED));
 
 	sf::Text headerText;
@@ -26,7 +28,7 @@ int MenuProfile::run(sf::RenderWindow& window, BackgroundAnimation& bg, std::vec
 
 	LoadingScreen loading;
 
-	FlexRectangle movingSelector((WIDOW_WIDTH + 300) / 5 - 360, 150 + (WIDOW_HEIGHT - 150) / 3 - 110, 420, 220);
+	FlexRectangle movingSelector((WINDOW_WIDTH + 300) / 5 - 360, 150 + (WINDOW_HEIGHT - 150) / 3 - 110, 420, 220);
 	movingSelector.setFillColor(0xFFFFFF44);
 	bool changed = false;
 	int selected = 0;
@@ -68,7 +70,7 @@ int MenuProfile::run(sf::RenderWindow& window, BackgroundAnimation& bg, std::vec
 	nameRect.setFillColor(sf::Color(COLOR_YELLOW));
 	nameRect.setPosition(150, 400);
 
-	nameFond.setSize({ WIDOW_WIDTH * 0.4, 60 });
+	nameFond.setSize({ WINDOW_WIDTH * 0.4, 60 });
 	nameFond.setFillColor(sf::Color(COLOR_SEMI_YELLOW));
 	nameFond.setPosition(150 + nameText.getGlobalBounds().width + 200, 415);
 
@@ -78,7 +80,7 @@ int MenuProfile::run(sf::RenderWindow& window, BackgroundAnimation& bg, std::vec
 
 	sf::RectangleShape fond;
 	fond.setFillColor(sf::Color(0x000000BB));
-	fond.setSize({ WIDOW_WIDTH, WIDOW_HEIGHT });
+	fond.setSize({ WINDOW_WIDTH, WINDOW_HEIGHT });
 
 	while (exit == -1)
 	{
@@ -201,8 +203,8 @@ int MenuProfile::run(sf::RenderWindow& window, BackgroundAnimation& bg, std::vec
 			
 			int ii = selected % 4;
 			int jj = selected / 4;
-			float x = (WIDOW_WIDTH + 300) / 5 * (ii + 1) - 360;
-			float y = 150 + (WIDOW_HEIGHT - 150) / 3 * (jj + 1) - 110;
+			float x = (WINDOW_WIDTH + 300) / 5 * (ii + 1) - 360;
+			float y = 150 + (WINDOW_HEIGHT - 150) / 3 * (jj + 1) - 110;
 
 			movingSelector.setPos(sf::Vector2f(x, y));
 
@@ -231,8 +233,8 @@ int MenuProfile::run(sf::RenderWindow& window, BackgroundAnimation& bg, std::vec
 			sf::Sprite sprite_profile(profiles[i].getProfileCard().getTexture());
 			int ii = i % 4;
 			int jj = i / 4;
-			float x = (WIDOW_WIDTH + 300) / 5 * (ii + 1) - 350;
-			float y = 150 + (WIDOW_HEIGHT - 150) / 3 * (jj + 1) - 100;
+			float x = (WINDOW_WIDTH + 300) / 5 * (ii + 1) - 350;
+			float y = 150 + (WINDOW_HEIGHT - 150) / 3 * (jj + 1) - 100;
 			sprite_profile.setPosition(x, y);
 			window.draw(sprite_profile);
 		}

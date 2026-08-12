@@ -29,6 +29,8 @@ private:
     float _getTimestamp(int key, float val);
     void _addTimestamp(int key, float val);
     void _setActive(int ind, bool val);
+    int _getPlayerNumber();
+    void _sortTimestamp(int key);
 
     std::pair<int, float> _getOutlier(int key, bool first = true);
 
@@ -41,6 +43,8 @@ public:
     static void addTimestamp(int key, float val);
     static void setActive(int ind, bool val);
     static std::pair<int, float> getOutlier(int key, bool first = true);
+    static int getPlayerNumber();
+    static void sortTimestamp(int key);
 
     StatisticCounter(const StatisticCounter&) = delete;
     StatisticCounter& operator= (const StatisticCounter) = delete;

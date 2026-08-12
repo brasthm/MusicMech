@@ -86,8 +86,8 @@ int RoomStatus::run(sf::RenderWindow& window, Client* client, EntityManager &em)
         auto size = namesText.back().getGlobalBounds();
         namesInfo.back().setSize(sf::Vector2f(size.width + 20, size.height + 15));
 
-        namesText.back().setPosition(5, WIDOW_HEIGHT - 50 - (joueurs_.size() - i) * (60));
-        namesInfo.back().setPosition(0, WIDOW_HEIGHT - 50 - (joueurs_.size() - i) * (60));
+        namesText.back().setPosition(5, WINDOW_HEIGHT - 50 - (joueurs_.size() - i) * (60));
+        namesInfo.back().setPosition(0, WINDOW_HEIGHT - 50 - (joueurs_.size() - i) * (60));
     }
 
     ButtonGroup menuButtons;
@@ -105,7 +105,7 @@ int RoomStatus::run(sf::RenderWindow& window, Client* client, EntityManager &em)
 
     debuffInfo.setSize({800.f, 300.f});
     debuffInfo.setFillColor(sf::Color(200, 200, 200, 255));
-    debuffInfo.setPosition(WIDOW_WIDTH - 800.f, WIDOW_HEIGHT - 300);
+    debuffInfo.setPosition(WINDOW_WIDTH - 800.f, WINDOW_HEIGHT - 300);
 
     auto box = debuffInfo.getGlobalBounds();
 
@@ -122,12 +122,12 @@ int RoomStatus::run(sf::RenderWindow& window, Client* client, EntityManager &em)
     textDebuffDuration.setFont(RessourceLoader::getFont("Font/Roboto-Regular.ttf"));
     textDebuffDuration.setCharacterSize(28);
     textDebuffDuration.setFillColor(sf::Color::Black);
-    textDebuffDuration.setPosition(box.left + 10, WIDOW_HEIGHT - 40);
+    textDebuffDuration.setPosition(box.left + 10, WINDOW_HEIGHT - 40);
 
     std::pair<float, float> checkpoint;
 
     sf::RenderTexture renderText;
-    renderText.create(WIDOW_WIDTH, WIDOW_HEIGHT);
+    renderText.create(WINDOW_WIDTH, WINDOW_HEIGHT);
     for (int i = 0; i < mechanicList_.size(); i++) {
         mechanicList_[i]->setFailed(false);
     }
@@ -328,7 +328,7 @@ int RoomStatus::run(sf::RenderWindow& window, Client* client, EntityManager &em)
                 std::string test = resText + " " + mots[i];
                 textDebuffDescription.setString(test);
                 auto b = textDebuffDescription.getGlobalBounds();
-                if (b.left + b.width > WIDOW_WIDTH) {
+                if (b.left + b.width > WINDOW_WIDTH) {
                     resText += "\n" + mots[i];
                 }
                 else {

@@ -57,7 +57,7 @@ int LobbySelection::run(sf::RenderWindow& window, BackgroundAnimation& bg, Clien
 
 	sf::RectangleShape moving;
 	moving.setPosition(0, 335);
-	moving.setSize({ WIDOW_WIDTH, 52 });
+	moving.setSize({ WINDOW_WIDTH, 52 });
 	moving.setFillColor(sf::Color(0xFFFFFF44));
 
 	sf::Text roomText, headerText;
@@ -76,13 +76,13 @@ int LobbySelection::run(sf::RenderWindow& window, BackgroundAnimation& bg, Clien
 	playerText.setFont(RessourceLoader::getFont("Font/Roboto-Bold.ttf"));
 	playerText.setString("Player");
 	playerText.setCharacterSize(70);
-	playerText.setPosition(60 + WIDOW_WIDTH * 0.6, 240);
+	playerText.setPosition(60 + WINDOW_WIDTH * 0.6, 240);
 	playerText.setFillColor(sf::Color::Black);
 
 	nbText.setFont(RessourceLoader::getFont("Font/Roboto-Bold.ttf"));
 	nbText.setString("#");
 	nbText.setCharacterSize(70);
-	nbText.setPosition(60 + WIDOW_WIDTH * 0.9, 240);
+	nbText.setPosition(60 + WINDOW_WIDTH * 0.9, 240);
 	nbText.setFillColor(sf::Color::Black);
 
 	headerText.setFont(RessourceLoader::getFont("Font/Roboto-Bold.ttf"));
@@ -99,36 +99,36 @@ int LobbySelection::run(sf::RenderWindow& window, BackgroundAnimation& bg, Clien
 
 
 	sf::RectangleShape header;
-	header.setSize({ WIDOW_WIDTH, 150 });
+	header.setSize({ WINDOW_WIDTH, 150 });
 	header.setFillColor(sf::Color(COLOR_RED));
 
 
 	sf::RectangleShape nameRect, nameFond;
-	nameRect.setSize({ WIDOW_WIDTH *0.6, 100 });
+	nameRect.setSize({ WINDOW_WIDTH *0.6, 100 });
 	nameRect.setFillColor(sf::Color(COLOR_BLUE));
 	nameRect.setPosition(0, 230);
 
-	nameFond.setSize({ WIDOW_WIDTH * 0.6, 610 });
+	nameFond.setSize({ WINDOW_WIDTH * 0.6, 610 });
 	nameFond.setFillColor(sf::Color(COLOR_SEMI_BLUE));
 	nameFond.setPosition(0, 330);
 
 	sf::RectangleShape playerRect, playerFond;
-	playerRect.setSize({ WIDOW_WIDTH * 0.3, 100 });
+	playerRect.setSize({ WINDOW_WIDTH * 0.3, 100 });
 	playerRect.setFillColor(sf::Color(COLOR_GREEN));
-	playerRect.setPosition(WIDOW_WIDTH * 0.6, 230);
+	playerRect.setPosition(WINDOW_WIDTH * 0.6, 230);
 
-	playerFond.setSize({ WIDOW_WIDTH * 0.3, 610 });
+	playerFond.setSize({ WINDOW_WIDTH * 0.3, 610 });
 	playerFond.setFillColor(sf::Color(COLOR_SEMI_GREEN));
-	playerFond.setPosition(WIDOW_WIDTH * 0.6, 330);
+	playerFond.setPosition(WINDOW_WIDTH * 0.6, 330);
 
 	sf::RectangleShape nbRect, nbFond;
-	nbRect.setSize({ WIDOW_WIDTH * 0.1, 100 });
+	nbRect.setSize({ WINDOW_WIDTH * 0.1, 100 });
 	nbRect.setFillColor(sf::Color(COLOR_YELLOW));
-	nbRect.setPosition(WIDOW_WIDTH * 0.9, 230);
+	nbRect.setPosition(WINDOW_WIDTH * 0.9, 230);
 
-	nbFond.setSize({ WIDOW_WIDTH * 0.1, 610 });
+	nbFond.setSize({ WINDOW_WIDTH * 0.1, 610 });
 	nbFond.setFillColor(sf::Color(COLOR_SEMI_YELLOW));
-	nbFond.setPosition(WIDOW_WIDTH * 0.9, 330);
+	nbFond.setPosition(WINDOW_WIDTH * 0.9, 330);
 
 
 	std::vector<std::string> listname, listplayer, listnb;
@@ -302,10 +302,10 @@ int LobbySelection::run(sf::RenderWindow& window, BackgroundAnimation& bg, Clien
 			roomText.setPosition(10, 338 + (i - decalage) * 50);
 			window.draw(roomText);
 			roomText.setString(listplayer[i]);
-			roomText.setPosition(10 + WIDOW_WIDTH * 0.6, 338 + (i - decalage) * 50);
+			roomText.setPosition(10 + WINDOW_WIDTH * 0.6, 338 + (i - decalage) * 50);
 			window.draw(roomText);
 			roomText.setString(listnb[i]);
-			roomText.setPosition(10 + WIDOW_WIDTH * 0.9, 338 + (i - decalage) * 50);
+			roomText.setPosition(10 + WINDOW_WIDTH * 0.9, 338 + (i - decalage) * 50);
 			window.draw(roomText);
 		}
 		

@@ -53,10 +53,10 @@ void BeatmapSelection::run(sf::RenderWindow& window, BackgroundAnimation& bg, Cl
 	finalImage.setColor(sf::Color(0xFFFFFF88));
 
 
-	if (WIDOW_WIDTH - img.getGlobalBounds().width > WIDOW_HEIGHT - img.getGlobalBounds().height)
-		finalImage.setScale(WIDOW_WIDTH / (float)img.getGlobalBounds().width, WIDOW_WIDTH / (float)img.getGlobalBounds().width);
-	else if (WIDOW_WIDTH - img.getGlobalBounds().width < WIDOW_HEIGHT - img.getGlobalBounds().height)
-		finalImage.setScale(WIDOW_HEIGHT / (float)img.getGlobalBounds().height, WIDOW_HEIGHT / (float)img.getGlobalBounds().height);
+	if (WINDOW_WIDTH - img.getGlobalBounds().width > WINDOW_HEIGHT - img.getGlobalBounds().height)
+		finalImage.setScale(WINDOW_WIDTH / (float)img.getGlobalBounds().width, WINDOW_WIDTH / (float)img.getGlobalBounds().width);
+	else if (WINDOW_WIDTH - img.getGlobalBounds().width < WINDOW_HEIGHT - img.getGlobalBounds().height)
+		finalImage.setScale(WINDOW_HEIGHT / (float)img.getGlobalBounds().height, WINDOW_HEIGHT / (float)img.getGlobalBounds().height);
 
 
 	Caroussel saucisse(true, 0, 330, 1920, 630, 102, 900, true);
@@ -78,7 +78,7 @@ void BeatmapSelection::run(sf::RenderWindow& window, BackgroundAnimation& bg, Cl
 	saucisse.setCharacterSize(70);
 
 	sf::RectangleShape header;
-	header.setSize({ WIDOW_WIDTH, 150 });
+	header.setSize({ WINDOW_WIDTH, 150 });
 	header.setFillColor(sf::Color(COLOR_BLUE));
 
 	RingShape placeholder({ 450, 315 }, 30, 5, 0xFFFFFFFF);
@@ -134,7 +134,7 @@ void BeatmapSelection::run(sf::RenderWindow& window, BackgroundAnimation& bg, Cl
 	info.setFont(RessourceLoader::getFont("Font/Roboto-Regular.ttf"));
 	info.setCharacterSize(32);
 	info.setFillColor(sf::Color::White);
-	info.setPosition(20, WIDOW_HEIGHT - 42);
+	info.setPosition(20, WINDOW_HEIGHT - 42);
 	info.setString("W: change mode - Z: random selection");
 
 	std::future<void> loadVignettes = std::async(std::launch::async, &BeatmapSelection::load, this, songs);

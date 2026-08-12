@@ -539,7 +539,7 @@ void Song::drawProgress(sf::RenderWindow& window, float beat, int section)
     sf::CircleShape shape;
     sf::RectangleShape line, progress;
 
-    float d1 = WIDOW_WIDTH * 0.1f, d2 = WIDOW_WIDTH * 0.9f;
+    float d1 = WINDOW_WIDTH * 0.1f, d2 = WINDOW_WIDTH * 0.9f;
 
     line.setFillColor(sf::Color(COLOR_YELLOW));
     line.setPosition(d1, y - 3);
@@ -591,7 +591,7 @@ void Song::drawSection(sf::RenderWindow& window, float beat, int section)
     sf::CircleShape shape;
     sf::RectangleShape line, progress;
 
-    float d1 = WIDOW_WIDTH * 0.3f, d2 = WIDOW_WIDTH * 0.7f;
+    float d1 = WINDOW_WIDTH * 0.3f, d2 = WINDOW_WIDTH * 0.7f;
 
     line.setFillColor(sf::Color(COLOR_YELLOW));
     line.setPosition(d1, y - 6);

@@ -18,6 +18,9 @@
 #include "../src/MenuCustomizeProfile.h"
 #include "../src/TestShadder.h"
 #include "../src/EndScreen.h"
+#include "../src/AchievementScreen.h"
+
+#include "../src/MapsCode.h"
 
 #include "../src/System/Song.h"
 #include "../src/System/SongData.h"
@@ -38,6 +41,7 @@ void mainLoop(Client& c) {
     MenuProfile mp;
     RoomCustomizeProfile rcp;
     EndScreen es;
+    AchievementScreen as;
 
     Game g;
 
@@ -50,7 +54,7 @@ void mainLoop(Client& c) {
 
     sf::ContextSettings settings;
     settings.antialiasingLevel = 8;
-    sf::RenderWindow mainWindow(sf::VideoMode(WIDOW_WIDTH, WIDOW_HEIGHT), "Synchrobeat", sf::Style::Fullscreen, settings);
+    sf::RenderWindow mainWindow(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Synchrobeat", sf::Style::Fullscreen, settings);
     mainWindow.setFramerateLimit(60);
     mainWindow.setMouseCursorVisible(false);
     int val, selectedProfile;
@@ -65,10 +69,24 @@ void mainLoop(Client& c) {
         profiles[i].load(i);
     }
 
-    TestShadder ts;
+    /*TestShadder ts;
+    Song song;
+    sf::Music music;
+
+    sd.setSelected(11);
+
+    music.openFromFile(RessourceLoader::getPath(sd.getSelectedPath()));
+
+    EntityManager em;
+
+    std::vector<Mechanic*> mechs;
+
+    getMechsFromCode(sd.getCurrentId(), mechs, song, music, em);
+
+    es.run(mainWindow, bg, &c, sd, &song);
 
     //ts.run(mainWindow, bg);
-    //return;
+    return;*/
 
 TITLE_SCREEN:
     title.play();
@@ -87,12 +105,22 @@ MAIN_MENU:
     if (val == -1) goto TITLE_SCREEN;
     if (val == 1) std::cout << "SOLO" << std::endl;
     if (val == 2) goto LOBBY_SELECTION;
-    if (val == 3) std::cout << "ACHIEVEMENT" << std::endl;
+    if (val == 3) goto ACHIEVEMENT_SCREEN;
     if (val == 4) goto CHANGE_PROFILE;
-    if (val == 5) std::cout << "SETTINGS" << std::endl;
+    if (val == 5) {
+        std::string ip;
+        std::cout << "SETTINGS   " << std::endl;
+        std::cout << "Server IP: ";
+        std::cin >> ip;
+        SERVER_IP = sf::IpAddress::IpAddress(ip);
+    }
 
     goto MAIN_MENU;
 
+ACHIEVEMENT_SCREEN:
+    val = as.run(mainWindow, bg, profiles[selectedProfile]);
+    if (val == -100) goto FULL_EXIT;
+    goto MAIN_MENU;
 
 CHANGE_PROFILE:
     val = rcp.run(mainWindow, bg, profiles[selectedProfile]);
@@ -137,7 +165,7 @@ GAME_SCREEN:
 
     val = g.run(mainWindow, &c, isCreator);
     if (val == -100) goto FULL_EXIT;
-    if(val == 100) val = es.run(mainWindow, bg, &c, sd);
+    if(val == 100) val = es.run(mainWindow, bg, &c, sd, g.getSong());
     if (val == -100) goto FULL_EXIT;
     goto LOBBY_ROOM;
 
@@ -194,7 +222,7 @@ int console() {
 
         }
         else if (cmd == "ctrlr") {
-            sf::RenderWindow mainWindow(sf::VideoMode(WIDOW_WIDTH / 10.f, WIDOW_HEIGHT / 10.f), "Sychrobeat");
+            sf::RenderWindow mainWindow(sf::VideoMode(WINDOW_WIDTH / 10.f, WINDOW_HEIGHT / 10.f), "Sychrobeat");
             while (mainWindow.isOpen()) {
                 sf::Event event{};
                 while (mainWindow.pollEvent(event))
@@ -244,6 +272,8 @@ int console() {
             c.sendCommand(cmd);
         }
     }
+
+    return 0;
 }
 
 

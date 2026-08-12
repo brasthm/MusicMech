@@ -3,8 +3,9 @@
 
 
 #include <SFML/Graphics.hpp>
-
 #include <string>
+
+#include "Achievement.h"
 
 
 class Profile {
@@ -21,8 +22,11 @@ private:
 	sf::Text nameText_, titleText_;
 	sf::Clock clock_;
 	sf::RenderTexture card_, returnCard_, textCard_;
+
+	std::vector<Achievement*>* achievementsList_;
 public:
 	Profile();
+	~Profile();
 	
 	void load(int id);
 	void save();
@@ -36,8 +40,10 @@ public:
 
 	void setProfile(std::string const& name, int banner, int title);
 
+	const int getNumberAchievement();
 
 	const sf::RenderTexture &getProfileCard();
+	const sf::RenderTexture& getAchievementCard(int i);
 };
 
 

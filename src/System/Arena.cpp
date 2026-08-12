@@ -5,7 +5,7 @@
 Arena::Arena() : zoom_(100.f), rotation_(0.f), top_(ARENA_WIDTH / 2.f), left_(ARENA_HEIGHT / 2.f), width_(ARENA_WIDTH), height_(ARENA_HEIGHT)
 {
 	view_.setCenter(sf::Vector2f(ARENA_WIDTH / 2.f, ARENA_HEIGHT / 2.f));
-	view_.setSize(sf::Vector2f(WIDOW_WIDTH, WIDOW_HEIGHT));
+	view_.setSize(sf::Vector2f(WINDOW_WIDTH, WINDOW_HEIGHT));
 }
 
 Arena::~Arena()
@@ -109,7 +109,7 @@ void Arena::update(sf::Time elapsed)
 	width_.update(elapsed); 
 	height_.update(elapsed); 
 	
-	view_.setSize(WIDOW_WIDTH * zoom_.get()/100.f, WIDOW_HEIGHT * zoom_.get()/100.f);
+	view_.setSize(WINDOW_WIDTH * zoom_.get()/100.f, WINDOW_HEIGHT * zoom_.get()/100.f);
 	view_.setRotation(rotation_.get());
 	view_.setCenter(left_.get(), top_.get());
 
@@ -234,7 +234,7 @@ void Arena::clear()
 	width_.init((float)ARENA_WIDTH);
 	height_.init((float)ARENA_HEIGHT);
 	view_.setCenter(sf::Vector2f(ARENA_WIDTH / 2.f, ARENA_HEIGHT / 2.f));
-	view_.setSize(sf::Vector2f(WIDOW_WIDTH, WIDOW_HEIGHT));
+	view_.setSize(sf::Vector2f(WINDOW_WIDTH, WINDOW_HEIGHT));
 	rects_.clear();
 	insideRects_.clear();
 	borderRects_.clear();

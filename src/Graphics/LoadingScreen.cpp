@@ -5,18 +5,18 @@
 
 LoadingScreen::LoadingScreen() : angle_(45)
 {
-	fade_.setSize({ WIDOW_WIDTH, WIDOW_WIDTH });
+	fade_.setSize({ WINDOW_WIDTH, WINDOW_WIDTH });
 	fade_.setFillColor(sf::Color(0x000000BB));
 
 	connectionText_.setFont(RessourceLoader::getFont("Font/Roboto-Regular.ttf"));
 	connectionText_.setString("Connection");
 	connectionText_.setCharacterSize(70);
-	connectionText_.setPosition(10, WIDOW_HEIGHT - 90);
+	connectionText_.setPosition(10, WINDOW_HEIGHT - 90);
 	connectionText_.setFillColor(sf::Color::White);
 
 	animRect_.setSize({ 40, 40 });
 	animRect_.setOrigin(20, 20);
-	animRect_.setPosition(connectionText_.getGlobalBounds().width + 80, WIDOW_HEIGHT - 45);
+	animRect_.setPosition(connectionText_.getGlobalBounds().width + 80, WINDOW_HEIGHT - 45);
 
 	color_.addTarget("0", COLOR_BLUE);
 	color_.addTarget("1", COLOR_GREEN);
@@ -36,7 +36,7 @@ void LoadingScreen::start(std::string text)
 		activate_ = true;
 		finished_ = false;
 		connectionText_.setString(text);
-		animRect_.setPosition(connectionText_.getGlobalBounds().width + 80, WIDOW_HEIGHT - 45);
+		animRect_.setPosition(connectionText_.getGlobalBounds().width + 80, WINDOW_HEIGHT - 45);
 		angle_.set(angle_.get() + 90, 0.4);
 	}
 }

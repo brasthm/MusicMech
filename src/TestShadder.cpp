@@ -13,7 +13,7 @@ int TestShadder::run(sf::RenderWindow& window, BackgroundAnimation& bg)
 	int exit = 0;
 
 	sf::RectangleShape header;
-	header.setSize({ WIDOW_WIDTH, 150 });
+	header.setSize({ WINDOW_WIDTH, 150 });
 	header.setFillColor(sf::Color(COLOR_BLUE));
 
 	sf::Text headerText;

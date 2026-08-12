@@ -16,7 +16,7 @@ int RoomCustomizeProfile::run(sf::RenderWindow& window, BackgroundAnimation& bg,
 	int exit = 0;
 
 	sf::RectangleShape header;
-	header.setSize({ WIDOW_WIDTH, 150 });
+	header.setSize({ WINDOW_WIDTH, 150 });
 	header.setFillColor(sf::Color(COLOR_BLUE));
 
 	sf::Text headerText;
@@ -78,7 +78,7 @@ int RoomCustomizeProfile::run(sf::RenderWindow& window, BackgroundAnimation& bg,
 	nameplateSelectionText.setString(BANNERS[profile.getBannerId()].name);
 	nameplateSelectionText.setCharacterSize(50);
 	nameplateSelectionText.setFillColor(sf::Color::Black);
-	nameplateSelectionText.setPosition(WIDOW_WIDTH * 0.7 - nameplateSelectionText.getGlobalBounds().width / 2, 350);
+	nameplateSelectionText.setPosition(WINDOW_WIDTH * 0.7 - nameplateSelectionText.getGlobalBounds().width / 2, 350);
 
 
 	sf::Text titleText, titleSelectionText;
@@ -93,7 +93,7 @@ int RoomCustomizeProfile::run(sf::RenderWindow& window, BackgroundAnimation& bg,
 	titleSelectionText.setString(TITLES[profile.getTitleId()] == "" ? "None": TITLES[profile.getTitleId()]);
 	titleSelectionText.setCharacterSize(50);
 	titleSelectionText.setFillColor(sf::Color::Black);
-	titleSelectionText.setPosition(WIDOW_WIDTH * 0.7 - titleSelectionText.getGlobalBounds().width / 2, 600);
+	titleSelectionText.setPosition(WINDOW_WIDTH * 0.7 - titleSelectionText.getGlobalBounds().width / 2, 600);
 
 
 	sf::Text changeNameText;
@@ -102,7 +102,7 @@ int RoomCustomizeProfile::run(sf::RenderWindow& window, BackgroundAnimation& bg,
 	changeNameText.setString("Change name");
 	changeNameText.setCharacterSize(70);
 	changeNameText.setFillColor(sf::Color::Black);
-	changeNameText.setPosition(WIDOW_WIDTH * 0.7 - changeNameText.getGlobalBounds().width / 2, 750);
+	changeNameText.setPosition(WINDOW_WIDTH * 0.7 - changeNameText.getGlobalBounds().width / 2, 750);
 
 
 	sf::RectangleShape nameRect, nameFond;
@@ -110,7 +110,7 @@ int RoomCustomizeProfile::run(sf::RenderWindow& window, BackgroundAnimation& bg,
 	nameRect.setFillColor(sf::Color(COLOR_YELLOW));
 	nameRect.setPosition(150, 400);
 
-	nameFond.setSize({ WIDOW_WIDTH * 0.4, 60 });
+	nameFond.setSize({ WINDOW_WIDTH * 0.4, 60 });
 	nameFond.setFillColor(sf::Color(COLOR_SEMI_YELLOW));
 	nameFond.setPosition(150 + nameText.getGlobalBounds().width + 200, 415);
 
@@ -120,12 +120,12 @@ int RoomCustomizeProfile::run(sf::RenderWindow& window, BackgroundAnimation& bg,
 
 	sf::RectangleShape fond;
 	fond.setFillColor(sf::Color(0x000000BB));
-	fond.setSize({ WIDOW_WIDTH, WIDOW_HEIGHT });
+	fond.setSize({ WINDOW_WIDTH, WINDOW_HEIGHT });
 
 	sf::RectangleShape menuFond;
-	menuFond.setSize({ WIDOW_WIDTH *0.50, 700 });
+	menuFond.setSize({ WINDOW_WIDTH *0.50, 700 });
 	menuFond.setFillColor(sf::Color(COLOR_YELLOW));
-	menuFond.setPosition(WIDOW_WIDTH * 0.45, WIDOW_HEIGHT - 850);
+	menuFond.setPosition(WINDOW_WIDTH * 0.45, WINDOW_HEIGHT - 850);
 
 
 	sf::RectangleShape profilecardFond;
@@ -273,7 +273,7 @@ int RoomCustomizeProfile::run(sf::RenderWindow& window, BackgroundAnimation& bg,
 							if (bannerSelection == 0) bannerSelection = BANNERS.size() - 1;
 
 							nameplateSelectionText.setString(BANNERS[bannerSelection].name);
-							nameplateSelectionText.setPosition(WIDOW_WIDTH * 0.7 - nameplateSelectionText.getGlobalBounds().width / 2, 350);
+							nameplateSelectionText.setPosition(WINDOW_WIDTH * 0.7 - nameplateSelectionText.getGlobalBounds().width / 2, 350);
 
 							profile.setProfile(nameSelection, bannerSelection, titleSelection);
 						}
@@ -282,7 +282,7 @@ int RoomCustomizeProfile::run(sf::RenderWindow& window, BackgroundAnimation& bg,
 							if (titleSelection == -1) titleSelection = TITLES.size() - 1;
 
 							titleSelectionText.setString(TITLES[titleSelection] == "" ? "None" : TITLES[titleSelection]);
-							titleSelectionText.setPosition(WIDOW_WIDTH * 0.7 - titleSelectionText.getGlobalBounds().width / 2, 600);
+							titleSelectionText.setPosition(WINDOW_WIDTH * 0.7 - titleSelectionText.getGlobalBounds().width / 2, 600);
 
 							profile.setProfile(nameSelection, bannerSelection, titleSelection);
 						}
@@ -304,7 +304,7 @@ int RoomCustomizeProfile::run(sf::RenderWindow& window, BackgroundAnimation& bg,
 							if (bannerSelection == 0) bannerSelection = 1;
 
 							nameplateSelectionText.setString(BANNERS[bannerSelection].name);
-							nameplateSelectionText.setPosition(WIDOW_WIDTH * 0.7 - nameplateSelectionText.getGlobalBounds().width / 2, 350);
+							nameplateSelectionText.setPosition(WINDOW_WIDTH * 0.7 - nameplateSelectionText.getGlobalBounds().width / 2, 350);
 
 							profile.setProfile(nameSelection, bannerSelection, titleSelection);
 						}
@@ -313,7 +313,7 @@ int RoomCustomizeProfile::run(sf::RenderWindow& window, BackgroundAnimation& bg,
 							titleSelection = titleSelection % TITLES.size();
 
 							titleSelectionText.setString(TITLES[titleSelection] == "" ? "None" : TITLES[titleSelection]);
-							titleSelectionText.setPosition(WIDOW_WIDTH * 0.7 - titleSelectionText.getGlobalBounds().width / 2, 600);
+							titleSelectionText.setPosition(WINDOW_WIDTH * 0.7 - titleSelectionText.getGlobalBounds().width / 2, 600);
 
 							profile.setProfile(nameSelection, bannerSelection, titleSelection);
 						}

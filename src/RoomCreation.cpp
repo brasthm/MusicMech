@@ -53,15 +53,15 @@ int RoomCreation::run(sf::RenderWindow& window, BackgroundAnimation& bg, Client*
 	finalImage.setColor(sf::Color(0xFFFFFF44));
 
 
-	if (WIDOW_WIDTH - img.getGlobalBounds().width > WIDOW_HEIGHT - img.getGlobalBounds().height)
-		finalImage.setScale(WIDOW_WIDTH / (float)img.getGlobalBounds().width, WIDOW_WIDTH / (float)img.getGlobalBounds().width);
-	else if (WIDOW_WIDTH - img.getGlobalBounds().width < WIDOW_HEIGHT - img.getGlobalBounds().height)
-		finalImage.setScale(WIDOW_HEIGHT / (float)img.getGlobalBounds().height, WIDOW_HEIGHT / (float)img.getGlobalBounds().height);
+	if (WINDOW_WIDTH - img.getGlobalBounds().width > WINDOW_HEIGHT - img.getGlobalBounds().height)
+		finalImage.setScale(WINDOW_WIDTH / (float)img.getGlobalBounds().width, WINDOW_WIDTH / (float)img.getGlobalBounds().width);
+	else if (WINDOW_WIDTH - img.getGlobalBounds().width < WINDOW_HEIGHT - img.getGlobalBounds().height)
+		finalImage.setScale(WINDOW_HEIGHT / (float)img.getGlobalBounds().height, WINDOW_HEIGHT / (float)img.getGlobalBounds().height);
 
 
 
-	FlexRectangle moving(50, 280, WIDOW_WIDTH * 0.95, 130);
-	//FlexRectangle moving(100, 540, WIDOW_WIDTH * 0.93, 200);
+	FlexRectangle moving(50, 280, WINDOW_WIDTH * 0.95, 130);
+	//FlexRectangle moving(100, 540, WINDOW_WIDTH * 0.93, 200);
 	moving.setFillColor(0xFFFFFF44);
 
 	sf::Text roomText, headerText;
@@ -103,7 +103,7 @@ int RoomCreation::run(sf::RenderWindow& window, BackgroundAnimation& bg, Client*
 
 
 	sf::RectangleShape header;
-	header.setSize({ WIDOW_WIDTH, 150 });
+	header.setSize({ WINDOW_WIDTH, 150 });
 	header.setFillColor(sf::Color(COLOR_BLUE));
 
 
@@ -116,7 +116,7 @@ int RoomCreation::run(sf::RenderWindow& window, BackgroundAnimation& bg, Client*
 	nameRect.setFillColor(sf::Color(COLOR_YELLOW));
 	nameRect.setPosition(100, 300);
 
-	nameFond.setSize({ WIDOW_WIDTH * 0.6, 60 });
+	nameFond.setSize({ WINDOW_WIDTH * 0.6, 60 });
 	nameFond.setFillColor(sf::Color(COLOR_SEMI_YELLOW));
 	nameFond.setPosition(100 + nameText.getGlobalBounds().width + 200, 315);
 
@@ -129,7 +129,7 @@ int RoomCreation::run(sf::RenderWindow& window, BackgroundAnimation& bg, Client*
 	vignette.setScale(0.5f, 0.5f);
 	vignette.setPosition(100 + nameText.getGlobalBounds().width + 250, 580);
 
-	beatmapFond.setSize({ WIDOW_WIDTH * 0.6f + nameFond.getGlobalBounds().left
+	beatmapFond.setSize({ WINDOW_WIDTH * 0.6f + nameFond.getGlobalBounds().left
 		- vignette.getGlobalBounds().left - vignette.getGlobalBounds().width,
 		vignette.getGlobalBounds().height});
 	if(songs.getCurentNbPlayers() == "4")
@@ -214,7 +214,7 @@ int RoomCreation::run(sf::RenderWindow& window, BackgroundAnimation& bg, Client*
 						if (selection < 0) selection = 0;
 						else if (selection == 0) {
 							moving.setPos({ 50, 280 });
-							moving.setSize({ WIDOW_WIDTH * 0.95, 130 });
+							moving.setSize({ WINDOW_WIDTH * 0.95, 130 });
 						}
 						else if (selection == 1) {
 							buttons.setCurrent(-1);
@@ -227,7 +227,7 @@ int RoomCreation::run(sf::RenderWindow& window, BackgroundAnimation& bg, Client*
 						if (selection > 2) selection = 2;
 						else if (selection == 1) {
 							moving.setPos({ 100, 540 });
-							moving.setSize({ WIDOW_WIDTH * 0.93, 200 });
+							moving.setSize({ WINDOW_WIDTH * 0.93, 200 });
 						}
 						else if (selection == 2) {
 							buttons.setCurrent(1);

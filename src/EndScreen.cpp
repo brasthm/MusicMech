@@ -1,15 +1,119 @@
 #include "EndScreen.h"
 #include "Graphics/LoadingScreen.h"
 #include "System/RessourceLoader.h"
+#include "System/StatisticCounter.h"
 #include "Graphics/ButtonGroup.h"
 #include "main.h"
+#include "STRINGS.h"
 
-int EndScreen::run(sf::RenderWindow& window, BackgroundAnimation& bg, Client* client, SongDatabase& songs)
+void EndScreen::draw_markers(sf::RenderWindow& window, sf::Vector2f position)
+{
+
+	float p = 0.35;
+	float r = 25;
+
+	sf::RectangleShape r1;
+
+	r1.setSize(sf::Vector2f(r * 1.5, 10));
+	r1.setOrigin(r * 0.75, 5);
+	
+
+	sf::CircleShape shape;
+
+	shape.setRadius(r);
+	shape.setFillColor(sf::Color(COLOR_RED));
+	shape.setPointCount(100);
+
+
+	sf::ConvexShape triangle;
+	triangle.setPointCount(3);
+	triangle.setFillColor(sf::Color(COLOR_RED));
+
+
+	float y1 = p * r;
+	float x1 = r * sqrt(1 - p * p);
+	float alpha = asin(p);
+
+	float b = x1 / tan(alpha) - y1;
+
+	shape.setPosition(position - sf::Vector2f(r, r + b));
+	r1.setPosition(position - sf::Vector2f(0, b));
+
+	triangle.setPoint(0, position + sf::Vector2f(-x1, y1 - b));
+	triangle.setPoint(1, position + sf::Vector2f(x1, y1 - b));
+	triangle.setPoint(2, position + sf::Vector2f(0, 0));
+
+	window.draw(shape);
+	window.draw(triangle);
+	r1.setRotation(45);
+	window.draw(r1);
+	r1.setRotation(-45);
+	window.draw(r1);
+}
+
+void EndScreen::draw_deaths(sf::RenderWindow& window, Song* song)
+{
+	float d1 = WINDOW_WIDTH * 0.1, d2 = WINDOW_WIDTH*0.9;
+	float y = 290;
+
+	sf::Text deathCounter;
+
+	deathCounter.setFont(RessourceLoader::getFont("Font/Roboto-Bold.ttf"));
+	deathCounter.setString("Retries: " + std::to_string((int)StatisticCounter::get(STATISTIC_DEATHCOUNTER, 0)));
+	deathCounter.setCharacterSize(52);
+	deathCounter.setPosition(10, 100);
+	deathCounter.setFillColor(sf::Color::White);
+
+	window.draw(deathCounter);
+
+	sf::RectangleShape line;
+	line.setSize({ d2 -d1, 7 });
+	line.setFillColor(sf::Color(COLOR_YELLOW));
+	line.setPosition(d1, y - 3);
+
+	window.draw(line);
+
+	sf::CircleShape shape;
+	shape.setRadius(15);
+
+	float length = song->getIndexCheckpoint(song->getMaxCheckpoint() - 1).second;
+
+	shape.setFillColor(sf::Color(COLOR_YELLOW));
+
+	for (int i = 0; i < song->getMaxCheckpoint(); i++) {
+		shape.setPosition((d2 - d1) * song->getIndexCheckpoint(i).second / length + d1 - 15, y - 15);
+		window.draw(shape);
+	}
+
+	if (StatisticCounter::get(STATISTIC_DEATHCOUNTER, 0) == 0) {
+		sf::Text oneShotText;
+
+		oneShotText.setFont(RessourceLoader::getFont("Font/Roboto-Bold.ttf"));
+		oneShotText.setString("One shot!");
+		oneShotText.setCharacterSize(92);
+		oneShotText.setPosition(WINDOW_WIDTH/2 - oneShotText.getGlobalBounds().width/2, y - 40 - 92);
+		oneShotText.setFillColor(sf::Color(COLOR_RED));
+
+		window.draw(oneShotText);
+	}
+	else {
+		for (int i = 0; i < StatisticCounter::getTimestampSize(TIMESTAMPS_FAILED); i++) {
+			float fraction = StatisticCounter::getTimestamp(TIMESTAMPS_FAILED, i) / length;
+			draw_markers(window, sf::Vector2f(d1 + (d2 - d1) * fraction, y - 17));
+		}
+	}
+	
+
+
+}
+
+int EndScreen::run(sf::RenderWindow& window, BackgroundAnimation& bg, Client* client, SongDatabase& songs, Song* currentSong)
 {
 	sf::Clock fps;
 
 	LoadingScreen loading;
 
+	StatisticCounter::sortTimestamp(0);
 
 	SongData song = songs.getSelectedSong();
 
@@ -38,19 +142,62 @@ int EndScreen::run(sf::RenderWindow& window, BackgroundAnimation& bg, Client* cl
 	sf::Sprite finalImage(texture2.getTexture());
 	finalImage.setColor(sf::Color(0xFFFFFF44));
 
-	if (WIDOW_WIDTH - img.getGlobalBounds().width > WIDOW_HEIGHT - img.getGlobalBounds().height)
-		finalImage.setScale(WIDOW_WIDTH / (float)img.getGlobalBounds().width, WIDOW_WIDTH / (float)img.getGlobalBounds().width);
-	else if (WIDOW_WIDTH - img.getGlobalBounds().width < WIDOW_HEIGHT - img.getGlobalBounds().height)
-		finalImage.setScale(WIDOW_HEIGHT / (float)img.getGlobalBounds().height, WIDOW_HEIGHT / (float)img.getGlobalBounds().height);
+	if (WINDOW_WIDTH - img.getGlobalBounds().width > WINDOW_HEIGHT - img.getGlobalBounds().height)
+		finalImage.setScale(WINDOW_WIDTH / (float)img.getGlobalBounds().width, WINDOW_WIDTH / (float)img.getGlobalBounds().width);
+	else if (WINDOW_WIDTH - img.getGlobalBounds().width < WINDOW_HEIGHT - img.getGlobalBounds().height)
+		finalImage.setScale(WINDOW_HEIGHT / (float)img.getGlobalBounds().height, WINDOW_HEIGHT / (float)img.getGlobalBounds().height);
+
+	sf::RenderTexture objText, mvpRenderText;	
+
+	sf::Text obj1Text, obj2Text, obj3Text;
+
+	obj1Text.setFont(RessourceLoader::getFont("Font/Roboto-Bold.ttf"));
+	obj1Text.setString("Clear the song");
+	obj1Text.setCharacterSize(72);
+	obj1Text.setPosition(80, 200);
+	obj1Text.setFillColor(sf::Color::Black);
+
+	sf::RectangleShape obj1;
+	obj1.setSize({ WINDOW_WIDTH * 0.9, 90 });
+	obj1.setFillColor(sf::Color(COLOR_GREEN));
+	obj1.setPosition(60, 200);
+
+	obj2Text.setFont(RessourceLoader::getFont("Font/Roboto-Bold.ttf"));
+	obj2Text.setString("Clear the song without getting hit");
+	obj2Text.setCharacterSize(72);
+	obj2Text.setPosition(80, 320);
+	obj2Text.setFillColor(sf::Color::Black);
+
+	sf::RectangleShape obj2;
+	obj2.setSize({ WINDOW_WIDTH * 0.9, 90 });
+	obj2.setFillColor(sf::Color(COLOR_RED));
+	obj2.setPosition(60, 320);
 
 
-	sf::Text headerText;
+	obj3Text.setFont(RessourceLoader::getFont("Font/Roboto-Bold.ttf"));
+	obj3Text.setString("Clear the song without retrying");
+	obj3Text.setCharacterSize(72);
+	obj3Text.setPosition(80, 440);
+	obj3Text.setFillColor(sf::Color::Black);
 
-	headerText.setFont(RessourceLoader::getFont("Font/Roboto-Bold.ttf"));
-	headerText.setString("Clear !");
-	headerText.setCharacterSize(108);
-	headerText.setPosition(40, 10);
-	headerText.setFillColor(sf::Color::Black);
+	sf::RectangleShape obj3;
+	obj3.setSize({ WINDOW_WIDTH * 0.9, 90 });
+	obj3.setFillColor(sf::Color(COLOR_RED));
+	obj3.setPosition(60, 440);
+
+
+	sf::Text objectivesText;
+	objectivesText.setFont(RessourceLoader::getFont("Font/Roboto-Bold.ttf"));
+	objectivesText.setString("Objectives");
+	objectivesText.setCharacterSize(108);
+	objectivesText.setPosition(40, 10);
+	objectivesText.setFillColor(sf::Color::Black);
+
+
+	sf::Text mvpText;
+	mvpText.setFont(RessourceLoader::getFont("Font/Roboto-Bold.ttf"));
+	mvpText.setCharacterSize(108);
+	mvpText.setFillColor(sf::Color::Black);
 
 	ButtonGroup buttons;
 	buttons.addButton(Button("NEXT", "Next", COLOR_GREEN, 1550, 970, 320, 70));
@@ -58,12 +205,10 @@ int EndScreen::run(sf::RenderWindow& window, BackgroundAnimation& bg, Client* cl
 
 
 	vignettebanner.setScale(0.3, 0.3);
-	float hpos = 200, height = vignettebanner.getGlobalBounds().height;
+	float hpos = 25, height = vignettebanner.getGlobalBounds().height;
 	vignettebanner.setPosition(height, hpos);
 
-	sf::RectangleShape header;
-	header.setSize({ WIDOW_WIDTH, 150 });
-	header.setFillColor(sf::Color(COLOR_GREEN));
+
 
 	sf::RectangleShape difficultyRect;
 	difficultyRect.setSize({ height, height });
@@ -91,6 +236,55 @@ int EndScreen::run(sf::RenderWindow& window, BackgroundAnimation& bg, Client* cl
 	difficultyText.setPosition(height / 2 - difficultyText.getGlobalBounds().width / 2, hpos + 10);
 	artistRect.setSize({ artistText.getGlobalBounds().width + 100, height });
 
+
+	if (StatisticCounter::get(STATISTIC_FAILED, client->getPlayerIndex()) == 0) {
+		obj2.setFillColor(sf::Color(COLOR_GREEN));
+	}
+
+	if (StatisticCounter::get(STATISTIC_DEATHCOUNTER, 0) == 0) {
+		obj3.setFillColor(sf::Color(COLOR_GREEN));
+	}
+
+	Profile mvp, mvp2;
+
+
+	if (StatisticCounter::getPlayerNumber() == 1) {
+
+	}
+	else if (StatisticCounter::getPlayerNumber() == 2) {
+
+	}
+	else {
+		std::vector<std::tuple<int, int, float, bool>> allOutliers;
+
+		for (auto stat : ALL_TRACKED_STATS) {
+			std::pair<int, float> most = StatisticCounter::getOutlier(stat, true), least = StatisticCounter::getOutlier(stat, false);
+			
+			most.second = abs(most.second);
+			least.second = abs(least.second);
+
+			allOutliers.emplace_back(most.second > least.second ? std::make_tuple(stat, most.first, most.second, false) : std::make_tuple(stat, least.first, least.second, true));
+		}
+
+		std::sort(allOutliers.begin(), allOutliers.end(), [](std::tuple<int, int, float, bool> a, std::tuple<int, int, float, bool> b) {
+			return std::get<2>(a) > std::get<2>(b);
+		});
+
+		int mvpStat = std::get<0>(allOutliers[0]);
+		int mvpPlayer = std::get<1>(allOutliers[0]);
+		bool mvpBool = std::get<3>(allOutliers[0]);
+		mvp.setProfile(client->getCurrentLobby().players[mvpPlayer]->name, client->getCurrentLobby().players[mvpPlayer]->bannerID, client->getCurrentLobby().players[mvpPlayer]->titleID);
+		std::cout << "MVP : " << mvpPlayer << " (" << getTitleByStatistic(mvpStat, mvpBool) << ")" << std::endl;
+
+		mvpText.setString(getTitleByStatistic(mvpStat, mvpBool));
+		mvpText.setPosition(2 * WINDOW_WIDTH / 4 - mvpText.getGlobalBounds().width / 2, 10);
+	}
+
+	IFloat objwidth(WINDOW_WIDTH);
+
+	int nb = 0;
+	
+
 	bool exit = false;
 	while (!exit)
 	{
@@ -112,7 +306,10 @@ int EndScreen::run(sf::RenderWindow& window, BackgroundAnimation& bg, Client* cl
 				if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Return ||
 					event.type == sf::Event::JoystickButtonPressed && event.joystickButton.button == 0) {
 					if (buttons.getCurrent() == "NEXT") {
-						return 0;
+						nb++;
+						objwidth.set(0, 0.5);
+						if(nb == 2)
+							return 0;
 					}
 				}
 
@@ -126,14 +323,13 @@ int EndScreen::run(sf::RenderWindow& window, BackgroundAnimation& bg, Client* cl
 					event.type == sf::Event::JoystickMoved && event.joystickMove.axis == sf::Joystick::PovX && event.joystickMove.position == 100) {
 					buttons.next();
 				}
-				
-
 			}
 		}
 
 		client->keepAlive();
 
 		bg.update(elapsedTime);
+		objwidth.update(elapsedTime);
 
 		loading.update(elapsedTime);
 		buttons.update(elapsedTime);
@@ -142,18 +338,58 @@ int EndScreen::run(sf::RenderWindow& window, BackgroundAnimation& bg, Client* cl
 
 		window.draw(finalImage);
 		bg.draw(window);
-		window.draw(header);
-		window.draw(headerText);
+
+		if (objwidth.get() > 1) {
+			objText.create(objwidth.get(), 600);
+			objText.clear(sf::Color(COLOR_YELLOW));
+
+
+			objText.draw(obj1);
+			objText.draw(obj1Text);
+			objText.draw(obj2);
+			objText.draw(obj2Text);
+			objText.draw(obj3);
+			objText.draw(obj3Text);
+			objText.draw(objectivesText);
+
+			objText.display();
+
+			sf::Sprite objRect(objText.getTexture());
+			objRect.setPosition(0, 330);
+			window.draw(objRect);
+		}
+		if (objwidth.get() < WINDOW_WIDTH) {
+			mvpRenderText.create(WINDOW_WIDTH - objwidth.get(), 600);
+			mvpRenderText.clear(sf::Color(COLOR_BLUE));
+
+			mvpRenderText.draw(mvpText);
+			sf::Sprite mvpProfile(mvp.getProfileCard().getTexture());
+			mvpProfile.setPosition(WINDOW_WIDTH/2 - mvpProfile.getGlobalBounds().width/2, 230);
+			mvpRenderText.draw(mvpProfile);
+
+			mvpRenderText.display();
+
+			sf::Sprite mvpRect(mvpRenderText.getTexture());
+			mvpRect.setPosition(objwidth.get(), 330);
+			window.draw(mvpRect);
+		}
+
+
 		window.draw(vignettebanner);
 		window.draw(difficultyRect);
 		window.draw(artistRect);
-
 		window.draw(artistText);
 		window.draw(difficultyText);
 
 
+		draw_deaths(window, currentSong);
+
 		buttons.draw(window);
 		loading.draw(window);
+
+		
+
+
 		window.display();
 	}
 

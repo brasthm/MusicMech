@@ -43,10 +43,10 @@ sf::Vector2f RoomMenu::getPositionInLayout(int nb, int index)
 	}
 
 	if (nb == 2) {
-		x = (index + 1) * WIDOW_WIDTH / 3;
+		x = (index + 1) * WINDOW_WIDTH / 3;
 	}
 	else {
-		x = WIDOW_WIDTH / 8 + (index%4) * WIDOW_WIDTH / 4;
+		x = WINDOW_WIDTH / 8 + (index%4) * WINDOW_WIDTH / 4;
 	}
 
 	return sf::Vector2f(x, y);
@@ -95,10 +95,10 @@ int RoomMenu::run(sf::RenderWindow& window, BackgroundAnimation& bg, Client* cli
 	float hpos = 200, height = vignettebanner.getGlobalBounds().height;
 	vignettebanner.setPosition(height, hpos);
 
-	if (WIDOW_WIDTH - img.getGlobalBounds().width > WIDOW_HEIGHT - img.getGlobalBounds().height)
-		finalImage.setScale(WIDOW_WIDTH / (float)img.getGlobalBounds().width, WIDOW_WIDTH / (float)img.getGlobalBounds().width);
-	else if (WIDOW_WIDTH - img.getGlobalBounds().width < WIDOW_HEIGHT - img.getGlobalBounds().height)
-		finalImage.setScale(WIDOW_HEIGHT / (float)img.getGlobalBounds().height, WIDOW_HEIGHT / (float)img.getGlobalBounds().height);
+	if (WINDOW_WIDTH - img.getGlobalBounds().width > WINDOW_HEIGHT - img.getGlobalBounds().height)
+		finalImage.setScale(WINDOW_WIDTH / (float)img.getGlobalBounds().width, WINDOW_WIDTH / (float)img.getGlobalBounds().width);
+	else if (WINDOW_WIDTH - img.getGlobalBounds().width < WINDOW_HEIGHT - img.getGlobalBounds().height)
+		finalImage.setScale(WINDOW_HEIGHT / (float)img.getGlobalBounds().height, WINDOW_HEIGHT / (float)img.getGlobalBounds().height);
 
 
 	sf::Text headerText;
@@ -130,7 +130,7 @@ int RoomMenu::run(sf::RenderWindow& window, BackgroundAnimation& bg, Client* cli
 
 
 	sf::RectangleShape header;
-	header.setSize({ WIDOW_WIDTH, 150 });
+	header.setSize({ WINDOW_WIDTH, 150 });
 	header.setFillColor(sf::Color(COLOR_YELLOW));
 
 	sf::RectangleShape difficultyRect;
@@ -182,7 +182,7 @@ int RoomMenu::run(sf::RenderWindow& window, BackgroundAnimation& bg, Client* cli
 		circles[i].setOutlineThickness(3);
 		circles[i].setOutlineColor(sf::Color::Black);
 		circles[i].setFillColor(sf::Color(colors[i]));
-		//circles[i].setPosition(WIDOW_WIDTH * 0.5 - 100, 340 + 60 * i);
+		//circles[i].setPosition(WINDOW_WIDTH * 0.5 - 100, 340 + 60 * i);
 	}
 
 
@@ -401,10 +401,10 @@ int RoomMenu::run(sf::RenderWindow& window, BackgroundAnimation& bg, Client* cli
 				finalImage.setColor(sf::Color(0xFFFFFF44));
 
 
-				if (WIDOW_WIDTH - img.getGlobalBounds().width > WIDOW_HEIGHT - img.getGlobalBounds().height)
-					finalImage.setScale(WIDOW_WIDTH / (float)img.getGlobalBounds().width, WIDOW_WIDTH / (float)img.getGlobalBounds().width);
-				else if (WIDOW_WIDTH - img.getGlobalBounds().width < WIDOW_HEIGHT - img.getGlobalBounds().height)
-					finalImage.setScale(WIDOW_HEIGHT / (float)img.getGlobalBounds().height, WIDOW_HEIGHT / (float)img.getGlobalBounds().height);
+				if (WINDOW_WIDTH - img.getGlobalBounds().width > WINDOW_HEIGHT - img.getGlobalBounds().height)
+					finalImage.setScale(WINDOW_WIDTH / (float)img.getGlobalBounds().width, WINDOW_WIDTH / (float)img.getGlobalBounds().width);
+				else if (WINDOW_WIDTH - img.getGlobalBounds().width < WINDOW_HEIGHT - img.getGlobalBounds().height)
+					finalImage.setScale(WINDOW_HEIGHT / (float)img.getGlobalBounds().height, WINDOW_HEIGHT / (float)img.getGlobalBounds().height);
 
 				songs->play();
 			}

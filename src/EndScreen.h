@@ -11,7 +11,9 @@ class EndScreen {
 
 public:
 	EndScreen() = default;
-	int run(sf::RenderWindow& window, BackgroundAnimation& bg, Client* client, SongDatabase& songs);
+	void draw_markers(sf::RenderWindow& window, sf::Vector2f position);
+	void draw_deaths(sf::RenderWindow& window, Song* song);
+	int run(sf::RenderWindow& window, BackgroundAnimation& bg, Client* client, SongDatabase& songs, Song* currentSong);
 };
 
 #endif

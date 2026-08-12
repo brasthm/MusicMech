@@ -42,6 +42,8 @@ int Game::run(sf::RenderWindow &window, Client* client, bool creator) {
         totems_.emplace_back();
     }
 
+    reset(0);
+
     for(int i = 0; i < NB_MAX_JOUEURS; i++) {
         em_.addPlayer(std::addressof(joueurs_[i]));
     }
@@ -72,8 +74,8 @@ int Game::run(sf::RenderWindow &window, Client* client, bool creator) {
         auto size = namesText.back().getGlobalBounds();
         namesInfo.back().setSize(sf::Vector2f(size.width + 20, size.height + 15));
 
-        namesText.back().setPosition(5, WIDOW_HEIGHT - 50 - (joueurs_.size() - i) * (60));
-        namesInfo.back().setPosition(0, WIDOW_HEIGHT - 50 - (joueurs_.size() - i) * (60));
+        namesText.back().setPosition(5, WINDOW_HEIGHT - 50 - (joueurs_.size() - i) * (60));
+        namesInfo.back().setPosition(0, WINDOW_HEIGHT - 50 - (joueurs_.size() - i) * (60));
     }
 
     std::cout << "Number of players : " << numberPlayers_ << std::endl;
@@ -146,22 +148,22 @@ int Game::run(sf::RenderWindow &window, Client* client, bool creator) {
 
 
     sf::RectangleShape fond;
-    fond.setSize({ WIDOW_WIDTH, WIDOW_HEIGHT });
+    fond.setSize({ WINDOW_WIDTH, WINDOW_HEIGHT });
     fond.setFillColor(sf::Color(0x000000CC));
 
     ButtonGroup pauseButtons, gameOverButtons;
 
-    pauseButtons.addButton(Button("RESUME", "Resume", COLOR_GREEN, WIDOW_WIDTH / 2.f - 125, 450, 250, 70));
-    pauseButtons.addButton(Button("QUIT", "Quit", COLOR_RED, WIDOW_WIDTH / 2.f - 75, 580, 150, 70));
+    pauseButtons.addButton(Button("RESUME", "Resume", COLOR_GREEN, WINDOW_WIDTH / 2.f - 125, 450, 250, 70));
+    pauseButtons.addButton(Button("QUIT", "Quit", COLOR_RED, WINDOW_WIDTH / 2.f - 75, 580, 150, 70));
 
     if (creator) {
-        gameOverButtons.addButton(Button("RETRY", "Retry", COLOR_GREEN, WIDOW_WIDTH / 2.f - 125, 580, 250, 70));
-        gameOverButtons.addButton(Button("RECAP", "Death recap", COLOR_YELLOW, WIDOW_WIDTH / 2.f - 150, 710, 300, 70));
-        gameOverButtons.addButton(Button("QUIT", "Quit", COLOR_RED, WIDOW_WIDTH / 2.f - 75, 840, 150, 70));
+        gameOverButtons.addButton(Button("RETRY", "Retry", COLOR_GREEN, WINDOW_WIDTH / 2.f - 125, 580, 250, 70));
+        gameOverButtons.addButton(Button("RECAP", "Death recap", COLOR_YELLOW, WINDOW_WIDTH / 2.f - 150, 710, 300, 70));
+        gameOverButtons.addButton(Button("QUIT", "Quit", COLOR_RED, WINDOW_WIDTH / 2.f - 75, 840, 150, 70));
     }
     else {
-        gameOverButtons.addButton(Button("RECAP", "Death recap", COLOR_YELLOW, WIDOW_WIDTH / 2.f - 150, 580, 300, 70));
-        gameOverButtons.addButton(Button("QUIT", "Quit", COLOR_RED, WIDOW_WIDTH / 2.f - 75, 710, 150, 70));
+        gameOverButtons.addButton(Button("RECAP", "Death recap", COLOR_YELLOW, WINDOW_WIDTH / 2.f - 150, 580, 300, 70));
+        gameOverButtons.addButton(Button("QUIT", "Quit", COLOR_RED, WINDOW_WIDTH / 2.f - 75, 710, 150, 70));
     }
     
 
@@ -174,13 +176,13 @@ int Game::run(sf::RenderWindow &window, Client* client, bool creator) {
    pauseText.setFont(RessourceLoader::getFont("Font/Roboto-Bold.ttf"));
    pauseText.setString("PAUSE");
    pauseText.setCharacterSize(108);
-   pauseText.setPosition(WIDOW_WIDTH/2.f - pauseText.getGlobalBounds().width/2.f, 250);
+   pauseText.setPosition(WINDOW_WIDTH/2.f - pauseText.getGlobalBounds().width/2.f, 250);
    pauseText.setFillColor(sf::Color::White);
 
    gameOverText.setFont(RessourceLoader::getFont("Font/Roboto-Bold.ttf"));
    gameOverText.setString("FAIL");
    gameOverText.setCharacterSize(108);
-   gameOverText.setPosition(WIDOW_WIDTH / 2.f - pauseText.getGlobalBounds().width / 2.f, 250);
+   gameOverText.setPosition(WINDOW_WIDTH / 2.f - pauseText.getGlobalBounds().width / 2.f, 250);
    gameOverText.setFillColor(sf::Color::White);
 
 
@@ -193,8 +195,6 @@ int Game::run(sf::RenderWindow &window, Client* client, bool creator) {
    death_text.setPosition(10, 10);
 
 
-   int death = 0;
-
    for (int i = 0; i < joueurs_.size(); i++) {
        joueurs_[i].showPlate();
    }
@@ -206,7 +206,7 @@ int Game::run(sf::RenderWindow &window, Client* client, bool creator) {
    //client->requestPing();
 
    sf::RenderTexture renderText;
-   renderText.create(WIDOW_WIDTH, WIDOW_HEIGHT);
+   renderText.create(WINDOW_WIDTH, WINDOW_HEIGHT);
 
     window.setKeyRepeatEnabled(false);
     while (!exit)
@@ -337,12 +337,12 @@ int Game::run(sf::RenderWindow &window, Client* client, bool creator) {
         
         fps_tracker = 1.f / elapsedTime.asSeconds();
         position_tracker = currentPos.asSeconds();
-        distance_tracker = StatisticCounter::get(STATISTIC_DISTANCE, 0);
-        still_tracker =  StatisticCounter::get(STATISTIC_STILL, 0);
-        targeted_tracker = StatisticCounter::get(STATISTIC_TARGET, 0);
-        greed_tracker = StatisticCounter::get(STATISTIC_GREED, 0);
-        inshare_tracker = StatisticCounter::get(STATISTIC_INSHARE, 0);
-        failed_tracker = StatisticCounter::get(STATISTIC_FAILED, 0);
+        distance_tracker = StatisticCounter::get(STATISTIC_DISTANCE, current);
+        still_tracker =  StatisticCounter::get(STATISTIC_STILL, current);
+        targeted_tracker = StatisticCounter::get(STATISTIC_TARGET, current);
+        greed_tracker = StatisticCounter::get(STATISTIC_GREED, current);
+        inshare_tracker = StatisticCounter::get(STATISTIC_INSHARE, current);
+        failed_tracker = StatisticCounter::get(STATISTIC_FAILED, current);
 
 
         loading.update(elapsedTime);
@@ -557,14 +557,14 @@ int Game::run(sf::RenderWindow &window, Client* client, bool creator) {
                 gameOverSection = song_.getCheckpoint(checkpoint.second + 1);
 
                 gameOverText.setString("FAIL - Phase " + std::to_string((int)gameOverSection +1) + "/" + std::to_string(song_.getMaxCheckpoint()));
-                gameOverText.setPosition(WIDOW_WIDTH / 2.f - gameOverText.getGlobalBounds().width / 2.f, 100);
+                gameOverText.setPosition(WINDOW_WIDTH / 2.f - gameOverText.getGlobalBounds().width / 2.f, 100);
 
                 int pourcentage = song_.getSectionPourcentage(gameOverBeat, gameOverSection);
                 gameOverInfo.setString("Current phase: " + std::to_string(pourcentage) + "%");
-                gameOverInfo.setPosition(WIDOW_WIDTH / 2.f - gameOverInfo.getGlobalBounds().width / 2.f, 400);
+                gameOverInfo.setPosition(WINDOW_WIDTH / 2.f - gameOverInfo.getGlobalBounds().width / 2.f, 400);
 
-                death++;
-                death_text.setString("Death counter: " + std::to_string(death));
+                StatisticCounter::add(STATISTIC_DEATHCOUNTER, 0, 1);
+                death_text.setString("Death counter: " + std::to_string(StatisticCounter::get(STATISTIC_DEATHCOUNTER, 0)));
 
                 StatisticCounter::addTimestamp(TIMESTAMPS_FAILED, currentBeat_float);
 
@@ -749,6 +749,11 @@ void Game::addPlayer(std::string name ,sf::Uint32 color)
     }
     joueurs_.back().computePlate();
     numberPlayers_++;
+}
+
+Song* Game::getSong()
+{
+    return &song_;
 }
 
 EntityManager& Game::getEntityManager()

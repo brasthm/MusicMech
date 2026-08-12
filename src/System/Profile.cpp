@@ -27,8 +27,18 @@ Profile::Profile()
 	titleText_.setFillColor(sf::Color::Black);
 	titleText_.setCharacterSize(30);
 
+	achievementsList_ = getAchievementList();
+
 	clock_.restart();
 
+}
+
+Profile::~Profile()
+{
+	for (int i = 0; i < achievementsList_->size(); i++) {
+		delete achievementsList_->at(i);
+	}
+	delete achievementsList_;
 }
 
 void Profile::load(int id)
@@ -153,6 +163,11 @@ void Profile::setProfile(std::string const& name, int banner, int title)
 		bg_.setTexture(RessourceLoader::getTexture("Images/Banner/" + BANNERS[banner_id_].path));
 }
 
+const int Profile::getNumberAchievement()
+{
+	return achievementsList_->size();
+}
+
 const sf::RenderTexture& Profile::getProfileCard()
 {
 	nameText_.setString(name_);
@@ -197,4 +212,9 @@ const sf::RenderTexture& Profile::getProfileCard()
 	returnCard_.display();
 
 	return returnCard_;
+}
+
+const sf::RenderTexture& Profile::getAchievementCard(int i)
+{
+	return achievementsList_->at(i)->getAchievmentCard();
 }

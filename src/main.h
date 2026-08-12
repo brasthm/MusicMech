@@ -31,8 +31,8 @@ static constexpr int NB_MAX_MUSIC = 5;
 static constexpr int ARENA_WIDTH = 1000;
 static constexpr int ARENA_HEIGHT = 1000;
 
-static constexpr int WIDOW_WIDTH = 1920;
-static constexpr int WIDOW_HEIGHT = 1080;
+static constexpr int WINDOW_WIDTH = 1920;
+static constexpr int WINDOW_HEIGHT = 1080;
 
 
 static constexpr float JOYSTICK_DEADZONE = 15;
@@ -80,6 +80,14 @@ static constexpr int BANNER_BLUE = 2;
 static constexpr int BANNER_RED = 3;
 static constexpr int BANNER_YELLOW = 4;
 static constexpr int BANNER_GREEN = 5;
+static constexpr int BANNER_BLUE_BRILLANT = 6;
+static constexpr int BANNER_RED_BRILLANT = 7;
+static constexpr int BANNER_YELLOW_BRILLANT = 8;
+static constexpr int BANNER_GREEN_BRILLANT = 9;
+static constexpr int BANNER_BLUE_RAINBOW = 10;
+static constexpr int BANNER_RED_RAINBOW = 11;
+static constexpr int BANNER_YELLOW_RAINBOW = 12;
+static constexpr int BANNER_GREEN_RAINBOW = 13;
 
 class  BannerData {
 public:
@@ -95,9 +103,19 @@ static const std::vector<BannerData> BANNERS = {
 	BannerData("Synchro red", "red.png", "", ""),
 	BannerData("Synchro yellow", "yellow.png", "", ""),
 	BannerData("Synchro green", "green.png", "", ""),
-	BannerData("Test shader", "green.png", "Shader/rainbowborder.frag", ""),
-	BannerData("Text shader", "green.png", "", "Shader/rainbow.frag"),
-	BannerData("Both shader", "green.png", "Shader/flash.frag", "Shader/rainbow.frag")
+	BannerData("Synchro shining blue", "blue.png", "Shader/flash.frag", ""),
+	BannerData("Synchro shining red", "red.png", "Shader/flash.frag", ""),
+	BannerData("Synchro shining yellow", "yellow.png", "Shader/flash.frag", ""),
+	BannerData("Synchro shining green", "green.png", "Shader/flash.frag", ""),
+	BannerData("Synchro shining blue", "blue.png", "Shader/flash.frag", "Shader/rainbow.frag"),
+	BannerData("Synchro shining red", "red.png", "Shader/flash.frag", "Shader/rainbow.frag"),
+	BannerData("Synchro shining yellow", "yellow.png", "Shader/flash.frag", "Shader/rainbow.frag"),
+	BannerData("Synchro shining green", "green.png", "Shader/flash.frag", "Shader/rainbow.frag")
+
+
+	//BannerData("Test shader", "green.png", "Shader/rainbowborder.frag", ""),
+	//BannerData("Text shader", "green.png", "", "Shader/rainbow.frag"),
+	//BannerData("Both shader", "green.png", "Shader/flash.frag", "Shader/rainbow.frag")
 };
 
 // TITLE
@@ -113,6 +131,22 @@ static constexpr int TITLE_COMPLETIONIST = 8;
 static constexpr int TITLE_PROTAGONIST = 9;
 static constexpr int TITLE_TEAMPLAYER = 10;
 static constexpr int TITLE_NOVICE = 11;
+static constexpr int TITLE_ONESHOT = 12;
+static constexpr int TITLE_FLAWLESS = 13;
+static constexpr int TITLE_INVINCIBLE = 14;
+static constexpr int TITLE_UNBREAKABLE = 15;
+static constexpr int TITLE_GOTTAGOFAR = 16;
+static constexpr int TITLE_BLANKET = 17;
+static constexpr int TITLE_MOSTWANTED = 18;
+static constexpr int TITLE_LOWPROFILE = 19;
+static constexpr int TITLE_NOTME = 20;
+static constexpr int TITLE_EXPERT = 21;
+static constexpr int TITLE_GREEDGOD = 22;
+static constexpr int TITLE_FLOORLAVA = 23;
+static constexpr int TITLE_HEARTOFPARTY = 24;
+static constexpr int TITLE_EGOIST = 25;
+static constexpr int TITLE_STATUE = 26;
+static constexpr int TITLE_HYPERACTIVE = 27;
 
 static const std::vector<std::string> TITLES = {
 	"",
@@ -126,7 +160,23 @@ static const std::vector<std::string> TITLES = {
 	"The Completionist",
 	"The Protagonist",
 	"The Teamplayer",
-	"Experienced novice"
+	"Experienced novice",
+	"One shot, one clear",
+	"Flawless",
+	"Invincible",
+	"Unbreakable",
+	"Gotta go far",
+	"Secret Society BLANKET",
+	"Most wanted",
+	"Low profile",
+	"It was not me",
+	"The expert",
+	"The greed God",
+	"The floor is lava",
+	"Heart of the party",
+	"True egoist", 
+	"Prettiest statue",
+	"Hyperactive"
 };
 
 static constexpr int STATISTIC_DISTANCE = 0;
@@ -135,8 +185,10 @@ static constexpr int STATISTIC_STILL = 2;
 static constexpr int STATISTIC_FAILED = 3;
 static constexpr int STATISTIC_GREED = 4;
 static constexpr int STATISTIC_INSHARE = 5;
+static constexpr int STATISTIC_DEATHCOUNTER = 6;
+
+static const std::vector<int> ALL_TRACKED_STATS = { STATISTIC_DISTANCE , STATISTIC_TARGET , STATISTIC_FAILED, STATISTIC_GREED , STATISTIC_INSHARE, STATISTIC_STILL };
 
 static constexpr int TIMESTAMPS_FAILED = 0;
-
 
 #endif //MUSICMECH_SERVER_MAIN_H
