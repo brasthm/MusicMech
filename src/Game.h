@@ -48,6 +48,7 @@ public:
     void reset(float beat);
     void clearPlayer();
     void addPlayer(std::string name, sf::Uint32 color);
+    int getNbMechanics();
     Song* getSong();
     EntityManager& getEntityManager();
 };

@@ -21,6 +21,9 @@ SongDatabase::SongDatabase()
 		{
 			auto words = Utils::split(line, ':');
 
+			if (words.empty())
+				continue;
+
 			if (words[0] == "AudioFilename") 
 				songs_.back().songpath = "Beatmaps/" + songs_.back().id + "/" + words[1];
 			if (words[0] == "BackgroundImage")

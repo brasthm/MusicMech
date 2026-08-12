@@ -10,6 +10,7 @@
 #include <map>
 
 #include "../Mechanics/Mechanic.h"
+#include "../System/SongData.h"
 
 
 class Song {
@@ -21,6 +22,8 @@ private:
 
 	float endBeat_;
 
+	SongData data_;
+
 	
 public:
     Song();
@@ -31,7 +34,7 @@ public:
 
 	void save(const std::string& file, const std::vector<Mechanic*> &mech, Arena &arena);
 
-
+	void setSongData(SongData data);
 
 	float getBeatOffset(float ms);
     float getBeatLength(float ms);

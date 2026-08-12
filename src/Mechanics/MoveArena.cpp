@@ -15,7 +15,7 @@ void MoveArena::onPassed(const sf::Time& elapsed, float currentBeat, float curre
 
 std::string MoveArena::toString()
 {
-    std::string res = "MOVEARENA," + std::to_string(beat_) + "," + std::to_string(speed_);
+    std::string res = "MOVEARENA," + std::to_string(beat_) + "," + std::to_string(speed_) + ",";
 
     res += target_.to_string();
 

@@ -21,8 +21,6 @@
 
 #include "Mechanics/EndMap.h"
 
-#include "MapsCode.h"
-
 #include "System/StatisticCounter.h"
 
 
@@ -657,7 +655,7 @@ void Game::loadFromFile(const std::string& path)
         [](Mechanic* m1, Mechanic* m2) {return *m1 < *m2; });
 
     bool found = false;
-    float beat;
+    float beat = 9999;
     for (int i = 0; i < mechanicList_.size(); i++) {
         if (EndMap* em = dynamic_cast<EndMap*>(mechanicList_[i])) {
             beat = em->getBeat();
@@ -668,7 +666,8 @@ void Game::loadFromFile(const std::string& path)
 
     if (!found) {
         std::cout << "Warning : no EndMap" << std::endl;
-        beat = song_.getCumulativeNBeats(music_.getDuration().asMilliseconds());
+        if(music_.getDuration().asMilliseconds() != 0)
+            beat = song_.getCumulativeNBeats(music_.getDuration().asMilliseconds());
     }
 
     std::cout << "EndMap : " << beat << std::endl;
@@ -684,7 +683,7 @@ void Game::loadFromCode(const std::string& id, const std::string& path)
 
     mechanicList_.clear();
 
-    getMechsFromCode(id, mechanicList_, song_, music_, em_);
+    //getMechsFromCode(id, mechanicList_, song_, music_, em_);
 
     std::cout << "Mechanics number : " << mechanicList_.size() << std::endl;
 
@@ -749,6 +748,11 @@ void Game::addPlayer(std::string name ,sf::Uint32 color)
     }
     joueurs_.back().computePlate();
     numberPlayers_++;
+}
+
+int Game::getNbMechanics()
+{
+    return mechanicList_.size();
 }
 
 Song* Game::getSong()

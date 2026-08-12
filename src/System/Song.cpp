@@ -237,7 +237,7 @@ void Song::load(const std::string& osuFile, sf::Music *music, std::vector<Mechan
                         text = words[4];
 
                         int off = t.parse(5, words);
-                        t.parse(off, words);
+                        //t.parse(off, words);
 
                         mechs.emplace_back(new TextIndicator(beat, t, active, text, color));
                     }
@@ -642,8 +642,18 @@ void Song::resetCheckpoints() {
 }
 
 void Song::save(const std::string& filename, const std::vector<Mechanic *> &mechs, Arena &arena) {
-    std::ofstream file(filename);
+    std::ofstream file(RessourceLoader::getPath(filename));
 
+    
+    file << "AudioFilename:" << Utils::split(data_.songpath, '/').back() << std::endl;
+    file << "PreviewTime:" << std::to_string(data_.preview) << std::endl;
+    file << "Title:" << data_.name << std::endl;
+    file << "Artist:" << data_.artist << std::endl;
+    file << "BackgroundImage:" << Utils::split(data_.image, '/').back() << std::endl;
+    file << "VignetteImage:" << Utils::split(data_.vignette, '/').back() << std::endl;
+    file << "Difficulty:" << data_.difficulty << std::endl;
+    file << "Players:" << data_.nbPlayers << std::endl;
+    
     file << "[Arena]" << std::endl;
     for (int i = 0; i < arena.getNbRects(); i++) {
         auto rect = arena.getRects(i);
@@ -664,6 +674,11 @@ void Song::save(const std::string& filename, const std::vector<Mechanic *> &mech
     for(auto &mech:mechs)
         file << mech->toString() << std::endl;
 
+}
+
+void Song::setSongData(SongData data)
+{
+    data_ = data;
 }
 
 Song::~Song() = default;

@@ -3,7 +3,6 @@
 //
 
 #include "Lobby.h"
-#include "../MapsCode.h"
 #include "../System/StatisticCounter.h"
 
 #include <iostream>
@@ -102,8 +101,8 @@ void Lobby::startGame() {
     for(int i = 0; i < players.size(); i++) {
         if (players[i] != nullptr) {
             joueurs_[i].setActive(true);
-            joueurs_[i].setIndex(i);
         }
+        joueurs_[i].setIndex(i);
     }
 }
 
@@ -302,10 +301,6 @@ void Lobby::load(const std::string &filename) {
     song_.load(filename,
                nullptr,
                mechanics_, &arena_);
-
-    sf::Music m;
-    mechanics_.clear();
-    getMechsFromCode(beatmap, mechanics_, song_, m, manager_);
 
     std::cout << "Arena : " << arena_.getNbRects() << std::endl;
     std::cout << "Mechanics number : " << mechanics_.size() << std::endl;

@@ -29,7 +29,9 @@
 #include "../src/Graphics/BackgoundAnimation.h"
 #include "../src/System/Profile.h"
 
-void mainLoop(Client& c) {
+
+
+void mainLoop(Client& c, int args=0) {
     Title t;
     MainMenu mm;
     LobbyMenu lm;
@@ -69,24 +71,28 @@ void mainLoop(Client& c) {
         profiles[i].load(i);
     }
 
-    /*TestShadder ts;
-    Song song;
-    sf::Music music;
 
-    sd.setSelected(11);
+    if (args == 1) {
+        TestShadder ts;
+        Song song;
+        sf::Music music;
 
-    music.openFromFile(RessourceLoader::getPath(sd.getSelectedPath()));
+        sd.setSelected(11);
 
-    EntityManager em;
+        music.openFromFile(RessourceLoader::getPath(sd.getSelectedPath()));
 
-    std::vector<Mechanic*> mechs;
+        EntityManager em;
 
-    getMechsFromCode(sd.getCurrentId(), mechs, song, music, em);
+        std::vector<Mechanic*> mechs;
 
-    es.run(mainWindow, bg, &c, sd, &song);
+        //getMechsFromCode(sd.getCurrentId(), mechs, song, music, em);
 
-    //ts.run(mainWindow, bg);
-    return;*/
+        //es.run(mainWindow, bg, &c, sd, &song);
+
+        ts.run(mainWindow, bg);
+        return;
+    }
+    
 
 TITLE_SCREEN:
     title.play();
@@ -268,6 +274,42 @@ int console() {
         else if (cmd == "port") {
             std::cout << c.getUdpPort() << std::endl;
         }
+        
+        else if (cmd == "export") {
+            SongDatabase sd;
+            Game g;
+            std::cout << "Exporting songs:" << std::endl;
+            for (int i = 0; i < sd.size(); i++) {
+                SongData data = sd.getSong(i);
+                
+                std::string filepath = "Beatmaps/" + data.id + "/" + data.mmpath;
+
+                g.loadFromCode(data.id, filepath);
+                g.getSong()->setSongData(data);
+
+
+                g.save(filepath);
+
+                int nbMechsFromCode = g.getNbMechanics();
+
+                g.loadFromFile(filepath);
+
+                int nbMechsFromFile = g.getNbMechanics();
+
+                std::cout << "---- " << i+1 << "/" << sd.size() << ": " << data.name << " " << nbMechsFromCode << "/" << nbMechsFromFile;
+                
+                if (nbMechsFromCode == nbMechsFromFile)
+                    std::cout << " => OK!" << std::endl;
+                else {
+                    std::cout << " => ABORT!" << std::endl;
+                    break;
+                }
+            }
+
+        }
+        else if (cmd == "shader") {
+            mainLoop(c, 1);
+        }
         else if (cmd != "exit") {
             c.sendCommand(cmd);
         }
@@ -285,7 +327,7 @@ void game()
 
 int main() {
     GOD_MODE = true;
-    //console();
-    game();
+    console();
+    //game();
     return 0;
 }

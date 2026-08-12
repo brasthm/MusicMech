@@ -9,8 +9,8 @@
 bool RoomMenu::requestReady(Client* client, Game* game, SongDatabase* songs, sf::Uint32 color, bool load)
 {
 	if(load)
-		game->loadFromCode(songs->getCurrentId(), songs->getSelectedPath());
-		//game->loadFromFile(songs->getSelectedPath());
+		//game->loadFromCode(songs->getCurrentId(), songs->getSelectedPath());
+		game->loadFromFile(songs->getSelectedPath());
 
 	bool ok = client->sendReady(color);
 	return ok;
@@ -317,6 +317,7 @@ int RoomMenu::run(sf::RenderWindow& window, BackgroundAnimation& bg, Client* cli
 								ok = ok && ready[i];
 							ok = ready[0];
 							if (ok) {
+								game->getSong()->setSongData(songs->getSelectedSong());
 								launchGame = std::async(std::launch::async, &RoomMenu::requestStart, this, client, game);
 								loading.start("Launching");
 							}
