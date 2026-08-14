@@ -33,7 +33,7 @@ private:
         elapsed_ = sf::seconds(1);
 
         for (int i = 0; i < NB_MAX_SOUND; i++) {
-            sounds_[i].setVolume(10);
+            sounds_[i].setVolume(50);
         }
     };
 
