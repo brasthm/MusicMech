@@ -109,7 +109,7 @@ Cone::Cone(float beat, float width, float distance, int nbShare, float active, c
     base_.setOutlineThickness(5);
     base_.setPointCount(3);
 
-    Mechanic::setSoundName("Sound/hitsound-kick.wav");
+    Mechanic::setSoundName(HITSOUND_PATH);
 
     drawPriority_ = 20;
 

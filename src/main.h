@@ -28,6 +28,9 @@ static constexpr float BASE_TOTEM_RADIUS = 10;
 static constexpr int NB_MAX_SOUND = 50;
 static constexpr int NB_MAX_MUSIC = 5;
 
+static const std::string HITSOUND_PATH = "Sound/hitsound-hat.wav";
+static constexpr float SFX_VOLUME = 50.f;
+
 static constexpr int ARENA_WIDTH = 1000;
 static constexpr int ARENA_HEIGHT = 1000;
 

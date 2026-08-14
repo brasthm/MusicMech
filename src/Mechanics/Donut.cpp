@@ -89,7 +89,7 @@ Donut::Donut(float beat, float distanceMin, float distanceMax, int nbShare, floa
 
     setColor();
 
-    Mechanic::setSoundName("Sound/hitsound-kick.wav");
+    Mechanic::setSoundName(HITSOUND_PATH);
 
     drawPriority_ = -1;
 
