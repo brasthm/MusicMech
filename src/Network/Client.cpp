@@ -657,12 +657,12 @@ bool Client::requestLobbyInfo(const std::string& lobbyIndex) {
 
     int id = findLobbyById(lobbyList_, lobbyIndex);
 
-    sf::Uint8 nbIn, limit, playerstatus;
+    sf::Uint8 nbIn, limit, playerstatus, variant;
     sf::Uint32 color;
     sf::String lobyname, playername, beatmap;
     sf::Int32 banner, title;
 
-    p >> lobyname >> nbIn >> limit >> beatmap;
+    p >> lobyname >> nbIn >> limit >> beatmap >> variant;
 
     if (!p) {
         std::cout << "requestLobbyInfo : Data corrupted (header)" << std::endl;
@@ -673,6 +673,7 @@ bool Client::requestLobbyInfo(const std::string& lobbyIndex) {
     lobbyList_[id].nbIn = nbIn;
     lobbyList_[id].limit = limit;
     lobbyList_[id].beatmap = beatmap;
+    lobbyList_[id].variant = variant;
 
     for (int i = 0; i < NB_MAX_JOUEURS; i++) {
         p >> playerstatus >> playername >> color >> banner >> title;
@@ -1173,7 +1174,7 @@ bool Client::requestBeatmapChange(const std::string& beatmap, const std::string&
         return false;
     }
 
-    if (state != 23) {
+    if (state != 25) {
         std::cout << "requestBeatmapChange : Unexpected packet recieved (" << (int)state << ")" << std::endl;
         return false;
     }

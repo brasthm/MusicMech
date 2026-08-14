@@ -60,6 +60,7 @@ int Game::run(sf::RenderWindow &window, Client* client, bool creator) {
     for (int i = 0; i < joueurs_.size(); i++) {
         joueurs_[i].setIndex(i);
 
+
         namesText.emplace_back();
         namesInfo.emplace_back();
 
@@ -76,7 +77,7 @@ int Game::run(sf::RenderWindow &window, Client* client, bool creator) {
         namesInfo.back().setPosition(0, WINDOW_HEIGHT - 50 - (joueurs_.size() - i) * (60));
     }
 
-    std::cout << "Number of players : " << numberPlayers_ << std::endl;
+    std::cout << "Number of players : " << (int)client->getCurrentLobby().nbIn << std::endl;
     StatisticCounter::reset(joueurs_.size());
 
 

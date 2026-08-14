@@ -7,6 +7,7 @@ TCP_Socket::TCP_Socket()
 	socket_.setBlocking(false);
 	connected_ = false;
 	isConnecting_ = false;
+	obsolete_ = false;
 }
 
 void TCP_Socket::monitor()

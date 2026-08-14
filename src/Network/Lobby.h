@@ -39,6 +39,7 @@ private:
 
     float currentBeat_;
     int currentSection_ = 0;
+    
 
     Arena arena_;
 
@@ -53,6 +54,7 @@ public:
     LobbyStatus status;
     std::vector<PlayerInfo*> players;
     sf::Uint8 nbIn, limit;
+    sf::Uint8 variant;
     sf::Uint64 startingTime;
     std::string id;
     bool failed, paused;
@@ -68,6 +70,7 @@ public:
     void setPlayer(int i, std::string name, sf::Uint32 color);
     void computeSequences();
     void setRandomSequence(sf::Packet& packet);
+    size_t getNbMechanics();
 };
 
 

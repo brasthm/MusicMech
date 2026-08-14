@@ -735,9 +735,11 @@ void Server::monitorClient(int i)
         lobbies_[lobbyIndex].players[0] = &players_[index];
         lobbies_[lobbyIndex].name = lobbyName;
         lobbies_[lobbyIndex].beatmap = beatmap;
-        int nb = std::stoi(std::string(mode));
+        int nb = std::stoi(Utils::split(std::string(mode), ':')[0]);
+        int variant = std::stoi(Utils::split(std::string(mode), ':')[1]);
         lobbies_[lobbyIndex].limit = (sf::Uint8)nb;
         lobbies_[lobbyIndex].nbIn = 1;
+        lobbies_[lobbyIndex].variant = (sf::Uint8)variant;
 
         players_[index].status = PlayerStatus::PLAYER_WAITING;
 
@@ -753,7 +755,8 @@ void Server::monitorClient(int i)
 
         std::cout << "LOBBY : new lobby " <<
             lobbies_[lobbyIndex].id << " - " << lobbies_[lobbyIndex].name <<
-            " " << lobbies_[lobbyIndex].players[0]->name << std::endl;
+            " " << lobbies_[lobbyIndex].players[0]->name << 
+            "[" << lobbies_[lobbyIndex].beatmap << " " << (int)lobbies_[lobbyIndex].variant << "]" << std::endl;
 
         return;
 
@@ -958,7 +961,7 @@ void Server::monitorClient(int i)
             }
         }
 
-        songs_.setSelectedById(lobbies_[lobbyIndex].beatmap);
+        songs_.setSelectedById(lobbies_[lobbyIndex].beatmap, lobbies_[lobbyIndex].variant);
 
         sf::Uint64 currentTime = std::chrono::duration_cast<std::chrono::milliseconds>(
             std::chrono::steady_clock::now().time_since_epoch() + std::chrono::seconds(5)).count();
@@ -971,7 +974,9 @@ void Server::monitorClient(int i)
         //lobbies_[lobbyIndex].startGame();
 
 
-        std::cout << "LOBBY : Game starts in " << currentTime << " in lobby " << lobbies_[lobbyIndex].id << std::endl;
+        std::cout << "LOBBY : Game starts in " << currentTime << " in lobby " << lobbies_[lobbyIndex].id << 
+            "(" << lobbies_[lobbyIndex].beatmap << ":" << (int)lobbies_[lobbyIndex].variant << 
+            " " << lobbies_[lobbyIndex].getNbMechanics() << " mechs)" << std::endl;
 
         sf::Uint8 resstate = 30;
         responsePacket << state << response;
@@ -1213,13 +1218,13 @@ void Server::monitorClient(int i)
             return;
         }
 
-        if (lobbies_[lobbyIndex].status != LobbyStatus::LOBBY_FILLING) {
+        /*if (lobbies_[lobbyIndex].status != LobbyStatus::LOBBY_FILLING) {
             std::cout << "25 TCP_SOCKET (" << i << ") : " << lobbies_[lobbyIndex].name << "(" << lobbies_[lobbyIndex].id << ") is not in ready." << std::endl;
             response = 2;
             responsePacket << state << response;
             clients_[i]->send(responsePacket);
             return;
-        }
+        }*/
 
         sf::String beatmap, mode;
 
@@ -1231,7 +1236,8 @@ void Server::monitorClient(int i)
         }
 
         lobbies_[lobbyIndex].beatmap = beatmap;
-        int nbPlayers = std::stoi(std::string(mode));
+        int nbPlayers = std::stoi(Utils::split(std::string(mode), ':')[0]);
+        int variant = std::stoi(Utils::split(std::string(mode), ':')[1]);
 
         if (nbPlayers < lobbies_[lobbyIndex].limit) {
             sf::Packet p;
@@ -1245,13 +1251,14 @@ void Server::monitorClient(int i)
         }
 
         lobbies_[lobbyIndex].limit = nbPlayers;
+        lobbies_[lobbyIndex].variant = variant;
 
         for (int j = 0; j < lobbies_[lobbyIndex].limit; j++) {
             if (lobbies_[lobbyIndex].players[j] != nullptr)
                 lobbies_[lobbyIndex].players[j]->status = PlayerStatus::PLAYER_WAITING;
         }
 
-        std::cout << "LOBBY : Beatmap changed to [" << lobbies_[lobbyIndex].beatmap << "] " <<
+        std::cout << "LOBBY : Beatmap changed to [" << lobbies_[lobbyIndex].beatmap << " " << (int)lobbies_[lobbyIndex].variant << "] " <<
             (int)lobbies_[lobbyIndex].limit << "P in lobby " << lobbies_[lobbyIndex].id << std::endl;
 
 
@@ -1364,7 +1371,8 @@ void Server::monitorClient(int i)
             sf::String(lobbies_[lobbyIndex].name) <<
             lobbies_[lobbyIndex].nbIn <<
             lobbies_[lobbyIndex].limit <<
-            sf::String(lobbies_[lobbyIndex].beatmap);
+            sf::String(lobbies_[lobbyIndex].beatmap) <<
+            lobbies_[lobbyIndex].variant;
 
         for (int i = 0; i < NB_MAX_JOUEURS; i++) {
             if (lobbies_[lobbyIndex].players[i] == nullptr)

@@ -258,7 +258,7 @@ int LobbySelection::run(sf::RenderWindow& window, BackgroundAnimation& bg, Clien
 		if (joinRoom.valid() && joinRoom.wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
 			loading.stop();
 			if (joinRoom.get()) {
-				songs.setSelectedById(client->getCurrentLobby().beatmap);
+				songs.setSelectedById(client->getCurrentLobby().beatmap, client->getCurrentLobby().variant);
 				return 2;
 			}
 		}

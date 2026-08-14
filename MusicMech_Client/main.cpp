@@ -48,8 +48,8 @@ void mainLoop(Client& c, int args=0) {
     BackgroundAnimation bg;
 
     sf::Music title;
-    title.openFromFile(RessourceLoader::getPath("Music/Hysteric Night Girl.mp3"));
-    title.setVolume(10);
+    title.openFromFile(RessourceLoader::getPath("Music/Main Menu.mp3"));
+    title.setVolume(40);
     title.setLoop(true);
 
     sf::ContextSettings settings;
@@ -75,7 +75,7 @@ void mainLoop(Client& c, int args=0) {
         Song song;
         sf::Music music;
 
-        sd.setSelected(11);
+        sd.setSelected(0, 0);
 
         music.openFromFile(RessourceLoader::getPath(sd.getSelectedPath()));
 
@@ -134,6 +134,7 @@ LOBBY_SELECTION:
     roomName = "";
     isCreator = false;
     beatmapChanged = false;
+    sd.setVariant("Normal");
     val = ls.run(mainWindow, bg, &c, sd, &g);
     title.pause();
     if (val == 1)  goto LOBBY_CREATION;
@@ -205,7 +206,7 @@ int console() {
         else if (cmd == "lc") {
             std::string lobbyname;
             std::cin >> lobbyname;
-            if (c.requestLobbyCreation(lobbyname, "0", "4P"))
+            if (c.requestLobbyCreation(lobbyname, "0001", "4:1"))
                 std::cout << "Lobby created : " << c.getLobbyIndex() << std::endl;
             else
                 std::cout << "Lobby creation failled" << std::endl;
@@ -242,7 +243,13 @@ int console() {
 
         }
         else if (cmd == "run") {
-            mainLoop(c);
+            std::thread t([]() {
+                Client c1;  
+                mainLoop(c1);
+            });
+            //mainLoop(c);
+
+            t.detach();
         }
         else if (cmd == "save") {
             Game g;
@@ -270,9 +277,29 @@ int console() {
         else if (cmd == "port") {
             std::cout << c.getUdpPort() << std::endl;
         }
-        
+        else if (cmd == "database") {
+            SongDatabase sd;
+
+            for (int i = 0; i < sd.size(); i++)
+            {
+                for (int j = 0; j < sd.sizeVariant(i); j++)
+                {
+                    sd.setSelected(i, j);
+                    std::cout << sd.getSelectedPath() << " ";
+                }
+                std::cout << std::endl;
+            }
+        }
         else if (cmd == "shader") {
-            mainLoop(c, 1);
+
+            std::thread t([]() {
+                Client c1;
+                mainLoop(c1, 1);
+            });
+            //mainLoop(c, 1);
+
+            t.detach();
+
         }
         else if (cmd != "exit") {
             c.sendCommand(cmd);

@@ -199,7 +199,7 @@ int RoomMenu::run(sf::RenderWindow& window, BackgroundAnimation& bg, Client* cli
 	leftArrow.setOutlineThickness(3);
 
 	artistText.setString(songs->getSelectedSong().artist);
-	difficultyText.setString(songs->getSelectedSong().difficulty);
+	difficultyText.setString(songs->getSelectedVariant().difficulty);
 	difficultyText.setPosition(height / 2 - difficultyText.getGlobalBounds().width / 2, hpos + 10);
 	artistRect.setSize({ artistText.getGlobalBounds().width + 100, height });
 
@@ -226,7 +226,7 @@ int RoomMenu::run(sf::RenderWindow& window, BackgroundAnimation& bg, Client* cli
 	sf::Uint32 saveColor;
 
 	if (creator && beatmapChanged) 
-		beatmap = std::async(std::launch::async, &Client::requestBeatmapChange, client, songs->getSelectedSong().id, songs->getCurentNbPlayers());
+		beatmap = std::async(std::launch::async, &Client::requestBeatmapChange, client, songs->getSelectedSong().id, songs->getCurentNbPlayers() + ":" + std::to_string(songs->getIndexVariant()));
 	else 
 		refresh = std::async(std::launch::async, &Client::requestLobbyInfo, client, client->getLobbyIndex());
 	
@@ -372,11 +372,13 @@ int RoomMenu::run(sf::RenderWindow& window, BackgroundAnimation& bg, Client* cli
 		if (refresh.valid() && refresh.wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
 			std::cout << "Room refresh request" << std::endl;
 			nbMax = client->getCurrentLobby().limit;
-			if (songs->getSelectedSong().id != client->getCurrentLobby().beatmap) {
-				songs->setSelectedById(client->getCurrentLobby().beatmap);
+			bool beatmapDiffers = songs->getSelectedSong().id != client->getCurrentLobby().beatmap;
+			bool variantDiffers = songs->getIndexVariant() != client->getCurrentLobby().variant;
+			if (beatmapDiffers) {
+				songs->setSelectedById(client->getCurrentLobby().beatmap, client->getCurrentLobby().variant);
 				vignettebanner.setTexture(RessourceLoader::getTexture(song.vignette));
 				artistText.setString(songs->getSelectedSong().artist);
-				difficultyText.setString(songs->getSelectedSong().difficulty);
+				difficultyText.setString(songs->getSelectedVariant().difficulty);
 				artistRect.setSize({ artistText.getGlobalBounds().width + 100, height });
 				difficultyText.setPosition(height / 2 - difficultyText.getGlobalBounds().width / 2, hpos - difficultyText.getGlobalBounds().height / 2);
 
@@ -407,6 +409,11 @@ int RoomMenu::run(sf::RenderWindow& window, BackgroundAnimation& bg, Client* cli
 					finalImage.setScale(WINDOW_HEIGHT / (float)img.getGlobalBounds().height, WINDOW_HEIGHT / (float)img.getGlobalBounds().height);
 
 				songs->play();
+			}
+			else if (variantDiffers) {
+				songs->setSelectedById(client->getCurrentLobby().beatmap, client->getCurrentLobby().variant);
+				difficultyText.setString(songs->getSelectedVariant().difficulty);
+				difficultyText.setPosition(height / 2 - difficultyText.getGlobalBounds().width / 2, hpos - difficultyText.getGlobalBounds().height / 2);
 			}
 
 			for (int i = 0; i < nbMax; i++) {

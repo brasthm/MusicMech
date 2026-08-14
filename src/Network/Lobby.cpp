@@ -48,6 +48,7 @@ Lobby::Lobby()
 {
     status = LobbyStatus::LOBBY_AVAILABLE;
     limit = nbIn = 0;
+    variant = 0;
     for (int i = 0; i < NB_MAX_JOUEURS; i++) {
         players.emplace_back(nullptr);
         joueurs_.emplace_back();
@@ -294,6 +295,11 @@ void Lobby::computeSequences()
 void Lobby::setRandomSequence(sf::Packet& packet)
 {
     manager_.setPacketRandomSequence(packet);
+}
+
+size_t Lobby::getNbMechanics()
+{
+    return mechanics_.size();
 }
 
 void Lobby::load(const std::string &filename) {

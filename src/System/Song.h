@@ -24,6 +24,7 @@ private:
 	float endBeat_;
 
 	SongData data_;
+	int variant_ = 0;
 
 	
 public:

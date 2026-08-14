@@ -8,9 +8,10 @@ Le projet s'appelle `MusicMech` dans le dépôt et l'arborescence, mais **Synchr
 dans le jeu lui-même (titre de la fenêtre, nom de la cible CMake du client, protocole
 serveur `SYNCHROBEATSERV`).
 
-> **État : reprise en cours.** Les étapes 0 (compilation) et 1 (chorégraphies dans des
-> fichiers `.mm`) sont terminées. Le moteur, le réseau et 13 chorégraphies sont
-> fonctionnels. Voir [ROADMAP.md](ROADMAP.md) pour l'état détaillé et le plan.
+> **État : reprise en cours.** Les étapes 0 (compilation), 1 (chorégraphies dans des
+> fichiers `.mm`) et 2 (variantes classique / expert) sont terminées. Le moteur, le
+> réseau et les variantes fonctionnent ; 5 musiques libres de droits sont en place.
+> Voir [ROADMAP.md](ROADMAP.md) pour l'état détaillé et le plan.
 
 ---
 
@@ -114,10 +115,10 @@ Le client démarre **en plein écran 1920×1080** et se connecte à l'IP inscrit
 **et recompiler** avant de lancer.
 
 Une console de débogage existe dans `MusicMech_Client/main.cpp` (fonction `console()`,
-désactivée par défaut au profit de `game()`). Elle offre `connect`, `disconnect`,
-`ip <adresse>`, `name <nom>`, `lc <lobby>`, `run`, `save`, `limit`, `port`, `shader`.
-La commande `save` écrit la chorégraphie chargée dans `output.txt` au format `.mm` —
-voir [mm-format.md](mm-format.md).
+actuellement le point d'entrée par défaut : taper `run` pour lancer le jeu). Elle offre
+`connect`, `disconnect`, `ip <adresse>`, `name <nom>`, `lc <lobby>`, `run`, `save`,
+`limit`, `port`, `shader`, `database` (liste beatmaps et variantes). La commande `save`
+écrit la chorégraphie chargée dans `output.txt` au format `.mm` — voir [mm-format.md](mm-format.md).
 
 ### Contrôles
 
@@ -141,6 +142,7 @@ src/                    Code partagé client + serveur (~22 000 lignes)
 MusicMech_Client/       Cible client (main.cpp + CMakeLists)
 MusicMech_Server/       Cible serveur (main.cpp + CMakeLists)
 rc/                     Ressources : beatmaps (`.mm`), musiques, images, polices, shaders
+                        (beatmaps `0001`-`0005`, chacune en solo/normal/expert)
 refs/                   Références de conception : maquettes, palettes, storyboards
 scripts/                Utilitaires (calcul de paramètres de flou)
 ```
@@ -166,12 +168,13 @@ Détail complet et plan de résolution dans [ROADMAP.md](ROADMAP.md).
 - **Les mécaniques de partage ne s'adaptent pas à l'effectif.** Le nombre de joueurs
   attendu dans une zone est une constante inscrite dans chaque mécanique : une
   chorégraphie écrite pour 4 joueurs est infaisable à 2 ou à 8.
-- **Les musiques présentes dans `rc/Beatmaps/` sont sous droits** et ne peuvent pas
-  être rediffusées.
+- **Les musiques sont désormais libres de droits.** L'ancien contenu sous droits a
+  été retiré du dépôt et de l'historique git (voir [ROADMAP.md](ROADMAP.md),
+  « Chantier connexe »).
 
 ---
 
 ## Licence
 
-Aucune licence n'est déclarée à ce jour. Les ressources audio du dossier `rc/Beatmaps/`
-appartiennent à leurs ayants droit respectifs et ne sont pas redistribuables.
+Aucune licence n'est déclarée à ce jour. Les ressources audio actuelles
+(`rc/Beatmaps/0001` à `0005`, `rc/Music/`) sont libres de droits.

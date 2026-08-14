@@ -12,11 +12,10 @@ chacune en deux difficultés (classique / expert), diffusable sans restriction.
 
 ## Où en est le projet
 
-Les **étapes 0 et 1 sont terminées** (août 2026) : le projet compile sous Windows
-(MSVC 2019 + SFML 2.6) et les 13 chorégraphies sont désormais des fichiers `.mm`
-chargés au runtime. Plus aucune chorégraphie n'est codée en dur.
-
-L'arbre de travail est propre et tout est poussé sur `origin/main`. Rien n'est perdu.
+Les **étapes 0, 1 et 2 sont terminées** (août 2026) : le projet compile sous Windows
+(MSVC 2019 + SFML 2.6), les chorégraphies sont des fichiers `.mm` chargés au runtime,
+et chaque musique peut décliner plusieurs variantes (solo / normal / expert).
+Plus aucune chorégraphie n'est codée en dur.
 
 ### Ce qui fonctionne
 
@@ -28,8 +27,10 @@ L'arbre de travail est propre et tout est poussé sur `origin/main`. Rien n'est 
   synchronisation d'horloge, ping, keepalive, RNG seedé partagé.
   **Le serveur est autoritatif** : il rejoue la chorégraphie et décide de l'échec.
 - **Rendu** — formes géométriques custom, 10 shaders GLSL, carrousels, transitions.
-- **Contenu** — 13 chorégraphies dans des fichiers `.mm` (33 à 1074 lignes), dont 11
-  substantielles, un stub (`intoYou`, 33 lignes) et un doublon (`lazySong`).
+- **Contenu** — 5 musiques libres de droits, chacune en 3 variantes (`solo` / `normal` /
+  `expert`), soit 15 fichiers `.mm` dans `rc/Beatmaps/0001` à `0005`.
+- **Variantes** — plusieurs `.mm` par musique : le second carrousel de la sélection
+  choisit la variante, propagée au serveur via `mode` (`effectif:indexVariante`).
 - **Menus** — la chaîne complète existe, du titre à l'écran de fin.
 
 ### Ce qui manque
@@ -37,11 +38,10 @@ L'arbre de travail est propre et tout est poussé sur `origin/main`. Rien n'est 
 | Manque | Impact |
 |---|---|
 | Aucun mode solo | 🔴 Bloquant : le jeu est injouable sans serveur |
-| Aucun système de variantes (1 musique = 1 chorégraphie) | 🔴 Bloquant pour classique/expert |
 | Écran de fin partiel (objectifs, morts, checkpoints affichés ; pas de score ni titres) | 🟡 Manque le score détaillé et l'attribution de titres |
 | Titres jamais attribués | 🟠 Progression morte |
 | IP serveur modifiable dans le menu, mais pas de fichier de config | 🟡 Reste à externaliser résolution, volume, plein écran |
-| Musiques sous droits | ⚫ Résolu par le changement de musiques |
+| Musiques sous droits | ⚫ Résolu : remplacées par 5 morceaux libres de droits |
 
 ---
 
@@ -78,17 +78,14 @@ et `Lobby::load` (serveur), et `MapsCode.cpp` est supprimé. Le format `.mm` a g
 sections au passage : `[RandomSequences]` (séquences aléatoires) et le champ optionnel
 `colorScheme` des `SPREAD`.
 
-### Étape 2 — Variantes classique / expert · 1-2 j
+### Étape 2 — Variantes classique / expert · ✅ Terminé
 
-Aujourd'hui `rc/Beatmaps/beatmap_list.txt` associe **un seul `.mm` par identifiant** et
-le champ `Difficulty:` est purement décoratif.
-
-Version minimale suffisante pour l'option A : permettre plusieurs `.mm` par musique et
-choisir lequel charger. Le branchement réseau existe déjà — la chaîne `mode` circule
-client → serveur à la création du lobby **et** au changement de beatmap
-(`Client::requestBeatmapChange(beatmap, mode)`). Il suffit de lui faire porter
-l'identifiant de la chorégraphie en plus de l'effectif. Le second carrousel de
-`BeatmapSelection.cpp` est déjà en place pour l'interface.
+`beatmap_list.txt` accepte plusieurs `.mm` par identifiant
+(`id|solo.mm|normal.mm|expert.mm`). `SongDatabase` expose la variante sélectionnée,
+le second carrousel de `BeatmapSelection.cpp` la choisit, et la chaîne réseau `mode`
+porte désormais `effectif:indexVariante` (création **et** changement de beatmap).
+La variante est propagée aux autres clients via le paquet 41. Détail :
+[docs/etape-2.md](docs/etape-2.md).
 
 ### Étape 3 — Mode solo · 2-3 j
 
@@ -136,14 +133,15 @@ Reste à brancher : statistiques → attribution de titre → affichage dans l'�
 
 ---
 
-## Chantier connexe : purger l'historique
+## Chantier connexe : purger l'historique · ✅ Fait
 
-Les musiques sous droits pèsent 71 Mo dans `rc/Beatmaps/` **et sont aussi dans
-l'historique git** — d'où les 293 Mo de `.git` pour un dépôt de 22 000 lignes.
+Les musiques sous droits ont été retirées de `rc/Beatmaps/` **et de l'historique git**
+(`git filter-repo` sur les anciens dossiers de beatmaps et `rc/Music/Hysteric Night
+Girl.mp3`). Le dépôt ne contient plus que le contenu libre (5 morceaux,
+`rc/Beatmaps/0001` à `0005`) et pèse désormais une fraction de sa taille précédente.
 
-Le passage aux musiques libres est le bon moment pour un `git filter-repo` : on obtient
-un dépôt sain et publiable, avant de recommencer à committer du contenu. À faire
-**avant** l'étape 5, pas après.
+Les anciennes beatmaps restent disponibles localement dans `rc/OldBeatmaps/` (ignoré
+par git) si besoin de référence.
 
 ---
 
@@ -204,3 +202,10 @@ démarrage (`MusicMech_Client/main.cpp:287`).
 Le format `.mm` étant séparé par des virgules, une virgule dans un champ texte
 (`TEXTINDICATOR`) ou dans un chemin d'image (`DISPLAYIMAGE`) casse le parsing. Aucun
 échappement n'est prévu. Voir [mm-format.md](mm-format.md).
+
+### 8. ✅ `TCP_Socket::obsolete_` non initialisé — corrigé (étape 2)
+
+Le constructeur de `TCP_Socket` n'initialisait pas `obsolete_` : selon le contenu de la
+mémoire, `Server::cleanup()` détruisait une connexion fraîchement acceptée, d'où des
+échecs de connexion intermittents (~1 sur 2). Initialisé à `false`, et `Lobby::variant`
+initialisé à `0` par la même occasion.

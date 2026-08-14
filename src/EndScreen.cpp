@@ -232,7 +232,7 @@ int EndScreen::run(sf::RenderWindow& window, BackgroundAnimation& bg, Client* cl
 
 
 	artistText.setString(songs.getSelectedSong().artist);
-	difficultyText.setString(songs.getSelectedSong().difficulty);
+	difficultyText.setString(songs.getSelectedVariant().difficulty);
 	difficultyText.setPosition(height / 2 - difficultyText.getGlobalBounds().width / 2, hpos + 10);
 	artistRect.setSize({ artistText.getGlobalBounds().width + 100, height });
 

@@ -71,8 +71,8 @@ void BeatmapSelection::run(sf::RenderWindow& window, BackgroundAnimation& bg, Cl
 	saucisse2.addColor(COLOR_GREEN);
 	saucisse2.addColor(COLOR_RED);
 
-	saucisse2.addData("2P", "2 Players");
-	saucisse2.addData("4P", "4 Players");
+	saucisse2.addData("N", "Normal");
+	saucisse2.addData("E", "Expert");
 
 
 	saucisse.setCharacterSize(70);
@@ -96,17 +96,16 @@ void BeatmapSelection::run(sf::RenderWindow& window, BackgroundAnimation& bg, Cl
 	for(int i = 0; i < songs->size(); i++)
 		saucisse.addData(songs->getSong(i).name, "");
 	
-	std::cout << "selected " << songs->getSelected() << std::endl;
+	std::cout << "selected " << songs->getSelected() << " " << songs->getIndexVariant() << std::endl;
 	saucisse.setCenter(songs->getSelected());
-	if(songs->getCurentNbPlayers() == "4")
-		saucisse2.right();
-	if (songs->getCurentNbPlayers() == "8") {
-		saucisse2.right();
+	//if (songs->getSelectedVariant().label == "Normal")
+		//saucisse2.right();
+	if (songs->getSelectedVariant().label == "Expert") {
 		saucisse2.right();
 	}
 		
 
-	bool changed = false;
+	bool changed = false, changedVariant = false;
 
 
 	sf::Text titleText, artistText, difficultyText, info, nbPlayers;
@@ -162,7 +161,7 @@ void BeatmapSelection::run(sf::RenderWindow& window, BackgroundAnimation& bg, Cl
 			}
 			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Return ||
 				event.type == sf::Event::JoystickButtonPressed && event.joystickButton.button == 0) {
-				songs->setSelected(saucisse.getIndex());
+				songs->setSelected(saucisse.getIndex(), 1 + saucisse2.getIndex());
 				if (changed && saucisse.isMoving())
 					songs->play();
 				*beatmapChanged = true;
@@ -182,6 +181,12 @@ void BeatmapSelection::run(sf::RenderWindow& window, BackgroundAnimation& bg, Cl
 			}
 			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::W ||
 				event.type == sf::Event::JoystickButtonPressed && event.joystickButton.button == 2) {
+				
+				if (saucisse2.getIndex() == 0)
+					saucisse2.right();
+				else
+					saucisse2.left();
+				changedVariant = true;
 			}
 			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::X ||
 				event.type == sf::Event::JoystickButtonPressed && event.joystickButton.button == 3) {
@@ -226,17 +231,23 @@ void BeatmapSelection::run(sf::RenderWindow& window, BackgroundAnimation& bg, Cl
 			finalImage.setTexture(texture2.getTexture());
 		}
 
+		if (changedVariant && !saucisse2.isMoving()) {
+			changedVariant = false;
+
+
+		}
+
 		client->keepAlive();
 
 		bg.update(elapsedTime);
 		saucisse.update(elapsedTime);
-		//saucisse2.update(elapsedTime);
+		saucisse2.update(elapsedTime);
 
 
 		titleText.setString(songs->getSong(saucisse.getIndex()).name);
 		artistText.setString(songs->getSong(saucisse.getIndex()).artist);
-		difficultyText.setString("Difficulty: " + songs->getSong(saucisse.getIndex()).difficulty);
-		nbPlayers.setString("Players: " + songs->getSong(saucisse.getIndex()).nbPlayers);
+		difficultyText.setString("Difficulty: " + songs->getVariant(saucisse.getIndex(), 1 + saucisse2.getIndex()).difficulty);
+		nbPlayers.setString("Players: " + songs->getVariant(saucisse.getIndex(), 1 + saucisse2.getIndex()).nbPlayers);
 
 		saucisse.getCenterTexture().draw(titleText);
 		saucisse.getCenterTexture().draw(artistText);
@@ -260,7 +271,7 @@ void BeatmapSelection::run(sf::RenderWindow& window, BackgroundAnimation& bg, Cl
 		window.draw(header);
 		window.draw(headerText);
 		saucisse.draw(window);
-		//saucisse2.draw(window);
+		saucisse2.draw(window);
 		window.draw(info);
 		window.display();
 	}

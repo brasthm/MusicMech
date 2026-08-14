@@ -84,7 +84,7 @@ int RoomCreation::run(sf::RenderWindow& window, BackgroundAnimation& bg, Client*
 	beatmapText.setFillColor(sf::Color::Black);
 
 	nbText.setFont(RessourceLoader::getFont("Font/Roboto-Bold.ttf"));
-	nbText.setString(songs.getCurentNbPlayers()+"P");
+	nbText.setString(songs.getSelectedVariant().difficulty);
 	nbText.setCharacterSize(80);
 	nbText.setFillColor(sf::Color::Black);
 
@@ -132,13 +132,11 @@ int RoomCreation::run(sf::RenderWindow& window, BackgroundAnimation& bg, Client*
 	beatmapFond.setSize({ WINDOW_WIDTH * 0.6f + nameFond.getGlobalBounds().left
 		- vignette.getGlobalBounds().left - vignette.getGlobalBounds().width,
 		vignette.getGlobalBounds().height});
-	if(songs.getCurentNbPlayers() == "4")
+	if(songs.getSelectedVariant().label == "Expert")
 		beatmapFond.setFillColor(sf::Color(COLOR_RED));
-	else if(songs.getCurentNbPlayers() == "2")
+	else if(songs.getSelectedVariant().label == "Normal")
 		beatmapFond.setFillColor(sf::Color(COLOR_GREEN));
-	else if(songs.getCurentNbPlayers() == "8")
-		beatmapFond.setFillColor(sf::Color(COLOR_BLUE));
-	else if (songs.getCurentNbPlayers() == "1")
+	else if (songs.getSelectedVariant().label == "Solo")
 		beatmapFond.setFillColor(sf::Color(COLOR_YELLOW));
 
 	beatmapFond.setPosition(vignette.getGlobalBounds().left + vignette.getGlobalBounds().width, vignette.getGlobalBounds().top);
@@ -200,7 +198,7 @@ int RoomCreation::run(sf::RenderWindow& window, BackgroundAnimation& bg, Client*
 						}
 						if (reponse == "CREATE") {
 							if (roomName != "") {
-								createRoom = std::async(std::launch::async, &RoomCreation::request, this, client, roomName, songs.getSelectedSong().id, songs.getCurentNbPlayers());
+								createRoom = std::async(std::launch::async, &RoomCreation::request, this, client, roomName, songs.getSelectedSong().id, songs.getCurentNbPlayers() + ":" + std::to_string(songs.getIndexVariant()));
 								loading.start("Creating room");
 							}
 						}

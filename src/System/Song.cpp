@@ -659,14 +659,14 @@ void Song::save(const std::string& filename, const std::vector<Mechanic *> &mech
     file << "Artist:" << data_.artist << std::endl;
     file << "BackgroundImage:" << Utils::split(data_.image, '/').back() << std::endl;
     file << "VignetteImage:" << Utils::split(data_.vignette, '/').back() << std::endl;
-    file << "Difficulty:" << data_.difficulty << std::endl;
-    file << "Players:" << data_.nbPlayers << std::endl;
+    file << "Difficulty:" << data_.variants[variant_].difficulty << std::endl;
+    file << "Players:" << data_.variants[variant_].nbPlayers << std::endl;
+    file << "Variant:" << data_.variants[variant_].label << std::endl;
     
     file << "[Arena]" << std::endl;
     for (int i = 0; i < arena.getNbRects(); i++) {
         auto rect = arena.getRects(i);
         file << rect.left << "," << rect.top << "," << rect.width << "," << rect.height << std::endl;
-
     }
 
 

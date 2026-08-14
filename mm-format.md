@@ -72,12 +72,12 @@ autour du `:`.
 | `PreviewTime` | entier (ms) | Position de départ de l'extrait joué dans les menus |
 | `Title` | texte | Titre affiché |
 | `Artist` | texte | Artiste affiché |
-| `Difficulty` | entier | **Purement décoratif.** Affiché, jamais interprété. |
-| `Players` | entier | Effectif prévu. Ne fait que pré-positionner le sélecteur de mode. |
+| `Difficulty` | entier | Difficulté affichée de la variante (aucun effet mécanique en soi). |
+| `Players` | entier | Effectif prévu pour cette variante ; sert à fixer la limite du lobby. |
+| `Variant` | texte | Libellé de la variante (`Solo`, `Normal`, `Expert`) ; choisie dans le carrousel. |
 
-> 🐛 `Song::save()` **n'écrit pas cet en-tête** — il ne produit que les quatre sections.
-> Tout export doit être recomplété à la main tant que ce n'est pas corrigé
-> (voir [ROADMAP.md](../ROADMAP.md), annexe 2).
+> ℹ️ `Song::save()` écrit désormais l'en-tête complet, y compris `Difficulty`, `Players`
+> et `Variant` (voir [ROADMAP.md](../ROADMAP.md), annexe 2).
 
 ---
 
@@ -357,15 +357,19 @@ un accès hors bornes, donc un plantage ou pire. Le parseur fait confiance à so
 **Les flottants sont écrits avec six décimales** par `std::to_string`. C'est verbeux mais
 sans conséquence : la relecture par `std::stof` est exacte à la précision utile.
 
-**Le `Difficulty` n'a aucun effet mécanique.** Deux chorégraphies de difficultés
-différentes sont deux fichiers distincts, sans lien entre eux dans le moteur actuel.
+**Le `Difficulty` n'a aucun effet mécanique.** Les difficultés d'une même musique sont
+des fichiers `.mm` distincts (variantes), reliés entre eux par `beatmap_list.txt`
+(`id|solo.mm|normal.mm|expert.mm`) et identifiés par leur clé `Variant:`.
 
 ---
 
 ## Générer un `.mm` depuis le code existant
 
-Tant que les chorégraphies vivent dans `src/MapsCode.cpp`, l'export se fait par la
-console de débogage du client (`console()` dans `MusicMech_Client/main.cpp`) :
+> ⚠️ **Section obsolète** depuis l'étape 1 : `src/MapsCode.cpp` a été supprimé, les
+> chorégraphies sont désormais des fichiers `.mm` édités à la main. L'export `save`
+> décrit ci-dessous est un vestige.
+
+Ancien mode d'emploi, pour référence :
 
 ```
 >> save
