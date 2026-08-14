@@ -27,8 +27,6 @@ cd MusicMech
 Ces fichiers ne sont **pas** dans git (volontairement). À recopier à la main depuis
 l'ancien poste si besoin :
 
-- `refs/vignettes.xcf` (137 Mo) — source GIMP des vignettes. Les `.png` exportés sont
-  déjà dans git, donc nécessaire seulement pour retoucher les vignettes.
 - `rc/OldBeatmaps/` (74 Mo) — anciennes beatmaps sous droits, référence locale.
 - `PROFILE*.dat` — sauvegardes de profils (régénérées en jouant).
 
