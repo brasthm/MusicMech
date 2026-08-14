@@ -39,7 +39,7 @@ Spread::Spread(float beat, float radius, int nbShare, float active, const Target
     base_.setOutlineThickness(5);
     base_.setPointCount(100);
 
-    Mechanic::setSoundName("Sound/normal-hitnormal.wav");
+    Mechanic::setSoundName("Sound/hitsound-kick.wav");
 
     drawPriority_ = target_.timing == TARGET_FOLLOW ? 15: isShare_ ? 10 : 0;
 

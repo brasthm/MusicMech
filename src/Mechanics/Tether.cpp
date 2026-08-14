@@ -54,7 +54,7 @@ Tether::Tether(float beat, const Target& t1, const Target& t2, float minDist, fl
 
     min_ = inward_ ? 120 : 200;
 
-    Mechanic::setSoundName("Sound/normal-hitnormal.wav");
+    Mechanic::setSoundName("Sound/hitsound-kick.wav");
 }
 
 void Tether::onDraw(const sf::Time &elapsed, sf::RenderTarget &window) {

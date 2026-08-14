@@ -71,7 +71,7 @@ NopeZone::NopeZone(float beat, float width, float height, int nbShare, float act
     rect_.width = width;
     rect_.height = height;
 
-    Mechanic::setSoundName("Sound/normal-hitnormal.wav");
+    Mechanic::setSoundName("Sound/hitsound-kick.wav");
 
     drawPriority_ = -10;
 
