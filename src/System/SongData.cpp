@@ -1,5 +1,6 @@
 #include "SongData.h"
 
+#include "../main.h"
 #include "RessourceLoader.h"
 #include "Utils.h"
 #include "Random.h"
@@ -82,7 +83,7 @@ void SongDatabase::play()
 {
 	music_.stop();
 	music_.openFromFile(RessourceLoader::getPath(songs_[selected_].songpath));
-	music_.setVolume(50);
+	music_.setVolume(MUSIC_VOLUME);
 	music_.setPlayingOffset(sf::milliseconds(songs_[selected_].preview));
 	music_.setLoop(true);
 	music_.play();
@@ -145,7 +146,7 @@ void SongDatabase::setSong(int i)
 {
 	music_.stop();
 	music_.openFromFile(RessourceLoader::getPath(songs_[i].songpath));
-	music_.setVolume(10);
+	music_.setVolume(MUSIC_VOLUME);
 	music_.setPlayingOffset(sf::milliseconds(songs_[i].preview));
 	music_.setLoop(true);
 	music_.play();

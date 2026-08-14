@@ -30,6 +30,7 @@ static constexpr int NB_MAX_MUSIC = 5;
 
 static const std::string HITSOUND_PATH = "Sound/hitsound-hat.wav";
 static constexpr float SFX_VOLUME = 50.f;
+static constexpr float MUSIC_VOLUME = 50.f;
 
 static constexpr int ARENA_WIDTH = 1000;
 static constexpr int ARENA_HEIGHT = 1000;

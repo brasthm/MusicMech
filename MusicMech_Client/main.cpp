@@ -49,7 +49,7 @@ void mainLoop(Client& c, int args=0) {
 
     sf::Music title;
     title.openFromFile(RessourceLoader::getPath("Music/Main Menu.mp3"));
-    title.setVolume(40);
+    title.setVolume(MUSIC_VOLUME);
     title.setLoop(true);
 
     sf::ContextSettings settings;

@@ -645,7 +645,7 @@ void Game::loadFromFile(const std::string& path)
     arena_.clear();
 
     song_.load(path, &music_, mechanicList_, &arena_);
-    music_.setVolume(10);
+    music_.setVolume(MUSIC_VOLUME);
 
 
     std::cout << "Mechanics number : " << mechanicList_.size() << std::endl;
